@@ -7,11 +7,11 @@ This is also a small experiment in questioning Belgium's exam-oriented higher ed
 ## Structure
 
 ```
+.claude         
 Notes/          # Original lecture slides (PDFs)
 summary/        # Per-chapter HTML summaries + cheat sheet + combined overview
 prepare/        # Per-chapter exam-prep guides (deeper, with intuition checks)
 Exam/           # Past exams & solutions + 4 AI-generated mock exams
-.build/         # Build scripts & question bank (internal)
 ```
 
 ## Using Claude Code to study
