@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 08 · Big Data — MapReduce &amp; Spark · Preparation</title>
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   Inline this ENTIRE block verbatim inside each self-contained .html <style>.
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz  (used by exams + crash-course self-checks)
+   Markup:  <ol class="opts" data-explain="...">
+              <li data-correct="1"><span class="otxt">A</span></li> ... </ol>
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+/* per-option mode: a tried-wrong option locks but the question stays open */
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail (auto-built by sidebar.js) ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) for prep guides ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+</style>
+<!-- MathJax — inline verbatim in <head>. Renders LaTeX: inline \( … \), display \[ … \].
+     Use LaTeX for ALL math (greek \alpha\beta\sigma, subscripts x_{i}, superscripts e^{-z},
+     fractions \frac{a}{b}, sums \sum, etc.). Code/pre are skipped so pseudocode stays literal. -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Chapter 08 · Preparation</span>
+    <h1>Big Data — MapReduce &amp; Spark</h1>
+    <p class="subtitle">Understand it deeply — not just memorize.</p>
+    <div class="meta-row">
+      <span class="chip"><b>Theme</b> distributed storage &amp; computation</span>
+      <span class="chip"><b>Spine</b> HDFS → MapReduce → YARN → Spark</span>
+      <span class="chip"><b>Mantra</b> insights &gt; infra</span>
+      <span class="chip"><b>Mode</b> Socratic · why-driven</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="callout note">
+  <div class="ttl">How to use this guide</div>
+  <p>This is <strong>not a summary</strong> — it is a guided session. Work it <em>top to bottom</em>. For every concept block: first try the <strong>restate-the-problem</strong> self-check (cover the reveal, say it out loud), <em>then</em> read the explanation, <em>then</em> hit the multiple-choice checks. If you get one wrong, do not just read the answer — re-derive <em>why</em> the right answer is right and the tempting one is a trap.</p>
+  <p>The course's deep-understanding rule: for each idea, drill <strong>(1) the problem</strong> it solves and the branches that were tried, <strong>(2) the solution</strong> and <em>why this design</em>, and <strong>(3) the broader context</strong> — why it matters. If you can teach a concept three ways (eli5 / eli14 / eli-intern), you own it. The left rail jumps you anywhere.</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:4px">Mastery checklist — you should be able to explain…</h3>
+  <ul class="check">
+    <li>Why "big data" and "analytics" are <strong>orthogonal</strong>, and why most problems are not big-data problems (the deflationary thesis, COST paper).</li>
+    <li>The <strong>road to big data</strong>: when in-memory / on-disk / on-GPU is enough, and when you genuinely need distributed storage + computation.</li>
+    <li>What <strong>HDFS</strong> gives you (name node, data nodes, 64MB blocks, replication) — and why it is storage, <em>not</em> computing.</li>
+    <li>The <strong>MapReduce</strong> pipeline over \((\text{key},\text{value})\) pairs: map → shuffle → reduce, with map emitting zero/one/many pairs.</li>
+    <li>The <strong>reduce-associativity trap</strong> — why naive averaging is wrong, and the \((\text{average},\text{count})\) fix. (Classic exam computation.)</li>
+    <li>What <strong>YARN</strong> solved (the JobTracker bottleneck) and the Hadoop 3 erasure-coding storage math (\(1.5\times\) vs \(3\times\)).</li>
+    <li>Why <strong>Spark "kicks out MapReduce"</strong>: a DAG engine with in-memory computing, \(10\text{–}100\times\) faster.</li>
+    <li>The <strong>RDD</strong>: lineage-based fault tolerance, lazy transformations vs eager actions, immutability.</li>
+    <li>The ladder <strong>RDD → DataFrame → Dataset</strong>: structure, schema, and compile-time type safety; why Python/R only get DataFrames.</li>
+    <li>The three <strong>aspects of streaming</strong> (data / training / prediction) and why online training is usually <em>not</em> needed.</li>
+    <li><strong>Spark Streaming (DStreams)</strong> vs <strong>Structured Streaming</strong> (unbounded table, late-data handling).</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<h2>The deflationary thesis: Big Data vs Analytics</h2>
+
+<p>Before any tool, fix the framing this whole deck is built on. The lecture is the <em>systems</em> deck — but its loudest message is a warning: do not reach for distributed infrastructure you do not need.</p>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem in your own words: what does this chapter claim is the <em>danger</em>, and why does "big data" not automatically mean "analytics"?</div>
+  <details><summary></summary>
+  <div class="reveal">Teams reflexively reached for Hadoop/Spark for any "big daunting task," over-engineering setups that a single beefy server would handle. The chapter says <strong>big data</strong> (managing/storing huge, high-speed, unstructured data) and <strong>analytics</strong> (analyzing data to get insights) are <em>orthogonal</em>: having huge data does not mean you can do ML on it, and doing analytics does not require large volumes. The danger is paying the enormous complexity tax of distribution when your problem does not call for it. The joke "big data is anything which is crash Excel" is a joke, not a definition.</div>
+  </details>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 620 200" role="img" aria-label="Big data and Analytics as two orthogonal boxes connected by a double arrow">
+  <rect x="40" y="60" width="200" height="80" rx="10" fill="#F1EADB" stroke="#D6CAB2"/>
+  <text x="140" y="95" text-anchor="middle" font-family="Georgia" font-size="18" fill="#22201C">Big Data</text>
+  <text x="140" y="118" text-anchor="middle" font-size="11" fill="#7E776B">store huge, high-speed,</text>
+  <text x="140" y="132" text-anchor="middle" font-size="11" fill="#7E776B">unstructured data</text>
+  <rect x="380" y="60" width="200" height="80" rx="10" fill="#F1EADB" stroke="#D6CAB2"/>
+  <text x="480" y="95" text-anchor="middle" font-family="Georgia" font-size="18" fill="#22201C">Analytics</text>
+  <text x="480" y="118" text-anchor="middle" font-size="11" fill="#7E776B">analyze data,</text>
+  <text x="480" y="132" text-anchor="middle" font-size="11" fill="#7E776B">obtain insights</text>
+  <line x1="240" y1="100" x2="380" y2="100" stroke="#CC785C" stroke-width="2"/>
+  <polygon points="240,100 254,94 254,106" fill="#CC785C"/>
+  <polygon points="380,100 366,94 366,106" fill="#CC785C"/>
+  <text x="310" y="44" text-anchor="middle" font-size="12" fill="#A8472A" font-style="italic">neither implies the other</text>
+</svg>
+<figcaption>Two black-box worlds, connected but independent. Volume is not insight; insight is not volume.</figcaption>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · the COST critique</div>
+  <p>Why be so skeptical of "scaling"? McSherry et al.'s <strong>COST</strong> ("Configuration that Outperforms a Single Thread") showed an <em>unoptimized</em> distributed system can post impressive scaling curves while a single well-written thread <em>beats the whole cluster</em>. Scaling well is not the same as being fast. So the honest first question is never "which cluster?" but "do I actually have big data, and is the algorithm even the same here?" — <strong>the algorithms are the same everywhere.</strong></p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>This framing is the lens for every later tool. HDFS, MapReduce, and Spark are <em>answers to a problem of scale you may not have</em>. In-memory analytics on a \(512\,\text{GB}\) RAM server is often cheaper than an HDFS cluster. The chapter's punchline — <em>"insights &gt; infra"</em> — is an exam-worthy thesis, not a throwaway.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">1</div><p class="qtext">"We have 4 TB of clickstream logs, therefore we need a distributed ML platform." What is the cleanest critique of this reasoning?</p></div>
+<ol class="opts" data-explain="Big data and analytics are orthogonal: huge volume does not imply you can or must do ML on it in a distributed way. You may only need to store/query it; the actual modeling could run on a sample in memory. Volume alone never settles the tooling question.">
+  <li data-correct="0"><span class="otxt">It is correct — any dataset above 1 TB legally requires Hadoop.</span></li>
+  <li data-correct="1"><span class="otxt">Volume (big data) and analysis (analytics) are orthogonal — large storage needs do not imply you must run ML in a distributed fashion.</span></li>
+  <li data-correct="0"><span class="otxt">It is correct because clickstream data is unstructured and only Spark can read it.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>The road to big data: when do you actually need it?</h2>
+
+<p>The deck escalates scale deliberately, so you can stop at the first rung that solves your problem.</p>
+
+<h3>The rungs of the ladder</h3>
+<dl class="defs">
+  <dt>In-memory analytics</dt><dd>Whole dataset fits in RAM (pandas, scikit-learn, tidyverse). Simplest and fastest. Servers with \(512\,\text{GB}\) RAM are cheap — often cheaper than an HDFS cluster.</dd>
+  <dt>On-GPU analytics</dt><dd>Massively parallel linear algebra (deep learning). Data may be huge (a million images) but is <em>not necessarily distributed</em>; <em>minibatch</em> = gradient over a sample before updating weights.</dd>
+  <dt>On-disk analytics</dt><dd>Data exceeds RAM but you still avoid a full big-data stack — the <em>intermediate</em> step. Dask, vaex, Polars, DuckDB use a <strong>DAG-of-computations</strong> approach with column-oriented storage and aggressive indexing.</dd>
+  <dt>Distributed (real big data)</dt><dd>Only here do you split <em>storage</em> (HDFS) and <em>computation</em> (MapReduce/Spark) across many machines.</dd>
+</dl>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern · the DAG idea you will keep meeting</div>
+  <p>Notice the recurring theme: Dask, Polars, DuckDB — and later Spark and Tez and Impala — all reach for the <strong>same trick</strong>: describe your work as a <em>directed acyclic graph (DAG)</em> of operations, then let an engine optimize and schedule it lazily (in memory, columnar) instead of materializing every intermediate step to disk. MapReduce's rigid "map → write to disk → reduce → write to disk" is exactly what this DAG idea kills. When you later read "Spark replaces MapReduce with a DAG engine," you have already met the concept three rungs earlier.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>The chapter is blunt: <em>"Pandas is crashing because I'm trying to work with a 50 GB data set is not really an excuse,"</em> and <em>"most organizations that jumped on the Spark bandwagon would have been better off"</em> learning <code>apply</code>, a database, or a columnar on-disk library. The road to big data is a road you should be reluctant to finish.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>HDFS — distributed storage (but not computing)</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: a single disk cannot hold (or survive holding) a petabyte-scale file. What two jobs must a distributed file system do, and what is the one thing it deliberately does <em>not</em> do?</div>
+  <details><summary></summary>
+  <div class="reveal">It must (1) <strong>spread one logical file across many commodity machines</strong> so total capacity scales, and (2) <strong>survive machine failures</strong> so data is not lost when a cheap node dies. HDFS does the first by chopping files into blocks placed on separate <em>data nodes</em>, and the second by <strong>replicating</strong> each block. What it deliberately does <em>not</em> do is <em>compute</em> — it just stores. Reading a massive file naively still ends badly; you need MapReduce/Spark on top to process it in a distributed way.</div>
+  </details>
+</div>
+
+<h3>How HDFS works</h3>
+<ul class="clean">
+  <li><strong>Name node</strong> — the brain. Makes <em>all</em> decisions about block placement and replication. (Metadata, not data.)</li>
+  <li><strong>Data nodes</strong> — the muscle. Hold the actual data blocks.</li>
+  <li><strong>Blocks</strong> — files are split into blocks, typical size <strong>\(64\,\text{MB}\)</strong>; HDFS tries to place each block on <em>separate</em> data nodes.</li>
+  <li><strong>Replication</strong> — each block is copied for fault tolerance; the <em>number of replicas</em> is specified at <em>file-creation time</em>.</li>
+  <li><strong>Access</strong> — native Java API + a C wrapper + shell commands. "A massive, distributed C: drive."</li>
+</ul>
+
+<div class="diagram">
+<svg viewBox="0 0 620 230" role="img" aria-label="HDFS name node directing block placement across three data nodes">
+  <rect x="230" y="15" width="160" height="46" rx="9" fill="#EAD2C5" stroke="#CC785C"/>
+  <text x="310" y="36" text-anchor="middle" font-family="Georgia" font-size="14" fill="#A8472A">Name Node</text>
+  <text x="310" y="52" text-anchor="middle" font-size="10.5" fill="#7E776B">decides placement + replicas</text>
+  <g font-size="11" fill="#3C5870">
+  <rect x="30"  y="120" width="160" height="90" rx="9" fill="#D9E2EA" stroke="#5B7C99"/>
+  <rect x="230" y="120" width="160" height="90" rx="9" fill="#D9E2EA" stroke="#5B7C99"/>
+  <rect x="430" y="120" width="160" height="90" rx="9" fill="#D9E2EA" stroke="#5B7C99"/>
+  <text x="110" y="138" text-anchor="middle" font-family="Georgia" fill="#3C5870">Data Node 1</text>
+  <text x="310" y="138" text-anchor="middle" font-family="Georgia" fill="#3C5870">Data Node 2</text>
+  <text x="510" y="138" text-anchor="middle" font-family="Georgia" fill="#3C5870">Data Node 3</text>
+  </g>
+  <g font-size="10.5" fill="#22201C">
+  <rect x="46"  y="150" width="50" height="22" rx="4" fill="#fff" stroke="#5B7C99"/><text x="71"  y="165" text-anchor="middle">A</text>
+  <rect x="110" y="150" width="50" height="22" rx="4" fill="#fff" stroke="#5B7C99"/><text x="135" y="165" text-anchor="middle">B</text>
+  <rect x="246" y="150" width="50" height="22" rx="4" fill="#fff" stroke="#5B7C99"/><text x="271" y="165" text-anchor="middle">A'</text>
+  <rect x="310" y="150" width="50" height="22" rx="4" fill="#fff" stroke="#5B7C99"/><text x="335" y="165" text-anchor="middle">C</text>
+  <rect x="446" y="150" width="50" height="22" rx="4" fill="#fff" stroke="#5B7C99"/><text x="471" y="165" text-anchor="middle">B'</text>
+  <rect x="510" y="150" width="50" height="22" rx="4" fill="#fff" stroke="#5B7C99"/><text x="535" y="165" text-anchor="middle">C'</text>
+  </g>
+  <line x1="270" y1="61" x2="120" y2="120" stroke="#CC785C" stroke-width="1.4"/>
+  <line x1="310" y1="61" x2="310" y2="120" stroke="#CC785C" stroke-width="1.4"/>
+  <line x1="350" y1="61" x2="500" y2="120" stroke="#CC785C" stroke-width="1.4"/>
+  <text x="310" y="225" text-anchor="middle" font-size="11" fill="#7E776B">each 64 MB block (A, B, C) replicated to a separate node (A', B', C')</text>
+</svg>
+<figcaption>Name node decides; data nodes hold blocks; replication survives a dead node.</figcaption>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why 64 MB blocks, not 4 KB?</div>
+  <p>Ordinary filesystems use tiny blocks (kilobytes) because they juggle many small files. HDFS is built for <em>few enormous</em> files streamed end-to-end. Huge blocks mean (1) the name node tracks far <em>fewer</em> block records (less metadata pressure on the single brain), and (2) once a worker opens a block it reads a long contiguous run — maximizing <em>throughput</em> over <em>latency</em>. HDFS optimizes for "read a lot, sequentially," which is exactly what batch analytics does.</p>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">The trap to never forget</div>
+  <p><strong>HDFS is storage, not computing.</strong> Distributing the <em>file</em> does nothing for you if your code still pulls it down and processes it on one machine. You need a distributed <em>computation</em> framework — that is the next section's whole reason to exist.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">2</div><p class="qtext">In HDFS, which component decides how blocks are replicated, and what is the typical block size?</p></div>
+<ol class="opts" data-explain="The name node holds metadata and makes all placement/replication decisions; data nodes only store the blocks. The typical HDFS block size is 64 MB — large, to favor sequential throughput and reduce metadata load on the single name node.">
+  <li data-correct="1"><span class="otxt">The name node decides replication; typical block size is \(64\,\text{MB}\).</span></li>
+  <li data-correct="0"><span class="otxt">Each data node decides its own replication; typical block size is \(4\,\text{KB}\).</span></li>
+  <li data-correct="0"><span class="otxt">YARN decides replication; typical block size is \(1\,\text{GB}\).</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>MapReduce — distributed computation over (key, value) pairs</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: HDFS spread your file across 100 machines. You want a word count. Why can you not just "loop over the file," and what programming shape lets the work happen <em>where the data already lives</em>?</div>
+  <details><summary></summary>
+  <div class="reveal">Looping pulls all blocks to one machine — you lose every benefit of distribution and the data may not fit. You need a model where the <em>same simple function</em> runs <strong>in parallel, locally, on each block</strong>, and partial results are then combined. That shape is map + reduce: <strong>map</strong> applies a function to every item independently (embarrassingly parallel), then a <strong>shuffle</strong> routes all values with the same key to one worker, and <strong>reduce</strong> aggregates each key's group. Computation moves to the data, not data to the computation.</div>
+  </details>
+</div>
+
+<h3>Functional roots</h3>
+<p>"Map" and "reduce" predate Hadoop — they are functional-programming primitives:</p>
+<div class="formula"><span class="lbl">map: a function over every item, producing a new list</span>\[ [1,2,3,4,5]\;.\!\operatorname{map}(\lambda x.\, x^{2}) = [1,4,9,16,25] \]</div>
+<div class="formula"><span class="lbl">reduce: aggregate a list down to a scalar</span>\[ [1,2,3,4,5]\;.\!\operatorname{reduce}(\operatorname{sum}) = 15 \]</div>
+
+<h3>The Hadoop MapReduce pipeline</h3>
+<ol class="steps">
+  <li><strong>Map.</strong> Each input \((\text{key},\text{value})\) pair is mapped to a list of output pairs — <strong>zero, one, or more</strong>. Runs in parallel across all input pairs.</li>
+  <li><strong>Shuffle / distribute.</strong> Output entries are routed so that <strong>all entries with the same key land on the same worker</strong>.</li>
+  <li><strong>Reduce.</strong> Each worker applies the reduce function to each key's group, producing one final pair per distinct key. Outputs optionally sorted per key.</li>
+</ol>
+
+<div class="diagram">
+<svg viewBox="0 0 640 180" role="img" aria-label="MapReduce word-count flow: map, shuffle by key, reduce">
+  <text x="64" y="18" font-size="12" fill="#7E776B" text-anchor="middle">input</text>
+  <text x="205" y="18" font-size="12" fill="#7E776B" text-anchor="middle">map</text>
+  <text x="380" y="18" font-size="12" fill="#7E776B" text-anchor="middle">shuffle by key</text>
+  <text x="545" y="18" font-size="12" fill="#7E776B" text-anchor="middle">reduce</text>
+  <g font-size="11">
+  <rect x="10" y="34" width="110" height="34" rx="6" fill="#F1EADB" stroke="#D6CAB2"/><text x="65" y="56" text-anchor="middle">"two plus two"</text>
+  <rect x="10" y="112" width="110" height="34" rx="6" fill="#F1EADB" stroke="#D6CAB2"/><text x="65" y="134" text-anchor="middle">"two plus four"</text>
+  </g>
+  <g font-size="10.5" fill="#22201C">
+  <rect x="150" y="30" width="110" height="22" rx="5" fill="#fff" stroke="#5B7C99"/><text x="205" y="45" text-anchor="middle">(two,1)(plus,1)</text>
+  <rect x="150" y="56" width="110" height="22" rx="5" fill="#fff" stroke="#5B7C99"/><text x="205" y="71" text-anchor="middle">(two,1)</text>
+  <rect x="150" y="110" width="110" height="22" rx="5" fill="#fff" stroke="#5B7C99"/><text x="205" y="125" text-anchor="middle">(two,1)(plus,1)</text>
+  <rect x="150" y="136" width="110" height="22" rx="5" fill="#fff" stroke="#5B7C99"/><text x="205" y="151" text-anchor="middle">(four,1)</text>
+  </g>
+  <g font-size="10.5" fill="#22201C">
+  <rect x="320" y="38" width="120" height="22" rx="5" fill="#DDE8DC" stroke="#5C8A6B"/><text x="380" y="53" text-anchor="middle">two → [1,1,1]</text>
+  <rect x="320" y="82" width="120" height="22" rx="5" fill="#DDE8DC" stroke="#5C8A6B"/><text x="380" y="97" text-anchor="middle">plus → [1,1]</text>
+  <rect x="320" y="126" width="120" height="22" rx="5" fill="#DDE8DC" stroke="#5C8A6B"/><text x="380" y="141" text-anchor="middle">four → [1]</text>
+  </g>
+  <g font-size="11" fill="#22201C">
+  <rect x="500" y="38" width="90" height="22" rx="5" fill="#EAD2C5" stroke="#CC785C"/><text x="545" y="53" text-anchor="middle">(two,3)</text>
+  <rect x="500" y="82" width="90" height="22" rx="5" fill="#EAD2C5" stroke="#CC785C"/><text x="545" y="97" text-anchor="middle">(plus,2)</text>
+  <rect x="500" y="126" width="90" height="22" rx="5" fill="#EAD2C5" stroke="#CC785C"/><text x="545" y="141" text-anchor="middle">(four,1)</text>
+  </g>
+  <line x1="120" y1="51" x2="150" y2="44" stroke="#CC785C"/><line x1="120" y1="129" x2="150" y2="132" stroke="#CC785C"/>
+  <line x1="260" y1="48" x2="320" y2="49" stroke="#5C8A6B"/><line x1="260" y1="147" x2="320" y2="93" stroke="#5C8A6B"/>
+  <line x1="440" y1="49" x2="500" y2="49" stroke="#A8472A"/><line x1="440" y1="93" x2="500" y2="93" stroke="#A8472A"/><line x1="440" y1="137" x2="500" y2="137" stroke="#A8472A"/>
+</svg>
+<figcaption>Word count: map emits <code>(word,1)</code>, shuffle groups by word, reduce sums. The shuffle is the only step that moves data between machines.</figcaption>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why must map be allowed to emit zero, one, or many?</div>
+  <p>Because the relation between input records and output records is not one-to-one. One line of text produces <em>many</em> word-count pairs (one-to-many). A filter step produces <em>zero or one</em> (drop or keep). Forcing exactly one output per input would make map useless for the most common jobs. The flexibility — list-valued output — is what lets map express splitting, filtering, and expansion all at once.</p>
+</div>
+
+<h3>Running it on Hadoop</h3>
+<ul class="clean">
+  <li>Tasks are written in <strong>Java</strong> (Python and other bindings exist; Java is native), packaged as a <strong>JAR</strong>, launched with <code>hadoop jar myfile.jar ClassToRun [args]</code>.</li>
+  <li>Output goes to HDFS as a <code>_SUCCESS</code> marker plus <code>part-r-00000</code> files; inspect with <code>hadoop fs -ls</code> / <code>hadoop fs -cat</code>.</li>
+  <li>Beyond mappers/reducers, real jobs also use <strong>Partitioners, Combiners, Shufflers, Sorters</strong> (file → InputFormat → Split → RecordReader → map → Partitioner → sort → reduce → OutputFormat).</li>
+</ul>
+
+<div class="callout warn">
+  <div class="ttl">The honest caveat</div>
+  <p><em>"There's a reason most tutorials don't go much further than counting words."</em> Expressing real analytics as map/reduce is genuinely hard, and <strong>big does not mean fast</strong> — the disk swapping between steps is brutal. Ask whether your use case really resembles a search engine's.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">3</div><p class="qtext">In Hadoop MapReduce, which statement about the <em>map</em> step is correct?</p></div>
+<ol class="opts" data-explain="Map runs in parallel and may emit zero, one, or many output (key,value) pairs per input pair — a line of text yields many word pairs, a filter yields zero or one. The shuffle (not map) is what groups same-key entries onto one worker.">
+  <li data-correct="0"><span class="otxt">Map must emit exactly one output pair per input pair.</span></li>
+  <li data-correct="0"><span class="otxt">Map is responsible for sending all entries with the same key to one worker.</span></li>
+  <li data-correct="1"><span class="otxt">Map runs in parallel and may emit zero, one, or many output pairs per input pair.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>The reduce-associativity trap (the exam-classic)</h2>
+
+<p>This is the single most testable mechanics point in the chapter. Slow down here.</p>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: a reducer may be called <em>more than once</em> on <em>partial</em> results — it might combine \([100,200]\) into one value, and a straggler mapper later hands it <em>another</em> value for the same key. What two properties must <code>reduce</code> therefore satisfy?</div>
+  <details><summary></summary>
+  <div class="reveal">(1) The reduce function must <strong>emit the same structure that map emits</strong>, so its output can be fed back in and reduced again. (2) It must give the <strong>correct result even when applied multiple times on partial results</strong> (it must be associative over partials). We want this because a complete group may be too large to reduce at once, we want to start reducing before all mappers finish, and we keep reducing until one item per key remains.</div>
+  </details>
+</div>
+
+<h3>Why naive averaging is WRONG</h3>
+<p>Suppose <code>reduce(key, values) = (key, sum(values)/length(values))</code>. For the genre <code>drama</code>:</p>
+<div class="formula"><span class="lbl">first reduce of [100, 200]</span>\[ \frac{100+200}{2} = 150 \]</div>
+<p>Now a slow mapper emits <code>drama → 300</code>. The engine re-reduces \([150, 300]\):</p>
+<div class="formula"><span class="lbl">re-reduce — uh-oh</span>\[ \frac{150+300}{2} = 225 \quad\neq\quad \frac{100+200+300}{3} = 200 \]</div>
+
+<div class="callout warn">
+  <div class="ttl">Why exactly does it break?</div>
+  <p>The mean is <strong>not associative</strong>: averaging the average of a subgroup with a new value silently <em>forgets how many records the average represented</em>. The \(150\) stood for <em>two</em> books, but the re-reduce treats it as <em>one</em>. Information was lost the moment we collapsed to a bare average.</p>
+</div>
+
+<h3>The fix: carry the count</h3>
+<p>Make the value a <strong>pair</strong> \((\text{running average},\ \text{number of records seen})\). Map yields <code>(genre, (nrPages, 1))</code>. Reduce reconstructs a weighted sum:</p>
+<pre><code>def reduce(key, values):
+    sum, newcount = 0, 0
+    for (nrPages, count) in values:
+        sum = sum + nrPages * count
+        newcount = newcount + count
+    yield (key, (sum / newcount, newcount))</code></pre>
+
+<p>Now trace it. First, <code>drama → [(100,1),(200,1)]</code>:</p>
+<div class="formula"><span class="lbl">weighted, with count carried</span>\[ \left(\frac{100\cdot1 + 200\cdot1}{1+1},\; 2\right) = (150,\,2) \]</div>
+<p>Then the straggler arrives with <code>(300,1)</code>; re-reduce \([(150,2),(300,1)]\):</p>
+<div class="formula"><span class="lbl">re-reduce — correct now</span>\[ \left(\frac{150\cdot2 + 300\cdot1}{2+1},\; 3\right) = (200,\,3) \;\checkmark \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why does the count make it associative?</div>
+  <p>Because \((\text{average},\text{count})\) is enough state to reconstruct the <em>true sum</em> (\(\text{average}\times\text{count}\)) at any point. Sums <em>are</em> associative and order-independent: a \(\sum\) of partial sums equals the total sum, always. By carrying the count we never lose the weight, so each re-reduce recomputes the exact running mean regardless of how the data was chunked or how late a mapper finishes. This is the same insight that makes parallel and streaming aggregates correct everywhere.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters beyond this slide</div>
+  <p>This is not a Hadoop quirk — it is the general law of <em>distributed/streaming aggregation</em>. Any reducer-like combine step (Spark's <code>reduceByKey</code>, a streaming window aggregate, a Combiner) must be <strong>associative and commutative on partial state</strong>, or your answer depends on machine timing. "Carry enough state to be re-combinable" is the lesson.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">4</div><p class="qtext">Why is naive MapReduce averaging incorrect when a reducer runs on partial results?</p></div>
+<ol class="opts" data-explain="A bare average forgets how many records it summarized, so re-reducing it with new values double-counts incorrectly — the mean is not associative. Carrying (average, count) preserves the weight so partial re-reduces still yield the true mean.">
+  <li data-correct="0"><span class="otxt">Because integer division rounds the result down each time.</span></li>
+  <li data-correct="1"><span class="otxt">Because a bare average loses the count it represented, so re-reducing it with new values weights them wrongly — the mean is not associative.</span></li>
+  <li data-correct="0"><span class="otxt">Because the shuffle step sorts keys, which reorders the values.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">5</div><p class="qtext">Using the corrected scheme, reducing <code>education → [(300,1),(200,1)]</code> and later combining with a straggler <code>(250,2)</code> gives which state?</p></div>
+<ol class="opts" data-explain="First: ((300+200)/2, 2) = (250, 2). Then combine with (250, 2): ((250·2 + 250·2)/(2+2), 4) = (250, 4). The carried counts weight each partial average by how many records it stood for.">
+  <li data-correct="0"><span class="otxt">\((250,\,2)\) — the straggler is ignored.</span></li>
+  <li data-correct="0"><span class="otxt">\((237.5,\,4)\) — average of the two averages.</span></li>
+  <li data-correct="1"><span class="otxt">\((250,\,4)\) — weighted by counts: \(\frac{250\cdot2 + 250\cdot2}{4}\).</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>YARN and the Hadoop generations</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: in Hadoop 1, one service (the JobTracker) both scheduled MapReduce jobs <em>and</em> managed cluster resources. Why was bundling those two jobs a scaling problem?</div>
+  <details><summary></summary>
+  <div class="reveal">A single JobTracker became a bottleneck and single point of contention as clusters and task counts grew — it could not scale to larger clusters. Hadoop 2 split the concerns: <strong>cluster resource management became YARN</strong> (Yet Another Resource Negotiator), while MapReduce kept only the MapReduce-specific logic. Separating "who gets resources" from "what the computation is" lets each scale independently — and lets <em>other</em> engines (like Spark) run on YARN too.</div>
+  </details>
+</div>
+
+<h3>What changed across generations</h3>
+<dl class="defs">
+  <dt>Hadoop 1</dt><dd><strong>JobTracker</strong> manages everything; does not scale to large clusters/tasks.</dd>
+  <dt>Hadoop 2</dt><dd>MapReduce split into two: resource management → <strong>YARN</strong>; MapReduce-specific capability stays in MapReduce. This is <em>why Spark can run on YARN</em>.</dd>
+  <dt>Hadoop 3</dt><dd>Mostly the same, plus <strong>erasure coding</strong> for cheaper durability, and support for <strong>multiple standby NameNodes</strong> (Hadoop 2 allowed only one active + one standby).</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · the erasure-coding storage math</div>
+  <p>Hadoop 2 replication stores <strong>3 full copies</strong> → \(3\times\) disk to survive failures. Hadoop 3 erasure coding adds <strong>one parity block per two data blocks</strong>, so you store the equivalent of \(1.5\) units per unit of data → only \(1.5\times\) disk, <em>with the same fault tolerance</em>. Why is parity cheaper than copies? A parity block lets you <em>reconstruct</em> a lost block algebraically (like RAID), so you do not need a whole redundant copy of everything.</p>
+  <div class="formula"><span class="lbl">storage overhead, same durability</span>\[ \text{replication: } 3\times \qquad\longrightarrow\qquad \text{erasure coding: } 1.5\times \]</div>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>YARN is the reason "the cluster" is decoupled from "the engine." When the chapter later says Spark can run on YARN, Mesos, or standalone, this separation is the precondition. Standard Hadoop, though, is "not a turn-key solution" — just a big distributed drive plus an un-fun way to do MapReduce. That gap is exactly what vendors and Spark rushed to fill.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">6</div><p class="qtext">What problem did YARN (Hadoop 2) solve relative to Hadoop 1?</p></div>
+<ol class="opts" data-explain="In Hadoop 1 the single JobTracker handled both resource management and MapReduce scheduling and did not scale. Hadoop 2 split out cluster resource management into YARN, leaving MapReduce-specific logic in MapReduce — which also lets other engines (Spark) run on YARN.">
+  <li data-correct="1"><span class="otxt">It split cluster resource management out of the JobTracker, which had become a scaling bottleneck.</span></li>
+  <li data-correct="0"><span class="otxt">It replaced HDFS with a faster in-memory file system.</span></li>
+  <li data-correct="0"><span class="otxt">It removed the need for replication by introducing erasure coding.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>SQL on Hadoop — and why "big does not mean fast"</h2>
+
+<p>Every time a distributed store gets popular, the next demand is: <em>"What do you mean it is a file system? We need SQL!"</em></p>
+
+<dl class="defs">
+  <dt>Apache Hive (2008)</dt><dd>The original SQL-on-Hadoop. <strong>Converts SQL into a series of MapReduce jobs</strong>; presents like a MySQL server (CLI, JDBC). Its <strong>main drawback is speed</strong> — even simple queries pay the MapReduce-translation overhead.</dd>
+  <dt>HBase</dt><dd>The <strong>first database on Hadoop</strong>. <strong>No SQL</strong> — its own get/put/filter ops (<code>scan</code>, <code>get</code>); column-family + timestamped cells; complex queries become MapReduce jobs.</dd>
+  <dt>Pig</dt><dd>A dataflow language to ease writing MapReduce — still not easy, and people still wanted SQL.</dd>
+  <dt>Without MapReduce</dt><dd><strong>Tez</strong> (a DAG backend for Hive) and Cloudera's <strong>Impala (2012)</strong> <em>forewent MapReduce entirely</em> for speed. The same DAG idea again.</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why is Hive slow even on small queries?</div>
+  <p>Because Hive does not <em>run</em> SQL — it <em>compiles</em> SQL into MapReduce jobs, and every MapReduce job pays fixed costs: JVM startup, scheduling, and writing intermediate results to HDFS between map and reduce. A trivial <code>GROUP BY</code> still spins up the whole machinery and swaps to disk. The size of the data barely matters to that fixed overhead — hence <strong>"big does not mean fast."</strong> This is precisely the pain that motivates Spark and the DAG-based engines.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters · the hype curve</div>
+  <p>Interest in "big data" peaked between <strong>2011–2014</strong>; by <strong>2015</strong> attention moved to AI/ML/deep learning, and 2015 was "the year of Apache Spark." Today storage/querying has stabilized around cloud warehouses (Redshift, Snowflake, Clickhouse, Presto, Dremio) — "<em>do not do it yourself.</em>" The analytics story, though, largely returned to BI-style SQL; MapReduce <em>was never well suited for analytics</em> (ask the Mahout project, who tried to port ML to it).</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">7</div><p class="qtext">What is Hive's main drawback, and why?</p></div>
+<ol class="opts" data-explain="Hive compiles SQL into a series of MapReduce jobs; each job pays fixed startup and disk-swapping costs, so even simple queries are slow. It is not about SQL syntax limits per se — the speed penalty from MapReduce translation is the headline drawback.">
+  <li data-correct="0"><span class="otxt">It cannot read HDFS files, so it must copy data to a local disk first.</span></li>
+  <li data-correct="0"><span class="otxt">It only supports the get/put/filter API, not real SQL.</span></li>
+  <li data-correct="1"><span class="otxt">Speed — it translates SQL into MapReduce jobs, so even simple queries inherit MapReduce's overhead and disk swapping.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Spark — kicking out MapReduce</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: MapReduce is slow because it writes intermediate results to HDFS between every map and reduce, and is painful for <em>iterative</em> jobs (like ML, which loops over the data many times). What single architectural change would fix both?</div>
+  <details><summary></summary>
+  <div class="reveal">Keep intermediate data <strong>in memory</strong> across steps instead of swapping to disk, and let a job be an arbitrary <strong>DAG of operations</strong> (supporting cyclic/iterative data flow) rather than a rigid map-then-reduce pair. That is exactly what Spark does: it <em>keeps the resource manager and storage</em> (runs on YARN/Mesos/standalone, reads HDFS/S3/Cassandra/etc.) but <strong>throws out the MapReduce paradigm</strong>, replacing it with a DAG execution engine + in-memory computing. Result: \(10\text{–}100\times\) faster, and finally good for ML and interactive queries.</div>
+  </details>
+</div>
+
+<h3>What Spark keeps vs throws out</h3>
+<div class="vs">
+  <div class="col"><h4>Keeps</h4>
+    <ul class="clean">
+      <li><strong>Resource manager</strong>: runs on YARN, or Mesos, or standalone.</li>
+      <li><strong>Storage</strong>: HDFS, S3, Cassandra, HBase, Hive, flat files (JSON/Parquet/CSV).</li>
+    </ul>
+  </div>
+  <div class="col"><h4>Throws out</h4>
+    <ul class="clean">
+      <li><strong>MapReduce.</strong> Replaced by an <strong>advanced DAG execution engine</strong> with cyclic data flow and in-memory computing.</li>
+      <li>Does batch <em>and</em> streaming, interactive queries, ML.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why is in-memory + DAG so much faster for ML?</div>
+  <p>Iterative algorithms (gradient descent, k-means) sweep the <em>same</em> dataset dozens of times. Under MapReduce, each sweep re-reads and re-writes HDFS — disk I/O dominates. Spark caches the working set in RAM, so iteration \(n+1\) reuses iteration \(n\)'s data with no disk round-trip. The DAG also lets Spark <em>fuse and reorder</em> operations and avoid materializing throwaway intermediates. Benchmarks on the slides: Hadoop ~\(110\,\text{s}\) vs Spark ~\(0.9\,\text{s}\).</p>
+</div>
+
+<h3>Spark's building blocks</h3>
+<p>A <strong>Spark Core Engine</strong> at the base; on top: <strong>Spark SQL</strong>, <strong>Spark Streaming</strong>, <strong>MLlib</strong> (machine learning), <strong>GraphX</strong> (graphs), <strong>SparkR</strong> — with <strong>BlinkDB</strong> (approximate SQL) above Spark SQL.</p>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>Spark addresses the exact three things that throttled Hadoop adoption: it is <strong>faster</strong>, <strong>easier to program</strong> (Scala/Java/Python/R/SQL + an interactive shell), and <strong>lends itself to machine learning</strong>. Note the family resemblance to Dask and the on-disk DAG libraries — "a smarter way to distribute jobs over machines."</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">8</div><p class="qtext">Spark "kicks out MapReduce." Which statement captures what it keeps and what it replaces?</p></div>
+<ol class="opts" data-explain="Spark keeps a resource manager (YARN/Mesos/standalone) and storage (HDFS/S3/Cassandra/etc.) but replaces the MapReduce paradigm with a DAG execution engine featuring in-memory computing and cyclic data flow — yielding 10–100× speedups.">
+  <li data-correct="0"><span class="otxt">It replaces HDFS and YARN but keeps MapReduce for compatibility.</span></li>
+  <li data-correct="1"><span class="otxt">It keeps the resource manager and storage but replaces MapReduce with a DAG, in-memory execution engine.</span></li>
+  <li data-correct="0"><span class="otxt">It keeps MapReduce but moves all storage from HDFS into RAM.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>RDD — Resilient Distributed Dataset</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: if you keep data in memory across a cluster for speed, a node can die and take its partition with it. Replicating everything in RAM is wasteful. How can Spark be <em>fault-tolerant</em> without copying data everywhere?</div>
+  <details><summary></summary>
+  <div class="reveal">By recording, for each RDD, the <strong>lineage</strong> — the chain of coarse-grained transformations that built it from its source. If a partition is lost, Spark just <strong>recomputes</strong> it by replaying those transformations on the source data, instead of fetching a stored replica. Efficiency comes from parallelizing across nodes and <em>minimizing</em> replication; resilience comes from the recipe (lineage), not from copies.</div>
+  </details>
+</div>
+
+<h3>What an RDD is</h3>
+<p>The <strong>RDD</strong> is Spark Core's primary data abstraction: an immutable collection of elements (text lines, words, objects, images…) <strong>partitioned across the cluster</strong> and operated on in parallel. The unpacked name:</p>
+<dl class="defs">
+  <dt><strong>R</strong>esilient</dt><dd>Fault-tolerant via <strong>lineage</strong>: the chain \(\text{RDD}_1 \to \dots \to \text{RDD}_n\) is logged and can be <em>replayed</em> to rebuild lost partitions.</dd>
+  <dt><strong>D</strong>istributed</dt><dd>Partitioned across nodes; Spark handles distribution and task management automatically.</dd>
+  <dt><strong>D</strong>ataset</dt><dd>A collection of data elements; kept <strong>in memory where possible</strong> (a huge win for iterative queries).</dd>
+</dl>
+
+<h3>Transformations vs Actions</h3>
+<div class="vs">
+  <div class="col"><h4>Transformations</h4>
+    <p>Produce a <strong>new RDD</strong> (the original is immutable). <strong>Lazily evaluated</strong> — nothing runs yet.</p>
+    <p><code>map, filter, flatMap, union, distinct, groupByKey, reduceByKey, sortByKey, join</code></p>
+  </div>
+  <div class="col"><h4>Actions</h4>
+    <p>Produce a <strong>value or side-effect</strong> and <strong>trigger execution</strong> of the whole pending DAG.</p>
+    <p><code>reduce, count, first, take, collect, saveAsTextFile, countByKey, foreach</code></p>
+  </div>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why are transformations <em>lazy</em>?</div>
+  <p>If Spark executed each transformation immediately, it could not <em>optimize</em>. By deferring until an <strong>action</strong> demands a result, Spark sees the <em>entire</em> DAG at once and can fuse maps, push down filters, pick join strategies, and avoid materializing intermediates you never use. Laziness is what turns "a chain of map/filter calls" into "one optimized physical plan." (It also means a bug in a pure transformation chain may not surface until you call an action.)</p>
+</div>
+
+<h3>How a job actually runs (DAG → stages → tasks)</h3>
+<div class="diagram">
+<svg viewBox="0 0 640 150" role="img" aria-label="RDD execution: RDD objects to DAGScheduler to TaskScheduler to Worker">
+  <g font-size="11.5" fill="#22201C">
+  <rect x="10"  y="40" width="130" height="64" rx="9" fill="#F1EADB" stroke="#D6CAB2"/><text x="75"  y="66" text-anchor="middle" font-family="Georgia">RDD Objects</text><text x="75" y="86" text-anchor="middle" font-size="10" fill="#7E776B">build operator DAG</text>
+  <rect x="170" y="40" width="130" height="64" rx="9" fill="#D9E2EA" stroke="#5B7C99"/><text x="235" y="62" text-anchor="middle" font-family="Georgia">DAGScheduler</text><text x="235" y="82" text-anchor="middle" font-size="10" fill="#7E776B">split into stages</text><text x="235" y="95" text-anchor="middle" font-size="10" fill="#7E776B">(agnostic to operators)</text>
+  <rect x="330" y="40" width="130" height="64" rx="9" fill="#DDE8DC" stroke="#5C8A6B"/><text x="395" y="62" text-anchor="middle" font-family="Georgia">TaskScheduler</text><text x="395" y="82" text-anchor="middle" font-size="10" fill="#7E776B">launch + retry tasks</text><text x="395" y="95" text-anchor="middle" font-size="10" fill="#7E776B">(unaware of stages)</text>
+  <rect x="490" y="40" width="130" height="64" rx="9" fill="#EAD2C5" stroke="#CC785C"/><text x="555" y="62" text-anchor="middle" font-family="Georgia">Worker</text><text x="555" y="82" text-anchor="middle" font-size="10" fill="#7E776B">threads + block mgr</text><text x="555" y="95" text-anchor="middle" font-size="10" fill="#7E776B">execute, store blocks</text>
+  </g>
+  <line x1="140" y1="72" x2="170" y2="72" stroke="#CC785C" stroke-width="1.6"/><polygon points="170,72 160,68 160,76" fill="#CC785C"/>
+  <line x1="300" y1="72" x2="330" y2="72" stroke="#CC785C" stroke-width="1.6"/><polygon points="330,72 320,68 320,76" fill="#CC785C"/>
+  <line x1="460" y1="72" x2="490" y2="72" stroke="#CC785C" stroke-width="1.6"/><polygon points="490,72 480,68 480,76" fill="#CC785C"/>
+  <path d="M395 40 C 395 18, 235 18, 235 40" fill="none" stroke="#A8472A" stroke-dasharray="4 3"/>
+  <text x="315" y="20" text-anchor="middle" font-size="10" fill="#A8472A">stage failed</text>
+</svg>
+<figcaption>Layered scheduling: DAGScheduler thinks in stages, TaskScheduler thinks in tasks, workers execute and serve blocks.</figcaption>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">9</div><p class="qtext">An RDD recovers a lost partition primarily by…</p></div>
+<ol class="opts" data-explain="Resilience comes from lineage: Spark logs the chain of transformations and recomputes the lost partition from the source. It deliberately minimizes replication rather than relying on stored copies.">
+  <li data-correct="0"><span class="otxt">Fetching a synchronous replica it keeps on three other nodes.</span></li>
+  <li data-correct="0"><span class="otxt">Reloading the whole dataset from HDFS and starting over.</span></li>
+  <li data-correct="1"><span class="otxt">Replaying its logged lineage of transformations to recompute just that partition.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">10</div><p class="qtext">In <code>rdd.map(f).filter(g).count()</code>, when does Spark actually execute the work?</p></div>
+<ol class="opts" data-explain="map and filter are lazy transformations that only build the DAG; the action count() triggers execution of the whole pending plan, letting Spark optimize across the chain first.">
+  <li data-correct="0"><span class="otxt">At <code>map</code>, eagerly, then again at <code>filter</code>.</span></li>
+  <li data-correct="1"><span class="otxt">Only at <code>count()</code> — the action triggers the lazily-built DAG.</span></li>
+  <li data-correct="0"><span class="otxt">Never — <code>count()</code> is also lazy until you print it.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Writing Spark: SparkContext, PySpark, where work runs</h2>
+
+<h3>The driver and the context</h3>
+<ul class="clean">
+  <li>A Spark app can be a JAR (Scala/Java) <em>or</em> driven interactively via the <strong>Spark shell</strong>; APIs exist in Scala, Java, Python, R, SQL.</li>
+  <li>In <strong>PySpark</strong>, the <strong>driver program</strong> runs on the client and sets up a <strong>SparkContext</strong> (<code>sc</code>) — the connection to the cluster.</li>
+  <li><code>sc.textFile("README.md")</code> returns an RDD where each element is a line; <code>.count()</code> gives 126, <code>.filter(lambda l: "Spark" in l).count()</code> gives 15.</li>
+</ul>
+
+<div class="callout warn">
+  <div class="ttl">The most important sentence about PySpark</div>
+  <p><strong>Data operations are NOT executed on your machine.</strong> The client sends them to the cluster; <em>no data is loaded into the client</em> — <strong>unless you call <code>.toPandas()</code></strong> (which pulls results back, and can blow up your driver's memory if the result is large).</p>
+</div>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern · what <code>SparkContext</code> really is</div>
+  <p>Think of <code>sc</code> as a <em>remote control</em>, not a database. Your Python script holds the remote; the cluster holds the data. Every <code>.map</code>/<code>.filter</code> you write is a button press queued on the remote — nothing happens on your laptop. Only an <em>action</em> (or <code>.toPandas()</code>) actually makes the cluster run and, in the <code>.toPandas()</code> case, ship the result back. The context itself bundles the RDD graph, DAGScheduler, TaskScheduler, scheduler backend, listener bus, and block manager.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>RDD → DataFrame → Dataset: imposing structure</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: RDDs are powerful but "still feel like MapReduce" — low-level <code>map</code>/<code>reduceByKey</code> over free-form elements, with no schema for the optimizer to exploit. What does a data scientist working with tabular data actually want instead?</div>
+  <details><summary></summary>
+  <div class="reveal">They want a <strong>DataFrame</strong>: named, typed columns (a schema), a high-level domain-specific API like pandas, and SQL. Imposing structure also lets a query optimizer (<strong>Catalyst</strong>) reason about and speed up the computation. So Spark layers DataFrames (and typed Datasets) on top of RDDs — keeping RDDs available for low-level/unstructured/functional work, but making the structured path the default since Spark 2.0.</div>
+  </details>
+</div>
+
+<h3>The three abstractions</h3>
+<dl class="defs">
+  <dt>RDD</dt><dd>Free-form distributed collection of elements. No schema. Best for low-level control, unstructured data, functional manipulation.</dd>
+  <dt>DataFrame</dt><dd>Immutable distributed collection where every element is a set of values in <strong>named columns</strong> (it imposes <em>structure on top of RDDs</em>). Like a pandas/R data frame. <strong>= Dataset[Row]</strong> — untyped (runtime-checked).</dd>
+  <dt>Dataset[T]</dt><dd>An extension of DataFrame with a <strong>type-safe, object-oriented</strong> interface: strongly-typed objects mapped to a schema, giving <strong>compile-time</strong> error checking. <em>Scala/Java only.</em></dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why do Python and R only get DataFrames?</div>
+  <p>A <code>Dataset[T]</code>'s headline benefit is <strong>compile-time type safety</strong> — catching field/type errors <em>before the program runs</em>, via a Scala/Java <em>case class</em>. Python and R are dynamically typed: they have <em>no compile step</em> at which such checks could happen. So for them the typed API would be meaningless — they get only the untyped <strong>DataFrame = Dataset[Row]</strong>. Same engine, same Catalyst optimizer; they just lose the static guarantee they could never have enforced anyway.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters · Spark 2.0 unification</div>
+  <p>Since Spark 2.0, the DataFrame and Dataset APIs merged: <strong>a DataFrame is literally a <code>Dataset[Row]</code></strong>. <strong>Spark SQL</strong> (built on Spark Core, powered by the <strong>Catalyst</strong> optimizer) became the primary, feature-rich interface — hiding raw RDDs behind these higher-level abstractions. Use <code>SparkSession</code> (not <code>SparkContext</code>) as your entry point. For R/Python users: keep using DataFrames, knowing they ride on <code>Dataset[Row]</code> underneath.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">11</div><p class="qtext">Why is the strongly-typed <code>Dataset[T]</code> API unavailable in Python and R?</p></div>
+<ol class="opts" data-explain="Dataset[T]'s benefit is compile-time type safety via a Scala/Java case class. Python and R are dynamically typed with no compile step, so that guarantee is impossible to provide — they get the untyped DataFrame = Dataset[Row] instead.">
+  <li data-correct="0"><span class="otxt">Because Python and R cannot connect to a SparkSession.</span></li>
+  <li data-correct="0"><span class="otxt">Because the Catalyst optimizer only works on RDDs in those languages.</span></li>
+  <li data-correct="1"><span class="otxt">Because they are dynamically typed — there is no compile step at which compile-time type safety could be enforced.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">12</div><p class="qtext">"A DataFrame is …" — complete it the way Spark 2.0 defines it.</p></div>
+<ol class="opts" data-explain="Since Spark 2.0 the DataFrame and Dataset APIs unified: a DataFrame is a Dataset[Row] — a distributed collection of untyped Row objects organized into named columns, built on top of RDDs.">
+  <li data-correct="1"><span class="otxt">… a <code>Dataset[Row]</code> — a distributed collection of untyped rows with named columns.</span></li>
+  <li data-correct="0"><span class="otxt">… a local pandas table loaded into the driver's memory.</span></li>
+  <li data-correct="0"><span class="otxt">… an RDD with replication turned on for fault tolerance.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>MLlib — scikit-learn on Spark</h2>
+
+<p>MLlib is Spark's machine-learning library; its goal is to make practical ML <strong>scalable and easy</strong> — "scikit-learn on Spark." It provides algorithms (classification, regression, clustering, collaborative filtering), <strong>featurization</strong>, <strong>pipelines</strong>, <strong>persistence</strong>, and utilities.</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · which package, and why the switch?</div>
+  <p>There are two APIs. The old <strong><code>spark.mllib</code></strong> was <strong>RDD-based</strong> ("not a very helpful way of working"). The new <strong><code>spark.ml</code></strong> is <strong>DataFrame-based</strong> and is the <em>primary</em> API since Spark 2.0. Why move to DataFrames? They give a schema-aware, pipeline-friendly, optimizer-backed surface that mirrors what data scientists already know — exactly the structured abstraction the previous section motivated. Feature parity was reached in <strong>Spark 2.3</strong>; in <strong>Spark 3</strong> the RDD-based API is in <strong>maintenance mode</strong> (supported, no new features).</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">13</div><p class="qtext">Which is the <em>primary</em> MLlib API today, and what is the status of the other?</p></div>
+<ol class="opts" data-explain="Since Spark 2.0 the DataFrame-based spark.ml is primary; the RDD-based spark.mllib reached parity in 2.3 and is in maintenance mode in Spark 3 (supported, no new features).">
+  <li data-correct="0"><span class="otxt"><code>spark.mllib</code> (RDD-based) is primary; <code>spark.ml</code> was removed in Spark 3.</span></li>
+  <li data-correct="1"><span class="otxt"><code>spark.ml</code> (DataFrame-based) is primary; <code>spark.mllib</code> (RDD-based) is in maintenance mode in Spark 3.</span></li>
+  <li data-correct="0"><span class="otxt">Both are deprecated; MLlib was replaced entirely by H2O.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Streaming analytics — three aspects you must not conflate</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: "streaming" sounds like one thing, but the chapter insists it is three. Name the three aspects, and say which one is genuinely hard.</div>
+  <details><summary></summary>
+  <div class="reveal">(1) <strong>Streaming data</strong> — plumbing: a source emits events; you store them, access history, ship them around. (2) <strong>Streaming training</strong> — training an algorithm on a <em>continuous</em> stream (true <em>online</em> learning). (3) <strong>Streaming prediction</strong> — applying a model to a stream of instances (a deployment matter). The genuinely hard one is <strong>streaming training</strong>: online algorithms are difficult and need ad-hoc changes per technique. The chapter's punchline: you usually <em>do not need it</em> — store the stream, predict online, but <strong>train offline</strong>.</div>
+  </details>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · when do you actually need online training?</div>
+  <p>Almost never — even Netflix (\(\sim 9\) million events/second at peak) retrains the recommender matrix in real time only partially; the <em>main</em> training stays offline. The decisive question is <strong>how fast the feature space changes</strong>, <em>not</em> how fast the data arrives. If concept drift is slow, a monthly/weekly/daily offline retrain plus online prediction is plenty. Online algorithms (streaming regression, online k-means, incremental matrix factorization) are also just hard to find and maintain. Conflating "fast data" with "must learn online" is the classic mistake.</p>
+</div>
+
+<h3>Bounded vs unbounded; engine batch vs streaming</h3>
+<ul class="clean">
+  <li>Data can be <strong>bounded (finite)</strong> or <strong>unbounded (infinite)</strong>; the engine can be <strong>batch</strong> or <strong>streaming</strong> — and you can mix (treat finite data as a stream; handle infinite data in batches).</li>
+  <li><strong>Finite</strong> data: accurate processing is easy — on failure, reprocess; use <strong>checkpoints</strong> for efficiency. (This is the "resilient" in RDD.)</li>
+  <li><strong>Infinite</strong> data: harder — you must reason about <strong>time</strong> (event creation / ingestion / processing) and aggregate over a <strong>window</strong>.</li>
+</ul>
+
+<h3>Window types</h3>
+<div class="vs">
+  <div class="col"><h4>Sliding window</h4><p>Overlapping windows that slide along the stream by an interval. Size can be count- or time-based.</p></div>
+  <div class="col"><h4>Hopping (tumbling) window</h4><p>Non-overlapping, consecutive windows. Also count- or time-based.</p></div>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">14</div><p class="qtext">Your data arrives fast. According to the chapter, what most determines whether you need <em>online (streaming) training</em>?</p></div>
+<ol class="opts" data-explain="The decisive factor is how fast the feature space / concept changes (drift), not the raw data arrival rate. If drift is slow, offline retraining plus online prediction suffices — even Netflix mostly trains offline.">
+  <li data-correct="0"><span class="otxt">The number of events per second arriving from the source.</span></li>
+  <li data-correct="1"><span class="otxt">How fast the feature space changes (concept drift) — not the arrival rate.</span></li>
+  <li data-correct="0"><span class="otxt">Whether the data is stored in Parquet or AVRO.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>The streaming pipeline: collectors, brokers, processors</h2>
+
+<p>A canonical streaming architecture has five stages — and the chapter is candid that <em>most of them are plumbing, not analytics</em>.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 640 120" role="img" aria-label="Streaming pipeline: producers, collector, broker, processor, indexer, visualizer">
+  <g font-size="10.5" fill="#22201C">
+  <rect x="6"   y="40" width="92" height="44" rx="7" fill="#F1EADB" stroke="#D6CAB2"/><text x="52"  y="60" text-anchor="middle">Producers</text><text x="52" y="74" text-anchor="middle" font-size="9" fill="#7E776B">apps/sensors</text>
+  <rect x="110" y="40" width="92" height="44" rx="7" fill="#D9E2EA" stroke="#5B7C99"/><text x="156" y="60" text-anchor="middle">Collector</text><text x="156" y="74" text-anchor="middle" font-size="9" fill="#7E776B">Flume/NiFi</text>
+  <rect x="214" y="40" width="92" height="44" rx="7" fill="#D9E2EA" stroke="#5B7C99"/><text x="260" y="60" text-anchor="middle">Broker</text><text x="260" y="74" text-anchor="middle" font-size="9" fill="#7E776B">Kafka</text>
+  <rect x="318" y="40" width="100" height="44" rx="7" fill="#DDE8DC" stroke="#5C8A6B"/><text x="368" y="60" text-anchor="middle" font-weight="bold">Processor</text><text x="368" y="74" text-anchor="middle" font-size="9" fill="#7E776B">Spark/Flink</text>
+  <rect x="430" y="40" width="92" height="44" rx="7" fill="#F1EADB" stroke="#D6CAB2"/><text x="476" y="60" text-anchor="middle">Indexer</text><text x="476" y="74" text-anchor="middle" font-size="9" fill="#7E776B">Elastic/NoSQL</text>
+  <rect x="534" y="40" width="100" height="44" rx="7" fill="#F1EADB" stroke="#D6CAB2"/><text x="584" y="60" text-anchor="middle">Visualizer</text><text x="584" y="74" text-anchor="middle" font-size="9" fill="#7E776B">Kibana</text>
+  </g>
+  <g stroke="#CC785C" stroke-width="1.4">
+  <line x1="98" y1="62" x2="110" y2="62"/><line x1="202" y1="62" x2="214" y2="62"/><line x1="306" y1="62" x2="318" y2="62"/><line x1="418" y1="62" x2="430" y2="62"/><line x1="522" y1="62" x2="534" y2="62"/>
+  </g>
+  <text x="368" y="105" text-anchor="middle" font-size="10" fill="#3F6B4F">the only stage where real analytics happens</text>
+</svg>
+<figcaption>Producers → Collector → Broker → Processor → Indexer → Visualizer. Most stages are decoupling/plumbing.</figcaption>
+</div>
+
+<dl class="defs">
+  <dt>Event collectors (Flume, NiFi)</dt><dd>Gather/centralize events. NiFi builds on Enterprise Integration Patterns. "Not that helpful" for analytics.</dd>
+  <dt>Event brokers (Kafka, RabbitMQ)</dt><dd>Message-oriented middleware ("MOM"): validate, transform, route messages — effectively <strong>decoupling</strong> producers from consumers. <strong>Kafka</strong> is especially popular and integrates easily with Spark — but "in itself, not much analytics."</dd>
+  <dt>Event processors (Spark, Flink, Storm, Samza)</dt><dd><em>Here is the actual analytics.</em> The two Spark options: <strong>Spark Streaming</strong> and <strong>Spark Structured Streaming</strong>.</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · why insert a broker like Kafka at all?</div>
+  <p><strong>Decoupling.</strong> Without a broker, every producer must know about every consumer, match its pace, and handle its failures — an \(N\times M\) mess. A broker mediates: producers write once, consumers read at their own speed, and the system stays resilient and scalable if either side restarts. It buys you durability and back-pressure handling — but, crucially, it does <em>no learning</em> on its own.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>Spark Streaming vs Structured Streaming</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: Spark Streaming forces you to think in low-level RDDs and struggles when data arrives <em>late</em> (an event generated at 12:04 but received at 12:11 should still update the 12:00–12:10 window). What cleaner mental model would fix both the API and the late-data problem?</div>
+  <details><summary></summary>
+  <div class="reveal">Treat the stream as an <strong>unbounded table</strong> that is continuously appended, and express your streaming query <em>exactly like a batch query on a static table</em> (DataFrame/SQL). The engine runs it incrementally, maintaining just the <strong>minimal intermediate state</strong> needed to update results — which lets it correctly update an <em>old</em> window when late data arrives. That is <strong>Structured Streaming</strong>, built on the Spark SQL engine, replacing the RDD-based DStream model.</div>
+  </details>
+</div>
+
+<h3>Spark Streaming (DStreams)</h3>
+<ul class="clean">
+  <li>Operates in <strong>micro-batching mode</strong> — many small batches; often sits <strong>on top of Kafka</strong>.</li>
+  <li>The abstraction is the <strong>DStream</strong> (Discretized Stream): a continuous stream represented <strong>internally as a sequence of RDDs</strong>, each holding one interval's data.</li>
+  <li>Entry point <code>StreamingContext(sc, batchInterval)</code>; supports <strong>windowed</strong> ops, e.g. <code>reduceByKeyAndWindow(f, 30, 10)</code> — window length 30, sliding interval 10.</li>
+  <li>It "heavily uses RDDs (not very pleasant)," but you can convert to DataFrames/SQL via a lazily-instantiated singleton <code>SparkSession</code>.</li>
+</ul>
+
+<h3>Structured Streaming</h3>
+<ul class="clean">
+  <li>A scalable, fault-tolerant engine <strong>built on the Spark SQL engine</strong>; the key idea is the <strong>unbounded table</strong>.</li>
+  <li>You write the same code as a batch query; the engine runs it <strong>incrementally and continuously</strong>, triggered (e.g., every 1s), emitting in complete/append/update mode.</li>
+  <li><strong>Does NOT materialize the whole table</strong> — it reads the latest data, updates the result, discards the source, keeping only minimal state.</li>
+  <li>Maintains state long enough to handle <strong>late data</strong> — an event arriving at 12:11 still correctly increments the 12:00–12:10 window.</li>
+</ul>
+
+<div class="callout why">
+  <div class="ttl">Drill the why · how can it "not materialize the table" yet handle late data?</div>
+  <p>Because it keeps the <em>minimal intermediate state</em> needed to keep each running aggregate correct — not the raw rows. For a windowed count it stores per-(window, key) counters, then discards the source events. When a late event for an old window arrives, the engine still has that window's counter in state and bumps it. It pays memory only for <em>active aggregates</em>, not for the whole infinite history — the same "carry enough state to be re-combinable" lesson from the MapReduce averaging trap.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 150" role="img" aria-label="Structured streaming unbounded table">
+  <text x="60" y="30" text-anchor="middle" font-size="11" fill="#7E776B">data stream</text>
+  <line x1="20" y1="75" x2="120" y2="75" stroke="#CC785C" stroke-width="2"/><polygon points="120,75 108,69 108,81" fill="#CC785C"/>
+  <text x="360" y="20" text-anchor="middle" font-size="11" fill="#3C5870">Unbounded Table (rows appended forever)</text>
+  <g font-size="10.5" fill="#22201C">
+  <rect x="200" y="30" width="320" height="20" rx="3" fill="#D9E2EA" stroke="#5B7C99"/><text x="360" y="44" text-anchor="middle">12:02  cat dog</text>
+  <rect x="200" y="54" width="320" height="20" rx="3" fill="#D9E2EA" stroke="#5B7C99"/><text x="360" y="68" text-anchor="middle">12:07  owl cat</text>
+  <rect x="200" y="78" width="320" height="20" rx="3" fill="#DDE8DC" stroke="#5C8A6B"/><text x="360" y="92" text-anchor="middle">12:11  dog dog</text>
+  <rect x="200" y="102" width="320" height="20" rx="3" fill="#EAD2C5" stroke="#CC785C"/><text x="360" y="116" text-anchor="middle" font-style="italic">12:04 (late) updates the 12:00–12:10 window</text>
+  </g>
+</svg>
+<figcaption>Each new event is a new row; late rows still update the window their event-time belongs to.</figcaption>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">15</div><p class="qtext">What is the core abstraction of Spark Structured Streaming, and what does it deliberately avoid?</p></div>
+<ol class="opts" data-explain="Structured Streaming models the stream as an unbounded table you query like static data; it does NOT materialize the whole table — it keeps minimal intermediate state and discards source data, which also lets it correctly handle late data.">
+  <li data-correct="0"><span class="otxt">A DStream (sequence of RDDs); it avoids using the Spark SQL engine.</span></li>
+  <li data-correct="0"><span class="otxt">A replicated in-memory copy of the full history; it avoids any state.</span></li>
+  <li data-correct="1"><span class="otxt">An unbounded table queried like static data; it avoids materializing the whole table, keeping only minimal state.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">16</div><p class="qtext">Internally, a <code>DStream</code> in Spark Streaming is represented as…</p></div>
+<ol class="opts" data-explain="A DStream is a discretized stream represented internally as a sequence/series of RDDs, each covering one micro-batch interval. That is why DStream code feels RDD-like and why Spark Streaming is described as micro-batching.">
+  <li data-correct="1"><span class="otxt">A sequence of RDDs, one per micro-batch interval.</span></li>
+  <li data-correct="0"><span class="otxt">A single continuously-mutated DataFrame.</span></li>
+  <li data-correct="0"><span class="otxt">A Kafka topic with no Spark representation.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Spark versus the contenders</h2>
+
+<table class="tbl">
+  <thead><tr><th>Contender</th><th>What it was for</th><th>Where it stands</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Hadoop MapReduce</strong></td><td>Mature petabyte-scale batch processing</td><td>Out-classed by Spark for online/analytics/ML; Spark is \(10\text{–}100\times\) faster</td></tr>
+    <tr><td><strong>Apache Tez</strong></td><td>DAG-of-tasks framework (Hive backend)</td><td><span class="pill">out</span> Hortonworks adopted Spark and merged with Cloudera</td></tr>
+    <tr><td><strong>Apache Mahout</strong></td><td>Scalable ML ("MapReduce all things")</td><td>Most algorithms now in MLlib → barely used</td></tr>
+    <tr><td><strong>H2O</strong></td><td>In-memory distributed ML platform (Java)</td><td>Did well; <strong>"Sparkling Water"</strong> integrates with Spark; "a better MLlib"</td></tr>
+  </tbody>
+</table>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>The takeaway is not a parts list but a <em>direction</em>: the ecosystem converged on Spark as the in-memory DAG engine, MapReduce faded for analytics, and the survivors (H2O) made peace by integrating with Spark. When in doubt on the exam: <strong>Spark won; Tez is out; Mahout is superseded; H2O coexists.</strong></p>
+</div>
+
+<!-- ============================================================ -->
+<h2>Quick-reference contrasts</h2>
+
+<details class="fold"><summary>Hadoop MapReduce vs Spark</summary>
+<table class="tbl">
+<thead><tr><th></th><th>Hadoop MapReduce</th><th>Spark</th></tr></thead>
+<tbody>
+<tr><td>Engine</td><td>map → shuffle → reduce, disk-based</td><td>DAG, in-memory, cyclic flow</td></tr>
+<tr><td>Speed</td><td class="no">slow (HDFS swapping)</td><td class="yes">\(10\text{–}100\times\) faster</td></tr>
+<tr><td>Intermediate data</td><td>written to HDFS each step</td><td>kept in memory (RDD lineage)</td></tr>
+<tr><td>Fault tolerance</td><td>re-run failed tasks</td><td>lineage recomputation</td></tr>
+<tr><td>Workloads</td><td>batch</td><td>batch + streaming + interactive + ML</td></tr>
+<tr><td>Analytics fit</td><td class="no">poor</td><td class="yes">good (DataFrames, MLlib)</td></tr>
+</tbody></table>
+</details>
+
+<details class="fold"><summary>RDD vs DataFrame vs Dataset</summary>
+<table class="tbl">
+<thead><tr><th></th><th>RDD</th><th>DataFrame</th><th>Dataset</th></tr></thead>
+<tbody>
+<tr><td>Structure</td><td>free-form elements</td><td>named columns (rows)</td><td>typed objects → schema</td></tr>
+<tr><td>Schema</td><td>none</td><td>yes</td><td>yes</td></tr>
+<tr><td>Type safety</td><td>—</td><td>runtime (untyped)</td><td class="yes">compile-time</td></tr>
+<tr><td>Equivalence</td><td>—</td><td>= Dataset[Row]</td><td>Dataset[T]</td></tr>
+<tr><td>Languages</td><td>all</td><td>all</td><td>Scala/Java only</td></tr>
+<tr><td>Optimizer</td><td class="no">no Catalyst</td><td class="yes">Catalyst</td><td class="yes">Catalyst</td></tr>
+</tbody></table>
+</details>
+
+<details class="fold"><summary>SparkContext vs SparkSession vs StreamingContext</summary>
+<table class="tbl">
+<thead><tr><th></th><th>SparkContext</th><th>SparkSession</th><th>StreamingContext</th></tr></thead>
+<tbody>
+<tr><td>Entry point for</td><td>RDD API</td><td>DataFrame/SQL (Spark 2+)</td><td>Spark Streaming (DStreams)</td></tr>
+<tr><td>Created via</td><td><code>SparkContext(...)</code></td><td><code>SparkSession.builder…getOrCreate()</code></td><td><code>StreamingContext(sc, interval)</code></td></tr>
+</tbody></table>
+</details>
+
+<details class="fold"><summary>Spark Streaming vs Structured Streaming</summary>
+<table class="tbl">
+<thead><tr><th></th><th>Spark Streaming (DStream)</th><th>Structured Streaming</th></tr></thead>
+<tbody>
+<tr><td>Built on</td><td>Spark Core (RDDs)</td><td>Spark SQL engine</td></tr>
+<tr><td>Abstraction</td><td>DStream = sequence of RDDs</td><td>unbounded table</td></tr>
+<tr><td>Model</td><td>micro-batching</td><td>incremental query, trigger-based</td></tr>
+<tr><td>API</td><td>RDD-like, low-level</td><td>DataFrame/SQL, batch-like</td></tr>
+<tr><td>Late data</td><td class="no">harder</td><td class="yes">handled via maintained state</td></tr>
+</tbody></table>
+</details>
+
+<!-- ============================================================ -->
+<h2>Can you teach it back?</h2>
+
+<div class="card">
+  <p>Close the guide and explain each, out loud, as if to a smart intern. If you stall, that is your signal to reread that block.</p>
+  <ul class="clean">
+    <li><strong>The deflationary thesis.</strong> Why big data is not analytics, and why a \(512\,\text{GB}\) RAM box often beats a cluster (COST).</li>
+    <li><strong>HDFS.</strong> Name node vs data nodes, \(64\,\text{MB}\) blocks, replication — and why it is storage, not computing.</li>
+    <li><strong>MapReduce.</strong> The map → shuffle → reduce pipeline; map emits zero/one/many; the shuffle routes same-key to same worker.</li>
+    <li><strong>The averaging trap.</strong> Why naive averaging breaks on partial re-reduce, and how \((\text{average},\text{count})\) restores associativity. Trace \((150,2) \to (200,3)\) from memory.</li>
+    <li><strong>YARN.</strong> The JobTracker bottleneck; the Hadoop 3 \(1.5\times\) vs \(3\times\) erasure-coding math.</li>
+    <li><strong>Hive's slowness.</strong> "Big does not mean fast" — SQL compiled to MapReduce.</li>
+    <li><strong>Spark.</strong> Keeps resource manager + storage, throws out MapReduce for a DAG in-memory engine; why that helps ML.</li>
+    <li><strong>RDD.</strong> Lineage-based recovery, lazy transformations vs eager actions, immutability.</li>
+    <li><strong>RDD → DataFrame → Dataset.</strong> Structure, schema, compile-time safety; why Python/R get only DataFrames.</li>
+    <li><strong>Streaming.</strong> The three aspects; why online training is rarely needed; DStream vs unbounded-table; late-data handling.</li>
+  </ul>
+  <div class="callout exam" style="margin-top:14px">
+    <div class="ttl">Most-likely exam hits</div>
+    <p>The <strong>reduce-associativity averaging computation</strong>; <strong>HDFS \(64\,\text{MB}\), name node decides replication</strong>; <strong>Spark replaces MapReduce with a DAG in-memory engine, \(10\text{–}100\times\)</strong>; <strong>transformations lazy / actions eager</strong>; <strong>DataFrame = Dataset[Row], typed Datasets Scala/Java only</strong>; <strong>spark.ml primary, spark.mllib maintenance</strong>; <strong>Hive compiles SQL to MapReduce (slow)</strong>; <strong>streaming = data/training/prediction, train offline</strong>; <strong>Structured Streaming = unbounded table, handles late data</strong>; <strong>Hadoop 3 erasure coding \(1.5\times\)</strong>.</p>
+  </div>
+</div>
+
+<footer>
+  <span>Chapter 08 · Big Data — MapReduce &amp; Spark · Preparation guide</span>
+  <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+</footer>
+
+</div>
+
+<script>
+/* Left contents rail — inline verbatim inside a <script> before </body>.
+   Auto-builds a fixed, full-height sidebar from the page's section headings
+   (h2 = level 1, h3 = level 2) plus any element carrying data-nav-label
+   (used for per-question anchors). Adds smooth scroll, scrollspy, and a
+   mobile slide-in toggle. No external dependencies. */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+</script>
+<script>
+/* Interactive quiz — inline verbatim inside a <script> before </body>.
+   Two modes, auto-detected per question:
+
+   • PER-OPTION mode (exam MCQs): every <li> carries its own data-explain.
+       - Click a WRONG option -> it turns red and shows WHY THAT option is wrong,
+         WITHOUT revealing the correct answer; the question stays open so you can try again.
+       - Click the CORRECT option -> it turns green, shows why it's right, and locks.
+   • LEGACY mode (crash-course / prep self-checks): one data-explain on the <ol>.
+       - First click locks the question, marks the correct answer, and reveals the reasoning.
+
+   A fixed scorebar tracks solved + first-try-correct counts. Re-typesets MathJax in feedback. */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        // legacy: lock + reveal correct
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock Exam 2 — multiple-choice are interactive with per-option feedback; open questions have separate solutions.</title>
+<!-- MathJax — inline verbatim in <head>. Renders LaTeX: inline \( … \), display \[ … \].
+     Use LaTeX for ALL math (greek \alpha\beta\sigma, subscripts x_{i}, superscripts e^{-z},
+     fractions \frac{a}{b}, sums \sum, etc.). Code/pre are skipped so pseudocode stays literal. -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   Inline this ENTIRE block verbatim inside each self-contained .html <style>.
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz  (used by exams + crash-course self-checks)
+   Markup:  <ol class="opts" data-explain="...">
+              <li data-correct="1"><span class="otxt">A</span></li> ... </ol>
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+/* per-option mode: a tried-wrong option locks but the question stays open */
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail (auto-built by sidebar.js) ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) for prep guides ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>KU Leuven · Mock Examination</span>
+    <h1>Mock Exam&nbsp;2</h1>
+    <p class="subtitle">Mock Exam 2 — multiple-choice are interactive with per-option feedback; open questions have separate solutions.</p>
+    <div class="meta-row"><span class="chip">📝 <b>20</b> multiple choice</span><span class="chip">✍️ <b>4</b> open questions</span><span class="chip">💡 per-option feedback</span><span class="chip">⏱️ <b>~90</b> min</span></div>
+  </div>
+</header>
+<div class="wrap">
+  <div class="section-head"><span class="bar"></span>
+    <h2>Multiple-choice questions</h2><span class="tag">20 questions</span></div>
+  <p class="section-note">Click any option to test it. A wrong option explains <em>why it is wrong</em> but does <b>not</b> reveal the answer — eliminate and try again until you find it.</p>
+  <div class="q" data-nav-label="Q1">
+    <div class="q-top"><div class="qnum">1</div>
+      <p class="qtext">Which statement about supervised versus unsupervised learning is INCORRECT?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="This is correct: unsupervised methods need no target and look for structure/patterns, so it is not the incorrect statement sought."><span class="otxt">Unsupervised learning does not require a target variable and aims to find structure in the data</span></li>
+<li data-correct="0" data-explain="This is correct: all three are listed as unsupervised, descriptive techniques, so it is not the answer."><span class="otxt">Clustering, anomaly detection and dimensionality reduction are all unsupervised techniques</span></li>
+<li data-correct="0" data-explain="This is correct: supervised learning needs a target and maps inputs X to output Y, so it is not the answer."><span class="otxt">Supervised learning requires a target variable and relates predictors to that target</span></li>
+<li data-correct="1" data-explain="This is the incorrect statement: association rule mining is unsupervised (it describes the data without a target), and it finds descriptive rules rather than predicting a labeled outcome."><span class="otxt">Association rule mining is a supervised technique because it predicts which items a customer will buy</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q2">
+    <div class="q-top"><div class="qnum">2</div>
+      <p class="qtext">A team imputes missing values, fits scaling parameters, and builds Weights-of-Evidence groupings, then evaluates the model. Which practice is CORRECT?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="Recomputing statistics on the test set leaks test information into preprocessing and breaks the production pipeline; the test set must be treated as unseen."><span class="otxt">The imputation median and scaling parameters should be recomputed on the test set so they match its distribution</span></li>
+<li data-correct="1" data-explain="Any transformation using statistics across instances is part of the model pipeline; it is fit on training data and re-applied unchanged so the model behaves the same on unseen data."><span class="otxt">All these transformations are fit on the training data only and then re-applied identically to validation, test, and production data</span></li>
+<li data-correct="0" data-explain="WoE and IV use the target, so computing them before the split leaks target information from the held-out data into the features."><span class="otxt">WoE/IV can be computed on the full dataset before splitting because they are just encodings</span></li>
+<li data-correct="0" data-explain="Fitting scaling on the whole dataset still uses held-out information, and there is no reason to treat scaling and imputation differently with respect to the split."><span class="otxt">Scaling parameters may be fit on the whole dataset, but imputation must be fit per split separately</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q3">
+    <div class="q-top"><div class="qnum">3</div>
+      <p class="qtext">A categorical Purpose feature has odds (good/bad) of: car=2, cash=20, travel=15, study=1.25, house=6.25. Following odds-based grouping, which pair is MOST natural to merge?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="Their odds (2 vs 20) are far apart, so they are poor candidates to group together."><span class="otxt">car and cash</span></li>
+<li data-correct="1" data-explain="Their odds (20 and 15) are the closest among the choices, and odds-based grouping merges categories with similar odds."><span class="otxt">cash and travel</span></li>
+<li data-correct="0" data-explain="Although 2 and 1.25 are somewhat close, another listed pair has odds that are even closer together, and grouping picks the most similar odds."><span class="otxt">car and study</span></li>
+<li data-correct="0" data-explain="Their odds (1.25 vs 6.25) differ by a factor of five, so they are not similar."><span class="otxt">study and house</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q4">
+    <div class="q-top"><div class="qnum">4</div>
+      <p class="qtext">A node S contains 4 positive and 4 negative instances. A candidate split produces a pure child of 4 positives and a pure child of 4 negatives. What is the information gain of this split (using entropy in bits)?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="Zero gain would mean no impurity reduction, but the split turns a maximally impure node into two pure ones."><span class="otxt">0</span></li>
+<li data-correct="0" data-explain="The parent entropy is 1 bit and both children are pure (entropy 0), so the reduction is the full parent entropy, not half."><span class="otxt">0.5</span></li>
+<li data-correct="1" data-explain="The parent entropy of a 50/50 node is 1 bit; both children are pure with entropy 0, so IG = 1 - 0 = 1."><span class="otxt">1</span></li>
+<li data-correct="0" data-explain="The maximum possible information gain here is the parent entropy of 1 bit; it cannot exceed it."><span class="otxt">2</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q5">
+    <div class="q-top"><div class="qnum">5</div>
+      <p class="qtext">A binary classifier is evaluated on a hold-out set with the confusion matrix: TN \(= 3\), FP \(= 2\), FN \(= 2\), TP \(= 7\). What is its recall (sensitivity)?</p></div>
+    <ol class="opts">
+<li data-correct="1" data-explain="Recall = TP/(TP+FN) = 7/(7+2) = 7/9 ≈ 0.78."><span class="otxt">\( 7/9 \approx 0.78 \)</span></li>
+<li data-correct="0" data-explain="This is TN/(TN+FP) = specificity, which uses the negative class, not recall."><span class="otxt">\( 3/5 = 0.60 \)</span></li>
+<li data-correct="0" data-explain="This is (TP+TN)/total = accuracy, not recall."><span class="otxt">\( 10/14 \approx 0.71 \)</span></li>
+<li data-correct="0" data-explain="This divides TP by total minus TN, an invented denominator; recall divides only by TP+FN = 9."><span class="otxt">\( 7/12 \approx 0.58 \)</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q6">
+    <div class="q-top"><div class="qnum">6</div>
+      <p class="qtext">A cost-insensitive model outputs \(p(1\mid x)=0.22\). With costs \(C(0,1)=5\) (predicting negative when actually positive) and \(C(1,0)=1\), and \(C(0,0)=C(1,1)=0\), how should \(x\) be classified under the decision rule "positive iff \(l(x,1)\lt l(x,0)\)"?</p></div>
+    <ol class="opts">
+<li data-correct="1" data-explain="l(x,0)=p(1|x)·C(0,1)=0.22·5=1.10; l(x,1)=p(0|x)·C(1,0)=0.78·1=0.78; since 0.78 is less than 1.10, classify positive."><span class="otxt">Positive, because \(l(x,1)=0.78\lt l(x,0)=1.10\).</span></li>
+<li data-correct="0" data-explain="The 0.5 default ignores costs; with asymmetric costs the cost-sensitive threshold drops below 0.22, so the default cut-off is the wrong rule here."><span class="otxt">Negative, because \(p(1\mid x)=0.22\lt 0.5\).</span></li>
+<li data-correct="0" data-explain="The expected losses are swapped: l(x,1) uses C(1,0) and l(x,0) uses C(0,1), giving 0.78 and 1.10 respectively."><span class="otxt">Negative, because \(l(x,1)=1.10\gt l(x,0)=0.78\).</span></li>
+<li data-correct="0" data-explain="The expected-loss rule needs only p(1|x) and the cost matrix, both given here."><span class="otxt">Cannot decide; the prior class distribution is required.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q7">
+    <div class="q-top"><div class="qnum">7</div>
+      <p class="qtext">Which statement about k-fold cross-validation is correct?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="CV is for tuning and protecting against lucky hits; a strict held-out test set is still the only guarantee for true generalization."><span class="otxt">Cross-validation replaces the need for a separate held-out test set.</span></li>
+<li data-correct="0" data-explain="Using the best single fold invites a lucky hit; configurations are compared by their AVERAGE score across folds."><span class="otxt">When comparing hyperparameter configurations, you should pick the one with the best single-fold score.</span></li>
+<li data-correct="1" data-explain="Models usually improve with more training data, so each fold&#x27;s smaller training set yields a slightly pessimistic estimate."><span class="otxt">It gives a pessimistically biased performance estimate because each fold trains on less than the full data.</span></li>
+<li data-correct="0" data-explain="Fitting preprocessing on all data leaks information across folds; it must be fitted on the training folds of each run."><span class="otxt">Preprocessing should be fitted once on all data before splitting into folds.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q8">
+    <div class="q-top"><div class="qnum">8</div>
+      <p class="qtext">In a random forest, when is the random subset of candidate features selected?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="Fixing one feature subset per tree would remove most of the per-split diversity that the method relies on; the resampling happens more frequently than this."><span class="otxt">Once per tree, fixed for all of that tree's splits</span></li>
+<li data-correct="1" data-explain="Correct: in addition to the row bootstrap, a new random subset of features is considered at each candidate split, which is the extra source of randomness over plain bagging."><span class="otxt">A fresh random subset is drawn at every individual split</span></li>
+<li data-correct="0" data-explain="A single global feature subset would make all trees nearly identical and defeat the purpose of feature randomness."><span class="otxt">Once for the whole forest, shared by every tree</span></li>
+<li data-correct="0" data-explain="Feature subsetting is independent of the bootstrap and is applied much more granularly than once per tree."><span class="otxt">Only when the bootstrap sample changes between trees</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q9">
+    <div class="q-top"><div class="qnum">9</div>
+      <p class="qtext">In AdaBoost a weak learner in a given round achieves a weighted error of \(\varepsilon_{t} = 0.5\). What happens?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="Large \(\alpha_{t}\) corresponds to low error; an error of \(0.5\) is the no-information point, not the best case."><span class="otxt">It receives the largest possible vote weight \(\alpha_{t}\)</span></li>
+<li data-correct="1" data-explain="Correct: \(\tfrac{1}{2}\ln(0.5/0.5) = \tfrac{1}{2}\ln 1 = 0\); a learner no better than random gets zero weight, and any \(\varepsilon_{t} \gt 0.5\) triggers a stop."><span class="otxt">Its vote weight \(\alpha_{t} = \tfrac{1}{2}\ln\!\frac{1-\varepsilon_{t}}{\varepsilon_{t}}\) becomes \(0\), so it contributes nothing</span></li>
+<li data-correct="0" data-explain="AdaBoost never resets the weight distribution mid-run; weights evolve cumulatively across rounds."><span class="otxt">Its instance weights are reset to uniform and the round restarts</span></li>
+<li data-correct="0" data-explain="At exactly \(0.5\) the log term is zero, not negative; the algorithm halts rather than inverting a learner here."><span class="otxt">Its vote weight becomes negative, flipping its predictions</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q10">
+    <div class="q-top"><div class="qnum">10</div>
+      <p class="qtext">Out-of-bag (OOB) validation in bagging works because, on average, each bootstrap sample leaves out roughly which fraction of the training instances?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="Half is too many; sampling \(N\) times with replacement excludes fewer instances than this on average."><span class="otxt">About \(50\%\)</span></li>
+<li data-correct="1" data-explain="Correct: drawing \(N\) times with replacement leaves about \(e^{-1} \approx 0.37\) of instances unpicked, forming each instance&#x27;s natural hold-out."><span class="otxt">About \(37\%\)</span></li>
+<li data-correct="0" data-explain="This understates the omitted fraction; the with-replacement limit is much larger than one tenth."><span class="otxt">About \(10\%\)</span></li>
+<li data-correct="0" data-explain="A 100% bootstrap draws with replacement and does not select every instance; a sizeable share is always left out."><span class="otxt">About \(0\%\), since a \(100\%\) bootstrap selects every instance</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q11">
+    <div class="q-top"><div class="qnum">11</div>
+      <p class="qtext">Why do sigmoid and tanh activations tend to cause vanishing gradients in deep networks?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="Sigmoid and tanh are bounded (0..1 and -1..1); unbounded growth describes a different problem."><span class="otxt">Their outputs are unbounded, so activations grow without limit toward the input layers.</span></li>
+<li data-correct="1" data-explain="Each layer multiplies by the activation derivative; since these are \(\lt 1\), the product shrinks as it propagates back to the first layers."><span class="otxt">Their derivatives are at most \(1\) and often much smaller, so repeated multiplication shrinks gradients toward the early layers.</span></li>
+<li data-correct="0" data-explain="Sigmoid and tanh are smooth and fully differentiable; non-differentiability is not the issue here."><span class="otxt">They are not differentiable, so backpropagation cannot compute gradients through them.</span></li>
+<li data-correct="0" data-explain="Permanently-dead neurons describe a failure mode of a different activation function, not the gradient shrinkage of saturating ones."><span class="otxt">They set roughly 40% of neurons permanently to zero activation.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q12">
+    <div class="q-top"><div class="qnum">12</div>
+      <p class="qtext">Which statement about dropout is correct?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="At test time the full network is used once with scaled activations, not by averaging multiple stochastic runs."><span class="otxt">At test time, all neurons are kept but the network is run multiple times and the outputs averaged.</span></li>
+<li data-correct="0" data-explain="A different random subset of neurons is dropped per sample/epoch, which is what produces the ensemble-like effect."><span class="otxt">During training, the same fixed subset of neurons is dropped for every example.</span></li>
+<li data-correct="1" data-explain="Dropout makes the training task harder than the dropout-free validation task, so validation loss can look lower."><span class="otxt">Validation loss can appear better than training loss because validation is measured without dropout.</span></li>
+<li data-correct="0" data-explain="Gradients only flow through the active (non-dropped) neurons; dropped units contribute nothing on that pass."><span class="otxt">Dropped neurons still pass their gradients backward to keep all weights updating.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q13">
+    <div class="q-top"><div class="qnum">13</div>
+      <p class="qtext">Which statement about generative adversarial networks (GANs) is correct?</p></div>
+    <ol class="opts">
+<li data-correct="1" data-explain="In mode collapse the generator keeps emitting the same outputs, fooling the discriminator while failing to cover the real data distribution."><span class="otxt">Mode collapse occurs when the generator produces a very narrow set of nearly identical outputs.</span></li>
+<li data-correct="0" data-explain="G and D play a two-player non-cooperative game with opposing objectives, and convergence to equilibrium is not guaranteed."><span class="otxt">GAN training is guaranteed to converge because both networks minimize the same loss.</span></li>
+<li data-correct="0" data-explain="It is the generator that maps noise to fakes; the discriminator only judges whether samples are real or fake."><span class="otxt">The discriminator generates fake samples from a noise vector.</span></li>
+<li data-correct="0" data-explain="A perfect discriminator drives the loss toward zero, giving vanishing gradients that slow the generator&#x27;s learning."><span class="otxt">A perfect discriminator accelerates the generator's learning by providing strong gradients.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q14">
+    <div class="q-top"><div class="qnum">14</div>
+      <p class="qtext">Which statement correctly distinguishes k-means from EM-based (Gaussian-mixture) clustering?</p></div>
+    <ol class="opts">
+<li data-correct="1" data-explain="k-means assigns each point to exactly one cluster, whereas EM estimates a membership probability per cluster."><span class="otxt">k-means makes hard assignments while EM makes soft, probabilistic assignments of instances to clusters.</span></li>
+<li data-correct="0" data-explain="EM still requires k to be specified in advance, just like k-means."><span class="otxt">EM does not require the number of clusters k to be specified, unlike k-means.</span></li>
+<li data-correct="0" data-explain="EM is also a local optimization and is sensitive to initialization, similar to k-means."><span class="otxt">Unlike k-means, EM has no problem with local optima.</span></li>
+<li data-correct="0" data-explain="EM still struggles with non-convex shapes; it is essentially a softer version of k-means."><span class="otxt">EM, unlike k-means, naturally handles non-convex cluster shapes.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q15">
+    <div class="q-top"><div class="qnum">15</div>
+      <p class="qtext">Which statement about t-SNE is correct?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="t-SNE is a dimensionality-reduction technique; any clustering must be done as a separate second step on its output."><span class="otxt">t-SNE is itself a clustering algorithm that outputs cluster labels.</span></li>
+<li data-correct="0" data-explain="t-SNE preserves only local similarities; cluster size and inter-cluster distance in the map are not meaningful."><span class="otxt">In a t-SNE map, the relative size of clusters and the distance between clusters are reliably meaningful.</span></li>
+<li data-correct="1" data-explain="Because there is no explicit input-to-map function, new points cannot be projected, which limits its use as a predictive feature extractor."><span class="otxt">It learns a non-parametric mapping, so unseen test points cannot be directly embedded into an existing map.</span></li>
+<li data-correct="0" data-explain="The low-dimensional map uses a Student t-distribution with fatter tails, not a Gaussian."><span class="otxt">Its low-dimensional similarities are computed with a Gaussian kernel, the same as in the high-dimensional space.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q16">
+    <div class="q-top"><div class="qnum">16</div>
+      <p class="qtext">A vocabulary is \{this, is, an, a, example, second\}. Under a binary bag-of-words representation, what is the vector for the document "This is a second example"?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="This marks &#x27;an&#x27; present and &#x27;a&#x27;/&#x27;second&#x27; absent, which corresponds to a different sentence; the given document contains &#x27;a&#x27; and &#x27;second&#x27; but not &#x27;an&#x27;."><span class="otxt">\( 1\ 1\ 1\ 0\ 1\ 0 \)</span></li>
+<li data-correct="1" data-explain="The document contains this, is, a, example and second, but not &#x27;an&#x27;, giving 1 1 0 1 1 1 in vocabulary order."><span class="otxt">\( 1\ 1\ 0\ 1\ 1\ 1 \)</span></li>
+<li data-correct="0" data-explain="This marks every word present including &#x27;an&#x27;, but &#x27;an&#x27; does not occur in the document."><span class="otxt">\( 1\ 1\ 1\ 1\ 1\ 1 \)</span></li>
+<li data-correct="0" data-explain="This marks &#x27;this&#x27; absent, but the document begins with &#x27;This&#x27;, which after case normalization is the token &#x27;this&#x27; and must be 1."><span class="otxt">\( 0\ 1\ 0\ 1\ 1\ 1 \)</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q17">
+    <div class="q-top"><div class="qnum">17</div>
+      <p class="qtext">What is a key difference between an LSTM cell and a GRU cell?</p></div>
+    <ol class="opts">
+<li data-correct="1" data-explain="The LSTM maintains both a cell state \( C_t \) and a hidden state \( h_t \) flowing forward, while the GRU carries only a single hidden state."><span class="otxt">An LSTM passes two values to the next step (a cell state and a hidden state), whereas a GRU passes only one</span></li>
+<li data-correct="0" data-explain="A GRU does use gates (a reset and an update gate); it is the absence of gating that characterizes a plain RNN, not a GRU."><span class="otxt">A GRU has no gates, relying purely on a tanh recurrence</span></li>
+<li data-correct="0" data-explain="It is the GRU that trains faster and often does better on less data; LSTMs are the slower, heavier of the two."><span class="otxt">An LSTM trains faster and works better than a GRU on small datasets</span></li>
+<li data-correct="0" data-explain="If anything the LSTM is expected to handle long-range dependencies at least as well in theory, so saying only the GRU can is wrong."><span class="otxt">Only the GRU can model long-range dependencies; the LSTM cannot</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q18">
+    <div class="q-top"><div class="qnum">18</div>
+      <p class="qtext">Map over genre yields drama \(\to [100, 200]\). A naive reduce computes \(\frac{100+200}{2}=150\). Later a straggling mapper emits drama \(\to 300\) and the partial result \(150\) is re-reduced with \(300\). What value does the naive reduce now produce, and is it correct?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="The naive reduce has no record counts, so it cannot weight 150 by the two records it summarised; it does not arrive at the true mean of 200."><span class="otxt">It produces \(200\), which is the correct mean of \(100, 200, 300\).</span></li>
+<li data-correct="1" data-explain="Re-reducing [150, 300] gives \(\frac{150+300}{2}=225\); the true mean of 100, 200, 300 is 200, so the naive scheme is incorrect on partial results."><span class="otxt">It produces \(225\), which is wrong because the partial average of two records is weighted as if it were one.</span></li>
+<li data-correct="0" data-explain="Reduce does combine the late value with the partial result; it does not discard late-arriving data, so the result is not left at 150."><span class="otxt">It produces \(150\), because reduce ignores any values that arrive after the first reduction.</span></li>
+<li data-correct="0" data-explain="The naive reduce divides as it goes rather than keeping a raw sum, so it does not output 450; this misdescribes what the function computes."><span class="otxt">It produces \(450\), the running sum, which is correct because averaging happens only at the very end.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q19">
+    <div class="q-top"><div class="qnum">19</div>
+      <p class="qtext">Which statement about Spark Streaming (DStreams) versus Spark Structured Streaming is correct?</p></div>
+    <ol class="opts">
+<li data-correct="0" data-explain="A DStream is internally a sequence of RDDs, each holding the data of one micro-batch interval, not one ever-growing RDD."><span class="otxt">A DStream is internally represented as a single continuously-growing RDD that is never split into intervals.</span></li>
+<li data-correct="0" data-explain="Structured Streaming deliberately does not materialise the whole table; it processes new data incrementally and discards the source, keeping only minimal state."><span class="otxt">Structured Streaming materialises the entire unbounded table in memory before producing any output.</span></li>
+<li data-correct="1" data-explain="Its key idea is to model the stream as a continuously appended table so the same DataFrame/SQL code used for static data runs incrementally on the stream."><span class="otxt">Structured Streaming treats the live stream as an unbounded table and lets you write batch-like queries on it.</span></li>
+<li data-correct="0" data-explain="This reverses the foundations: DStream-based Spark Streaming sits on Spark Core/RDDs, while Structured Streaming is built on the Spark SQL engine."><span class="otxt">Spark Streaming is built directly on the Spark SQL engine, whereas Structured Streaming is built on raw RDDs.</span></li>
+    </ol>
+  </div>
+  <div class="q" data-nav-label="Q20">
+    <div class="q-top"><div class="qnum">20</div>
+      <p class="qtext">Which statement correctly distinguishes plain PageRank from Personalized PageRank as used for network-based inference?</p></div>
+    <ol class="opts">
+<li data-correct="1" data-explain="Personalized PageRank replaces the uniform teleport with a chosen (non-uniform) jump distribution, letting the propagated scores be biased toward the \(Y=1\) class of interest."><span class="otxt">Plain PageRank teleports the random walker to a node chosen uniformly at random, whereas Personalized PageRank teleports according to a non-uniform distribution biased toward a class of interest.</span></li>
+<li data-correct="0" data-explain="This reverses the roles: it is the personalized variant that incorporates label information through its biased teleport, which is also why it leaks more in evaluation."><span class="otxt">Plain PageRank uses label information of the target class, whereas Personalized PageRank ignores labels entirely.</span></li>
+<li data-correct="0" data-explain="Personalized PageRank specifically changes the teleport distribution to be non-uniform, and neither variant is about producing embeddings of a fixed dimension."><span class="otxt">Both variants teleport uniformly; they differ only in the embedding dimension they produce.</span></li>
+<li data-correct="0" data-explain="Lazy random walks that allow resting at a vertex are a feature of the personalized setting, not something it forbids; the key difference is the teleport distribution."><span class="otxt">Personalized PageRank forbids the walker from ever resting at a vertex, unlike plain PageRank.</span></li>
+    </ol>
+  </div>
+  <div class="section-head"><span class="bar"></span>
+    <h2>Open questions</h2><span class="tag">4 questions</span></div>
+  <p class="section-note">Answer in full sentences; a clear drawing earns marks where one is asked for.</p>
+  <div class="open" data-nav-label="Open 1">
+    <div class="otop"><div class="qnum">1</div>
+      <p class="qtext" style="margin-top:6px">Weights of Evidence (WoE) encoding and Information Value (IV) are used to encode and screen a high-cardinality categorical predictor against a binary target.</p></div>
+<div class="part"><div class="plabel">a</div><div class="ptext">Define WoE for a category and explain the meaning of its sign. State the property that makes WoE attractive for use in a linear/logistic model.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Information Value is \( IV = \sum (p_G - p_B)\cdot \text{WoE} \). Explain how IV is used in practice, and state why both WoE and IV must be computed only after the train/test split.</div></div>
+  </div>
+  <div class="open" data-nav-label="Open 2">
+    <div class="otop"><div class="qnum">2</div>
+      <p class="qtext" style="margin-top:6px">Bagging and boosting are the two dominant ensemble paradigms for trees.</p></div>
+<div class="part"><div class="plabel">a</div><div class="ptext">Compare bagging and boosting along (i) how base models are constructed, (ii) whether bootstrapping is used, and (iii) the core intuition behind each.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Using the bias-variance decomposition, explain which type of base model each method is best suited to and which error component each mainly reduces.</div></div>
+  </div>
+  <div class="open" data-nav-label="Open 3">
+    <div class="otop"><div class="qnum">3</div>
+      <p class="qtext" style="margin-top:6px">Apriori frequent-itemset mining and the downward-closure property.</p></div>
+<div class="part"><div class="plabel">a</div><div class="ptext">Explain the two-stage structure of the apriori algorithm and state, with the power-set argument, why a brute-force search for frequent itemsets is infeasible for many items.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">State the downward-closure (anti-monotonicity) property of support and explain how the 'join and prune' candidate-generation step exploits it.</div></div>
+  </div>
+  <div class="open" data-nav-label="Open 4">
+    <div class="otop"><div class="qnum">4</div>
+      <p class="qtext" style="margin-top:6px">MapReduce processes data as a pipeline over (key, value) pairs.</p></div>
+<div class="part"><div class="plabel">a</div><div class="ptext">Explain the three stages of the Hadoop MapReduce pipeline (map, shuffle/distribute, reduce). For each stage state what it does and one key property (e.g. parallelism, how many outputs map may emit, what determines where a value is sent).</div></div><div class="part"><div class="plabel">b</div><div class="ptext">The deck states a reduce function must (1) emit the same structure that map emits and (2) be correct even when applied multiple times on partial results. Explain WHY both requirements matter, using the idea of stragglers / partial reduction.</div></div>
+  </div>
+  <p class="nav-note">→ Worked solutions for the open questions: <a href="Mock-Exam-2-Solutions.html">Mock-Exam-2-Solutions.html</a></p>
+  <footer>
+    <span>Advanced Analytics in a Big Data World (HIRB) · KU Leuven</span>
+    <span>Mock examination · self-study</span>
+  </footer>
+</div>
+<script>
+/* Left contents rail — inline verbatim inside a <script> before </body>.
+   Auto-builds a fixed, full-height sidebar from the page's section headings
+   (h2 = level 1, h3 = level 2) plus any element carrying data-nav-label
+   (used for per-question anchors). Adds smooth scroll, scrollspy, and a
+   mobile slide-in toggle. No external dependencies. */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+
+</script>
+<script>
+/* Interactive quiz — inline verbatim inside a <script> before </body>.
+   Two modes, auto-detected per question:
+
+   • PER-OPTION mode (exam MCQs): every <li> carries its own data-explain.
+       - Click a WRONG option -> it turns red and shows WHY THAT option is wrong,
+         WITHOUT revealing the correct answer; the question stays open so you can try again.
+       - Click the CORRECT option -> it turns green, shows why it's right, and locks.
+   • LEGACY mode (crash-course / prep self-checks): one data-explain on the <ol>.
+       - First click locks the question, marks the correct answer, and reveals the reasoning.
+
+   A fixed scorebar tracks solved + first-try-correct counts. Re-typesets MathJax in feedback. */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        // legacy: lock + reveal correct
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+
+</script>
+</body>
+</html>

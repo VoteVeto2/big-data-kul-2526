@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 04 · Trees, Ensembles &amp; Regularization — Preparation</title>
+<!-- MathJax — inline verbatim in <head>. Renders LaTeX: inline \( … \), display \[ … \].
+     Use LaTeX for ALL math (greek \alpha\beta\sigma, subscripts x_{i}, superscripts e^{-z},
+     fractions \frac{a}{b}, sums \sum, etc.). Code/pre are skipped so pseudocode stays literal. -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   Inline this ENTIRE block verbatim inside each self-contained .html <style>.
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz  (used by exams + crash-course self-checks)
+   Markup:  <ol class="opts" data-explain="...">
+              <li data-correct="1"><span class="otxt">A</span></li> ... </ol>
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+/* per-option mode: a tried-wrong option locks but the question stays open */
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail (auto-built by sidebar.js) ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) for prep guides ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Chapter 04 · Preparation</span>
+    <h1>Trees, Ensembles &amp; Regularization</h1>
+    <p class="subtitle">Understand it deeply — not just memorize. A guided, Socratic walk from "why combine models?" all the way to gradient boosting and the deep-learning-for-tabular debate.</p>
+    <div class="meta-row">
+      <span class="chip"><b>Theme</b> Wisdom of the crowd</span>
+      <span class="chip"><b>Two pillars</b> Bagging &amp; Boosting</span>
+      <span class="chip"><b>Lens</b> Bias–variance</span>
+      <span class="chip"><b>Payoff</b> What wins on tabular data</span>
+    </div>
+  </div>
+</header>
+
+<main class="chapter-body wrap">
+
+<div class="callout note">
+  <div class="ttl">How to use this guide</div>
+  <p>This is <b>not a summary to skim</b> — it is a study <em>session</em>. Each concept follows the same rhythm: (1) <b>the PROBLEM</b> — restate it in your own words <em>before</em> revealing a model answer; (2) <b>the SOLUTION</b> — how it works and, above all, <em>why this way</em>; (3) <b>the BROADER CONTEXT</b> — why it matters and how it connects.</p>
+  <p>Work top to bottom. <b>Pause at every gold "self-check"</b> and actually answer out loud before clicking reveal. Click the multiple-choice options — wrong picks explain themselves without giving away the answer, so you can think again. The goal: you can <em>teach it back</em> at the end.</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:4px;">Mastery checklist — what you must be able to explain</h3>
+  <ul class="check">
+    <li>Why a single complex tree <em>overfits</em>, and why ensembles let us escape the "accuracy vs. robustness" trade-off that pruning could not.</li>
+    <li>The difference between <b>combination rules</b> (min/max/mean — need a new cutoff) and <b>voting</b> (no calibration needed).</li>
+    <li><b>Bagging</b>: bootstrap with replacement, why diversity matters, why it needs <em>unstable</em> learners, and what OOB validation is.</li>
+    <li><b>Random forests</b>: the <em>two</em> sources of randomness, and why feature sampling happens <em>at every split</em> (not once per tree).</li>
+    <li><b>Boosting</b>: sequential cooperation, instance reweighting, and why it has no bootstrap.</li>
+    <li><b>AdaBoost</b> mechanics: \( \varepsilon_t \), \( \alpha_t \), the reweighting rule, the stop at \( \varepsilon_t \gt 0.5 \), and the exponential-loss view.</li>
+    <li><b>Gradient boosting</b>: fitting the negative gradient of the loss; why residual-fitting is just the MSE special case.</li>
+    <li><b>XGBoost / LightGBM / CatBoost</b>: second-order optimization, regularization, and the three tree-growth strategies.</li>
+    <li>The <b>bias–variance verdict</b>: bagging cuts variance, boosting cuts bias — and which base models suit each.</li>
+    <li>Why <b>gradient-boosted trees still beat deep learning</b> on tabular data — and what TabPFN changes.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<h2>The core problem — "Can we have it all?"</h2>
+<p class="section-note">Everything in this chapter exists to answer one frustration about single models. Start here, because the rest is a series of clever answers to it.</p>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem in your own words: a single decision tree, grown deeper and deeper, behaves <em>how</em> on training data versus unseen data — and why is that a problem we cannot fix by just "tuning the tree"?</div>
+  <details><summary></summary>
+  <div class="reveal">As the tree grows, <b>training accuracy keeps climbing</b> (toward ~0.86 in the slide) because the tree memorizes individual points. But <b>test accuracy peaks early</b> (~0.75 around 10 nodes) and then <em>drops</em> (~0.69) — the deep tree fits noise. "Great accuracy on train data, but worthless on unseen data." We <em>can</em> fix it with pruning / early stopping, but that buys robustness by <b>sacrificing peak accuracy</b> — you cap the tree at ~20 nodes and lose the high-end performance. The open question: is there a way to get robustness <em>and</em> high accuracy at once? That is what ensembles deliver.</div>
+  </details>
+</div>
+
+<h3>The problem in detail</h3>
+<p>A model can fail in two opposite directions:</p>
+<dl class="defs">
+  <dt>Overfitting (too complex)</dt>
+  <dd>A very deep tree carves jagged decision regions that hug individual training points. Train accuracy soars; test accuracy collapses. The model learned <em>noise</em>, not signal.</dd>
+  <dt>Underfitting (too simple)</dt>
+  <dd>A single straight logistic boundary cannot isolate a red cluster sitting inside a blue region — one linear cut is too rigid for a non-linear truth.</dd>
+</dl>
+<p>The single-model fixes (pruning, early stopping) only let you <em>slide along</em> this trade-off. They cannot break it. The recurring "WHY" of the whole lecture:</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>Why can't a single model "have it all"?</b> Because complexity is a single dial: turn it up and you reduce <em>bias</em> but inflate <em>variance</em>; turn it down and the reverse. Pruning just picks a point on that one dial. <b>Ensembles add a second mechanism</b> — averaging many diverse models cancels their variance (bagging), or chaining many weak models cancels their bias (boosting). That second lever is what no single tree can offer.</p>
+</div>
+
+<h3>The "wisdom of the crowd" intuition</h3>
+<p>The jelly-bean-jar: ask hundreds of people to guess the number of beans. Each guess is <em>noisy</em> — some too high, some too low. But the <b>mean of all guesses (≈ 487) lands remarkably close to the truth</b>. The errors are roughly independent, so they cancel. Ensembles formalize this: many imperfect models, aggregated, beat any single one — <em>provided their errors are diverse</em>.</p>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern</div>
+  <p>One expert can be confidently wrong. A committee of <em>differently-biased</em> experts, each voting, rarely is — because for a mistake to survive the vote, a majority would all have to be wrong <em>in the same way</em>. Diversity is the whole game. A committee of identical clones is no better than one clone.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>This single tension — accuracy vs. robustness — is why random forests and gradient boosting exist, why they dominate Kaggle on tabular data, and why "just use one big model" is rarely the answer for structured data. Hold onto it; every later section is a different way of cancelling either variance or bias.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">1</div><p class="qtext">A deep decision tree reaches 0.86 train accuracy but only 0.69 on the test set, while a shallow pruned tree reaches 0.75 on both. What is the single best description of the deep tree's failure?</p></div>
+<ol class="opts" data-explain="High variance: the deep tree fits the training noise, so small changes in data produce wildly different fits and it generalizes poorly. It is not high bias — its train accuracy is excellent. Pruning trades a little peak accuracy for much better generalization, which is exactly the trade-off ensembles aim to beat.">
+  <li data-correct="0"><span class="otxt">High bias — it is too simple to capture the pattern.</span></li>
+  <li data-correct="1"><span class="otxt">High variance — it memorized training noise and fails to generalize.</span></li>
+  <li data-correct="0"><span class="otxt">Irreducible error — no model could do better here.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Combining models: rules, voting, experts, stacking, smoothing</h2>
+<p class="section-note">Before the two big algorithms (bagging, boosting), the lecture surveys the basic <em>combination machinery</em>: given several trained models, how do you fuse their outputs?</p>
+
+<h3>Combination rules (algebraic)</h3>
+<p>Take the probability outputs of two models and combine them arithmetically, then find a new cutoff:</p>
+<ul class="clean">
+  <li><b>Min</b> — take the smaller of the two probabilities (conservative: both must be confident).</li>
+  <li><b>Max</b> — take the larger (lenient: either model's confidence suffices).</li>
+  <li><b>Mean</b> — average the two (balanced).</li>
+</ul>
+
+<div class="callout warn">
+  <div class="ttl">The cutoff trap</div>
+  <p>After combining, the raw 0.50 threshold is <b>no longer valid</b> — each rule needs its own re-tuned cutoff. In the worked example: Min → 0.50, Max → 0.78, Mean → 0.52. With those, <b>Mean classifies all 6 instances correctly</b>, while <b>Max (0.78) still mislabels a true "Yes" of 0.54 as "No"</b>. No algebraic rule is universally best.</p>
+</div>
+
+<details class="fold">
+<summary>See the full worked combination table (slides 8–9)</summary>
+<table class="tbl">
+<thead><tr><th>True</th><th>M1</th><th>M2</th><th>Min (cut 0.50)</th><th>Max (cut 0.78)</th><th>Mean (cut 0.52)</th></tr></thead>
+<tbody>
+<tr><td>Yes</td><td>0.80</td><td>0.70</td><td>0.70 yes</td><td>0.80 yes</td><td>0.75 yes</td></tr>
+<tr><td>Yes</td><td>0.78</td><td>0.50</td><td>0.50 yes</td><td>0.78 yes</td><td>0.64 yes</td></tr>
+<tr><td>Yes</td><td>0.54</td><td>0.50</td><td>0.50 yes</td><td class="no">0.54 NO (error)</td><td>0.52 yes</td></tr>
+<tr><td>No</td><td>0.57</td><td>0.30</td><td>0.30 no</td><td>0.57 no</td><td>0.44 no</td></tr>
+<tr><td>No</td><td>0.30</td><td>0.70</td><td>0.30 no</td><td>0.70 no</td><td>0.50 no</td></tr>
+<tr><td>No</td><td>0.22</td><td>0.40</td><td>0.22 no</td><td>0.40 no</td><td>0.31 no</td></tr>
+</tbody>
+</table>
+<p>Each individual model made 1 error (M1 on the 0.57 "No", M2 on the 0.70 "No"). <b>Mean fixes both.</b></p>
+</details>
+
+<h3>Voting (majority &amp; weighted)</h3>
+<p>Instead of combining <em>probabilities</em>, combine <em>discrete decisions</em>: count votes, the majority class wins.</p>
+<ul class="clean">
+  <li><b>Majority voting</b> — 6 models, 4 say "yes", 2 say "no" → "yes" wins, 4 to 2.</li>
+  <li><b>Weighted voting</b> — give trusted models more votes. If Model 4 carries 5 votes and one ally votes with it (5 + 1 = 6) against 4 others saying "yes", then "no" wins.</li>
+</ul>
+
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>Why prefer voting over algebraic combination?</b> Because voting is <b>less sensitive to the underlying probability distributions</b>. Algebraic rules operate on raw probabilities, so they assume the models are calibrated <em>and</em> demand a freshly tuned cutoff. Voting only needs each model's decision — no calibration, no new cutoff. But there's a catch: <b>determining the weights for weighted voting is itself a learning problem</b> (meta-learning).</p>
+</div>
+
+<h3>Mixture of experts (Jacobs/Jordan, 1991)</h3>
+<p>Train several "experts," each specializing in a different region of input space. A separate <b>gating network</b> decides <em>whom to trust</em> for a given input \( x \), producing the combination weights.</p>
+<div class="formula"><span class="lbl">Mixture of experts</span>\[ H(x) = \sum_{i=1}^{T} w_i \cdot h_i(x, \theta_i) \]</div>
+<p>The gating network is usually trained with the <b>Expectation–Maximization (EM)</b> algorithm. The weights \( w_i \) are <em>input-dependent</em>: a different mix of experts is trusted for different \( x \).</p>
+
+<h3>Stacking / stacked generalization (Wolpert, 1992)</h3>
+<p>A two-tier ensemble. Tier-1 base classifiers \( C_1 \ldots C_T \) are trained; then a Tier-2 <b>meta-classifier</b> \( C^{*} \) is trained on the <em>outputs</em> of the Tier-1 models (optionally plus the original features).</p>
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>What does the meta-classifier actually learn?</b> Whether the training data have been <em>properly learned</em> by the base models. If classifier \( C_3 \) reliably mislabels a particular region of feature space, the Tier-2 model <em>learns to correct that</em> — "when \( C_3 \) says X here, flip it." Stacking learns the <em>error pattern</em> of its base models.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 220" role="img" aria-label="Stacking diagram">
+  <rect x="10" y="90" width="90" height="40" rx="8" fill="#F1EADB" stroke="#D6CAB2"/>
+  <text x="55" y="115" font-size="12" text-anchor="middle" font-family="Georgia">Training data S</text>
+  <rect x="125" y="85" width="100" height="50" rx="8" fill="#F6F2E9" stroke="#D6CAB2"/>
+  <text x="175" y="106" font-size="11" text-anchor="middle">Bootstrap /</text>
+  <text x="175" y="122" font-size="11" text-anchor="middle">jackknife</text>
+  <rect x="260" y="30" width="80" height="32" rx="7" fill="#DDE8DC" stroke="#C5D8C4"/><text x="300" y="51" font-size="12" text-anchor="middle">C₁</text>
+  <rect x="260" y="92" width="80" height="32" rx="7" fill="#DDE8DC" stroke="#C5D8C4"/><text x="300" y="113" font-size="12" text-anchor="middle">C₂</text>
+  <rect x="260" y="154" width="80" height="32" rx="7" fill="#DDE8DC" stroke="#C5D8C4"/><text x="300" y="175" font-size="12" text-anchor="middle">C_T</text>
+  <rect x="400" y="78" width="70" height="72" rx="8" fill="#E7D8E3" stroke="#8A5C7C"/><text x="435" y="108" font-size="12" text-anchor="middle">Meta</text><text x="435" y="124" font-size="12" text-anchor="middle">C*</text>
+  <rect x="490" y="95" width="64" height="38" rx="8" fill="#EAD2C5" stroke="#CC785C"/><text x="522" y="118" font-size="11" text-anchor="middle">Decision</text>
+  <line x1="100" y1="110" x2="125" y2="110" stroke="#A8472A" stroke-width="1.5"/>
+  <line x1="225" y1="105" x2="260" y2="46" stroke="#A8472A" stroke-width="1.2"/>
+  <line x1="225" y1="110" x2="260" y2="108" stroke="#A8472A" stroke-width="1.2"/>
+  <line x1="225" y1="115" x2="260" y2="170" stroke="#A8472A" stroke-width="1.2"/>
+  <line x1="340" y1="46" x2="400" y2="100" stroke="#5C8A6B" stroke-width="1.2"/>
+  <line x1="340" y1="108" x2="400" y2="114" stroke="#5C8A6B" stroke-width="1.2"/>
+  <line x1="340" y1="170" x2="400" y2="128" stroke="#5C8A6B" stroke-width="1.2"/>
+  <line x1="470" y1="114" x2="490" y2="114" stroke="#A8472A" stroke-width="1.5"/>
+</svg>
+<figcaption>Stacking: Tier-1 base models feed their predictions into a Tier-2 meta-classifier.</figcaption>
+</div>
+
+<h3>Smoothing (blend by \( \lambda \))</h3>
+<p>Blend a simple and a complex model by a convex combination:</p>
+<div class="formula"><span class="lbl">Smoothing blend</span>\[ \text{Ensemble} = \lambda \cdot (\text{logistic regression}) + (1 - \lambda) \cdot (\text{complex model}), \quad \lambda \in [0,1] \]</div>
+<p>A pure complex model has a jagged, overfit boundary; pure logistic regression has a smooth but underfit one. The blend keeps the flexible <em>shape</em> of the complex model but <b>smooths it toward the simple model</b> — pulling it back from the noise.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">2</div><p class="qtext">Which combination approach requires <em>no</em> probability calibration and <em>no</em> newly-tuned cutoff?</p></div>
+<ol class="opts" data-explain="Majority voting works on discrete decisions, so it is insensitive to the raw probability scale — no calibration, no new cutoff needed. Min/Max/Mean rules operate on probabilities and explicitly require re-tuning the cutoff after combining. Smoothing produces a blended probability that still needs a threshold.">
+  <li data-correct="0"><span class="otxt">The Mean (average) combination rule.</span></li>
+  <li data-correct="0"><span class="otxt">Smoothing with \( \lambda = 0.5 \).</span></li>
+  <li data-correct="1"><span class="otxt">Majority voting.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">3</div><p class="qtext">In mixture of experts, what is the job of the <em>gating network</em>?</p></div>
+<ol class="opts" data-explain="The gating network produces the input-dependent weights w_i that decide which experts to trust for a given x — it is usually trained with EM. It does not classify directly, and it does not prune experts; it routes trust. Distractor A confuses it with a base expert; distractor C confuses it with stacking's meta-classifier learning error patterns.">
+  <li data-correct="0"><span class="otxt">It is one more expert that classifies the input directly.</span></li>
+  <li data-correct="1"><span class="otxt">It produces the input-dependent weights deciding which experts to trust.</span></li>
+  <li data-correct="0"><span class="otxt">It learns whether each expert's training data were properly learned.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Bagging — bootstrap aggregating</h2>
+<p class="section-note">The first of the two great ensemble families. Simple, old, surprisingly powerful — and the foundation of random forests.</p>
+
+<div class="selfcheck">
+  <div class="q">Restate it: bagging trains many models. What exactly is different about the <em>data</em> each model sees, and what single property of the ensemble are we trying to improve by doing that?</div>
+  <details><summary></summary>
+  <div class="reveal">Each model is trained on a <b>bootstrap replica</b> — a sample drawn <em>with replacement</em> from the full training set, so each replica is a slightly different, randomly-perturbed view of the data. By feeding each model a different view, we make the models <b>diverse</b>: they make <em>different</em> errors. When we aggregate (majority vote or average), those independent errors cancel, which <b>reduces variance</b> and makes the ensemble robust to overfitting and noise. The single property we improve is <em>variance</em>.</div>
+  </details>
+</div>
+
+<h3>How it works</h3>
+<ol class="steps">
+  <li>Draw multiple training subsets <b>randomly, with replacement</b>, from the full set (bootstrap samples).</li>
+  <li>Train one classifier of the <b>same type</b> per subset.</li>
+  <li>Combine via <b>majority vote</b> (original publication) of their decisions.</li>
+</ol>
+
+<div class="diagram">
+<svg viewBox="0 0 540 200" role="img" aria-label="Bagging diagram">
+  <rect x="10" y="78" width="80" height="44" rx="8" fill="#F1EADB" stroke="#D6CAB2"/><text x="50" y="104" font-size="12" text-anchor="middle">Full data</text>
+  <text x="170" y="22" font-size="11" text-anchor="middle" fill="#7E776B">bootstrap aggregating</text>
+  <rect x="140" y="30" width="70" height="32" rx="7" fill="#F6F2E9" stroke="#D6CAB2"/><text x="175" y="51" font-size="11" text-anchor="middle">sample 1</text>
+  <rect x="140" y="84" width="70" height="32" rx="7" fill="#F6F2E9" stroke="#D6CAB2"/><text x="175" y="105" font-size="11" text-anchor="middle">sample 2</text>
+  <rect x="140" y="138" width="70" height="32" rx="7" fill="#F6F2E9" stroke="#D6CAB2"/><text x="175" y="159" font-size="11" text-anchor="middle">sample 3</text>
+  <circle cx="290" cy="46" r="13" fill="#DDE8DC" stroke="#5C8A6B"/><text x="290" y="50" font-size="11" text-anchor="middle">★</text>
+  <circle cx="290" cy="100" r="13" fill="#DDE8DC" stroke="#5C8A6B"/><text x="290" y="104" font-size="11" text-anchor="middle">★</text>
+  <circle cx="290" cy="154" r="13" fill="#DDE8DC" stroke="#5C8A6B"/><text x="290" y="158" font-size="11" text-anchor="middle">★</text>
+  <rect x="360" y="70" width="120" height="60" rx="10" fill="#EAD2C5" stroke="#CC785C" stroke-dasharray="4 3"/>
+  <text x="420" y="95" font-size="11" text-anchor="middle">Combine via</text><text x="420" y="111" font-size="11" text-anchor="middle">majority vote</text>
+  <line x1="90" y1="92" x2="140" y2="46" stroke="#A8472A" stroke-width="1.2"/>
+  <line x1="90" y1="100" x2="140" y2="100" stroke="#A8472A" stroke-width="1.2"/>
+  <line x1="90" y1="108" x2="140" y2="154" stroke="#A8472A" stroke-width="1.2"/>
+  <line x1="210" y1="46" x2="277" y2="46" stroke="#5C8A6B" stroke-width="1.2"/>
+  <line x1="210" y1="100" x2="277" y2="100" stroke="#5C8A6B" stroke-width="1.2"/>
+  <line x1="210" y1="154" x2="277" y2="154" stroke="#5C8A6B" stroke-width="1.2"/>
+  <line x1="303" y1="46" x2="360" y2="92" stroke="#A8472A" stroke-width="1.1"/>
+  <line x1="303" y1="100" x2="360" y2="100" stroke="#A8472A" stroke-width="1.1"/>
+  <line x1="303" y1="154" x2="360" y2="108" stroke="#A8472A" stroke-width="1.1"/>
+</svg>
+<figcaption>Bagging: independent bootstrap samples → independent models → aggregate by vote.</figcaption>
+</div>
+
+<h3>Why it needs diversity — and unstable learners</h3>
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>Why do bootstraps alone sometimes give weak diversity, and what fixes it?</b> Because bootstrap samples drawn from the same dataset <b>overlap substantially</b> — roughly 63% of points appear in any given replica — so the models can end up quite similar. The cure is to inject <em>extra</em> randomness: subsample features per model, subsample data, and crucially use <b>unstable base learners</b> — models whose output changes a lot under small data perturbations (decision trees are the classic example). A <em>stable</em> learner (like a linear model) would barely change across bootstraps, giving you near-identical clones and no benefit.</p>
+</div>
+
+<h3>Output formulas</h3>
+<div class="formula"><span class="lbl">Majority voting</span>\[ p_{\text{ens}}(y=1 \mid x) = \frac{\bigl|\{\, c \in C : p_c(y=1 \mid x) \ge 0.5 \,\}\bigr|}{|C|} \]</div>
+<div class="formula"><span class="lbl">Averaged probability</span>\[ p_{\text{ens}}(y=1 \mid x) = \frac{1}{|C|}\sum_{c \in C} p_c(y=1 \mid x) \]</div>
+<p>For regression, simply average the predictions. Note scikit-learn combines classifiers by <b>averaging probabilities</b>, not by per-class voting — contrary to the original Breiman publication. For large ensembles these "virtually guarantee the same outcome," because averaging many probabilities and taking the majority vote tend to agree.</p>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>Bagging is the cleanest demonstration of variance reduction: it's parallel, embarrassingly easy to implement, and gives you a free validation estimate (next). Its best use is wrapping <em>high-variance, low-bias</em> learners — exactly the deep trees that overfit on their own.</p>
+</div>
+
+<h3>Out-of-bag (OOB) validation</h3>
+<p>Because each bootstrap is drawn with replacement, each replica <b>leaves out roughly a third</b> of the instances. Those left-out points are "unseen" by that model — so they form a natural hold-out.</p>
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>How do you compute an OOB estimate for instance \( i \)?</b> Aggregate predictions for \( i \) using <em>only</em> the models whose bootstrap sample <b>did not contain \( i \)</b>, then compare to its true label. You get a generalization estimate "for free" — no separate split needed. <b>But</b> the lecture is emphatic: OOB is a good <em>initial</em> check, <b>not</b> a substitute for an independent test set.</p>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">The 100% bootstrap trap</div>
+  <p>A bootstrap of size 100% does <b>NOT</b> mean "use every instance." Drawing \( N \) times <em>with replacement</em> from \( N \) instances leaves out, in the limit, \( e^{-1} \approx 0.368 \) of them — about <b>37%</b> never get picked. Those become the OOB set.</p>
+</div>
+
+<details class="fold">
+<summary>Where does the ~37% come from? (the math)</summary>
+<p>The chance one specific instance is <em>missed</em> in a single draw is \( 1 - \tfrac{1}{N} \). Across \( N \) independent draws:</p>
+<div class="formula">\[ \Bigl(1 - \frac{1}{N}\Bigr)^{N} \xrightarrow{\;N \to \infty\;} e^{-1} \approx 0.368 \]</div>
+<p>So ~37% of instances are out-of-bag, leaving ~63% in-bag.</p>
+</details>
+
+<div class="q"><div class="q-top"><div class="qnum">4</div><p class="qtext">Bagging gives the biggest improvement when the base learner is…</p></div>
+<ol class="opts" data-explain="Bagging reduces variance, so it helps most with high-variance, low-bias (unstable) models like deep decision trees — small data changes swing them a lot, so averaging cancels that swing. Stable, high-bias models (linear regression, shallow stumps) barely change across bootstraps, so the bagged ensemble is no better than one of them.">
+  <li data-correct="1"><span class="otxt">Unstable and high-variance, e.g. a deep decision tree.</span></li>
+  <li data-correct="0"><span class="otxt">Stable and high-bias, e.g. a linear regression.</span></li>
+  <li data-correct="0"><span class="otxt">Already perfectly calibrated, regardless of variance.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">5</div><p class="qtext">OOB validation for instance \( i \) aggregates predictions from…</p></div>
+<ol class="opts" data-explain="OOB uses only the models whose bootstrap did NOT include i, because only those treat i as unseen. Using all models (A) would leak training data; using only models that DID include i (C) is the opposite of the idea and measures memorization, not generalization.">
+  <li data-correct="0"><span class="otxt">all models in the ensemble.</span></li>
+  <li data-correct="0"><span class="otxt">only the models that <em>included</em> \( i \) in their bootstrap.</span></li>
+  <li data-correct="1"><span class="otxt">only the models that <em>excluded</em> \( i \) from their bootstrap.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Random forests</h2>
+<p class="section-note">Bagging's most famous child — and the single most exam-trapped concept in the chapter.</p>
+
+<div class="selfcheck">
+  <div class="q">Before reading: a random forest is "bagged decision trees plus <em>one more</em> source of randomness." What is that extra source, and — critically — how <em>often</em> is it applied?</div>
+  <details><summary></summary>
+  <div class="reveal">The extra source is <b>random feature subset selection</b>: at each candidate split, the tree considers only a random subset of \( M \) features (not all). The critical detail and classic exam trap: this is sampled <b>at every split</b>, a fresh random subset each time — <b>NOT once per tree</b>. So a random forest has <em>two</em> sources of randomness: (1) the bootstrap of rows, and (2) the per-split feature subsampling.</div>
+  </details>
+</div>
+
+<h3>The two sources of randomness</h3>
+<ul class="clean">
+  <li><b>Bagging randomness</b> — each tree sees a random bootstrap of the rows.</li>
+  <li><b>Feature randomness</b> — at each split, consider only a random subset of \( M \) features, <em>resampled at every split</em>.</li>
+</ul>
+
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>Why subsample features at every split instead of once per tree?</b> If one or two features are very strong predictors, plain bagged trees would <em>all</em> split on them near the root — making the trees highly <b>correlated</b>, which defeats variance reduction (correlated errors don't cancel). By forcing each split to choose from a <em>random</em> feature subset, sometimes the dominant feature isn't even available, so the trees are pushed to explore different structures. Result: <b>decorrelated, diverse trees</b> → much better variance reduction. Doing it once per tree would not break the correlation deep inside the trees.</p>
+</div>
+
+<h3>History &amp; why it replaced pruning</h3>
+<p>First random decision forests: <b>Tin Kam Ho (1995)</b>, the <em>random subspace method</em>. Extended by <b>Leo Breiman and Adele Cutler</b>, who trademarked "Random Forests" in <b>2006</b>, combining Breiman's bagging with Ho's (and Amit &amp; Geman's) random feature selection to build variance-controlled trees.</p>
+<div class="callout note">
+  <div class="ttl">Why it matters — no more pruning</div>
+  <p>Plain trees overfit and need pruning. Random forests control variance <em>by design</em> through the two randomness sources, so <b>pruning is no longer necessary</b>. (You <em>may</em> still prune/early-stop to speed training, but it's not needed for generalization.) This is the practical payoff: little configuration, little preprocessing, interaction effects captured "for free."</p>
+</div>
+
+<h3>Hyperparameters</h3>
+<dl class="defs">
+  <dt>Number of trees</dt><dd>No overfitting risk from adding trees — use plenty. (Validation accuracy plateaus, it does not degrade.)</dd>
+  <dt>Tree depth</dt><dd>No pruning necessary; optional pruning/early stopping only to speed things up.</dd>
+  <dt>Bootstrap size</dt><dd>Can be 100% (which, recall, still leaves out ~37% via with-replacement sampling). Lower is fine with enough data; the key is enough trees.</dd>
+  <dt>\( M \) = feature subset size</dt><dd>Could be 1, 2, or all (then it's "default bagging"). Heuristics below.</dd>
+</dl>
+<div class="formula"><span class="lbl">Feature subset heuristic (N = number of features)</span>\[ M = \left\lfloor \tfrac{N}{3} \right\rfloor \;(\ge 1)\ \text{for regression}, \qquad M = \left\lfloor \sqrt{N} \right\rfloor \ \text{for classification} \]</div>
+<p>Example with 16 features: classification \( M = \lfloor\sqrt{16}\rfloor = 4 \); regression \( M = \lfloor 16/3 \rfloor = 5 \). (Alternatively, choose \( M \) by cross-validation.) <b>Do not swap the two heuristics</b> — that's a favorite trap.</p>
+
+<h3>Extensions</h3>
+<dl class="defs">
+  <dt>Extra Randomized Trees (Extra-Trees)</dt>
+  <dd>Adds yet more randomness: also consider a random subset of <b>possible splitting points</b>, not just a random feature subset. More bias, even less variance, faster.</dd>
+  <dt>Completely randomized trees</dt>
+  <dd>Maximize diversity by building fully random trees (Liu et al., 2005), useful in some downstream applications.</dd>
+</dl>
+
+<div class="callout exam">
+  <div class="ttl">Exam traps clustered here</div>
+  <p>① Feature randomness is sampled <b>at every split</b>, not once per tree. ② Random forests use <b>two</b> sources of randomness; plain bagging only one. ③ Bootstrap 100% ≠ all instances (~37% out). ④ Random forests <b>need no pruning</b>. ⑤ More trees does <b>not</b> overfit. ⑥ \( \lfloor N/3 \rfloor \) regression, \( \lfloor\sqrt{N}\rfloor \) classification — don't swap. ⑦ Extra-Trees randomize the <b>split points</b> too.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">6</div><p class="qtext">"In a random forest the random subset of features is chosen once when the tree starts and used for all its splits." This statement is…</p></div>
+<ol class="opts" data-explain="FALSE — the feature subset is resampled at every split, a fresh random draw each time. Choosing once per tree would leave the trees correlated on dominant features deep inside, undermining the variance reduction. This is the single most common exam trap in the chapter.">
+  <li data-correct="0"><span class="otxt">True — that is exactly how random forests work.</span></li>
+  <li data-correct="1"><span class="otxt">False — the subset is resampled fresh at every split.</span></li>
+  <li data-correct="0"><span class="otxt">True for classification but false for regression.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">7</div><p class="qtext">You have 25 features and are doing <em>classification</em>. The textbook heuristic suggests trying about how many features per split?</p></div>
+<ol class="opts" data-explain="Classification uses ⌊√N⌋ = ⌊√25⌋ = 5. The value ⌊N/3⌋ = 8 is the REGRESSION heuristic — swapping them is the trap. Using all 25 features reduces to plain bagging with correlated trees.">
+  <li data-correct="0"><span class="otxt">About 8 (that is \( \lfloor 25/3 \rfloor \)).</span></li>
+  <li data-correct="0"><span class="otxt">All 25, to give each split full information.</span></li>
+  <li data-correct="1"><span class="otxt">About 5 (that is \( \lfloor\sqrt{25}\rfloor \)).</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Boosting — the general idea</h2>
+<p class="section-note">The second great family. Where bagging builds models <em>in parallel</em> to add diversity, boosting builds them <em>sequentially</em> to add cooperation.</p>
+
+<div class="selfcheck">
+  <div class="q">Restate the contrast: boosting also builds an ensemble of models, but two things differ fundamentally from bagging. What are they, and what is each new model trying to do?</div>
+  <details><summary></summary>
+  <div class="reveal">(1) <b>No bootstrapping</b> — boosting reweights the existing instances rather than resampling them. (2) <b>Sequential, not parallel</b> — each new model is added one at a time, and each one specifically aims to <b>correct the mistakes of the ensemble so far</b>: misclassified points get heavier weight, so the next learner focuses on them. The idea is <b>cooperation</b> between classifiers (each fixes the last), whereas bagging's idea was <b>diversity</b>.</div>
+  </details>
+</div>
+
+<h3>How it works</h3>
+<ol class="steps">
+  <li>Assign a weight to each <em>instance</em> (start uniform).</li>
+  <li>Train a model on the weighted data.</li>
+  <li><b>Reweight</b> the data based on its mistakes — misclassified points get heavier weight.</li>
+  <li>Train the next model on the reweighted data; combine via weighted voting; repeat.</li>
+</ol>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>Boosting <b>decreases bias</b>, so it's best for <em>low-variance, high-bias</em> (simple) base learners — the mirror image of bagging. Chain enough weak, simple learners, each cleaning up the last, and you get a strong, low-bias ensemble. The price: it's sequential (less parallelizable) and it <em>can</em> overfit — "overboosting."</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>AdaBoost — adaptive boosting</h2>
+<p class="section-note">Freund &amp; Schapire, 1996. The first practical boosting algorithm — and the one whose mechanics you must be able to reproduce.</p>
+
+<div class="selfcheck">
+  <div class="q">In AdaBoost, after each weak learner is trained, two numbers get updated: a per-<em>instance</em> weight and a per-<em>learner</em> weight. Which way does each move for a hard instance / an accurate learner?</div>
+  <details><summary></summary>
+  <div class="reveal"><b>Instance weights</b>: misclassified ("hard") instances get their weight <em>increased</em>, so the next learner pays more attention to them. <b>Learner weight \( \alpha_t \)</b>: a more <em>accurate</em> learner (low error \( \varepsilon_t \)) gets a <em>larger</em> \( \alpha_t \), so its vote counts more in the final combination. Accurate learners earn louder votes; hard instances earn more attention.</div>
+  </details>
+</div>
+
+<h3>The algorithm</h3>
+<p>Labels are \( y \in \{-1, +1\} \). Initialize uniform instance weights \( D_1(i) = 1/N \), so the first round is just a normal classifier.</p>
+<pre><code>for t = 1 to T:
+    h_t = train weak learner on data weighted by D_t
+    eps_t = sum of D_t(i) over all i misclassified by h_t   # weighted error
+    if eps_t &gt; 0.5: T = t-1; return                          # learner worse than random -> stop
+    alpha_t = 0.5 * ln( (1 - eps_t) / eps_t )                # learner's vote weight
+    for i = 1..N:
+        D_{t+1}(i) = D_t(i) * exp( -alpha_t * h_t(x_i) * y_i )
+    normalize D_{t+1} to sum to 1
+output H(x) = sign( sum_t alpha_t * h_t(x) )</code></pre>
+
+<div class="formula"><span class="lbl">Learner weight</span>\[ \alpha_t = \tfrac{1}{2}\ln\!\left(\frac{1 - \varepsilon_t}{\varepsilon_t}\right) \]</div>
+<div class="formula"><span class="lbl">Weight update &amp; final output</span>\[ D_{t+1}(i) = D_t(i)\, e^{-\alpha_t\, h_t(x_i)\, y_i}, \qquad H(x) = \operatorname{sign}\!\left(\sum_{t=1}^{T} \alpha_t\, h_t(x)\right) \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — read the update term</div>
+  <p>Look at \( h_t(x_i)\, y_i \) in the exponent. If the prediction is <b>correct</b>, \( h_t(x_i) \) and \( y_i \) share a sign, so the product is \( +1 \): the exponent is \( -\alpha_t \), and the weight <b>shrinks</b>. If <b>wrong</b>, the product is \( -1 \): the exponent is \( +\alpha_t \), and the weight <b>grows</b>. That single sign trick is how AdaBoost automatically up-weights the points it keeps getting wrong. And \( \alpha_t \) scales the effect by the learner's reliability.</p>
+</div>
+
+<details class="fold">
+<summary>Why the stop at \( \varepsilon_t \gt 0.5 \), and a numeric feel for \( \alpha_t \)</summary>
+<p>\( \alpha_t = \tfrac12\ln\!\frac{1-\varepsilon_t}{\varepsilon_t} \). If \( \varepsilon_t = 0.25 \) → \( \alpha_t = \tfrac12\ln 3 \approx 0.549 \) (a confident, well-weighted learner). If \( \varepsilon_t = 0.5 \) → \( \alpha_t = \tfrac12\ln 1 = 0 \): a coin-flip learner contributes <b>nothing</b>. If \( \varepsilon_t \gt 0.5 \) the log goes negative and the learner is <em>worse than random</em> — AdaBoost <b>stops</b> (sets \( T \leftarrow t-1 \) and returns).</p>
+</details>
+
+<h3>The statistical view (Friedman et al.)</h3>
+<p>AdaBoost can be re-read as an <b>additive logistic regression model</b> that <b>optimizes an exponential loss</b>. It produces an additive model \( F(x) = \sum_{m=1}^{M} c_m f_m(x) \). Two flavors:</p>
+<div class="vs">
+  <div class="col"><h4>Discrete AdaBoost</h4><p>Fit \( f_m(x) \in \{-1, 1\} \). Set \( c_m = \log\!\frac{1-e_m}{e_m} \); update \( w_i \leftarrow w_i\,\exp[c_m\,\mathbf{1}_{y_i \ne f_m(x_i)}] \); output \( \operatorname{sign}[\sum c_m f_m(x)] \).</p></div>
+  <div class="col"><h4>Real AdaBoost</h4><p>Fit a probability estimate \( p_m(x) \in [0,1] \); set \( f_m(x) = \tfrac12\log\!\frac{p_m(x)}{1-p_m(x)} \in \mathbb{R} \); update \( w_i \leftarrow w_i\,\exp[-y_i f_m(x_i)] \); output \( \operatorname{sign}[\sum f_m(x)] \).</p></div>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">AdaBoost's weakness</div>
+  <p>Because misclassified points are repeatedly up-weighted, <b>noisy data and outliers get amplified</b> — AdaBoost keeps throwing learners at points that are genuinely unlearnable, which hurts generalization. This is part of why too many rounds cause "overboosting."</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">8</div><p class="qtext">A weak learner in round \( t \) achieves a weighted error \( \varepsilon_t = 0.5 \). What happens?</p></div>
+<ol class="opts" data-explain="At eps = 0.5, alpha_t = 0.5*ln(1) = 0, so the learner contributes nothing to the final vote. It is exactly the boundary: eps strictly greater than 0.5 triggers the hard stop. It is not up-weighted, and it does not get the maximum weight.">
+  <li data-correct="0"><span class="otxt">It receives the maximum vote weight, since 0.5 is the target error.</span></li>
+  <li data-correct="1"><span class="otxt">Its weight \( \alpha_t = 0 \) — it contributes nothing to the final ensemble.</span></li>
+  <li data-correct="0"><span class="otxt">Its instances are all reset to uniform weights.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">9</div><p class="qtext">In the update \( D_{t+1}(i) = D_t(i)\,e^{-\alpha_t h_t(x_i) y_i} \), an instance that the learner <em>correctly</em> classifies gets its weight…</p></div>
+<ol class="opts" data-explain="Correct classification means h_t(x_i) and y_i share a sign, so their product is +1 and the exponent is -alpha_t (negative), shrinking the weight. Misclassified points (product -1) get a positive exponent and grow. The weight is not left unchanged — the whole point is to reallocate attention.">
+  <li data-correct="0"><span class="otxt">increased, so the ensemble keeps focusing on it.</span></li>
+  <li data-correct="0"><span class="otxt">left unchanged until normalization.</span></li>
+  <li data-correct="1"><span class="otxt">decreased, because the exponent becomes \( -\alpha_t \).</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Gradient Boosting Machines (GBM)</h2>
+<p class="section-note">Friedman's generalization: what if we want <em>any</em> loss, not just AdaBoost's exponential one? The answer reframes boosting as gradient descent — in function space.</p>
+
+<div class="selfcheck">
+  <div class="q">Restate the motivation: AdaBoost reweights instances to chase mistakes. Gradient boosting takes a different angle — instead of <em>reweighting</em>, what does each new learner directly try to <em>predict</em>, and why does that let us use any loss?</div>
+  <details><summary></summary>
+  <div class="reveal">Each new learner directly tries to predict the <b>residuals</b> — the errors \( y - F_m(x) \) of the ensemble so far — and the ensemble is updated to correct them. More generally, it fits the <b>negative gradient of the loss with respect to the model's raw output</b>. Because you only ever need that gradient, you can <b>plug in any differentiable loss</b> (MSE, LogLoss, etc.) and the same machinery works. Residual-fitting is just the special case where the loss is MSE.</div>
+  </details>
+</div>
+
+<h3>Residuals = negative MSE gradient</h3>
+<p>For squared-error loss, fitting residuals and fitting the negative gradient are the <em>same thing</em>:</p>
+<div class="formula"><span class="lbl">MSE loss and its gradient</span>\[ L_{\text{MSE}} = \frac{1}{n}\bigl(y - F(x)\bigr)^2, \qquad -\frac{\partial L_{\text{MSE}}}{\partial F} = \frac{2}{n}\bigl(y - F(x)\bigr) = \frac{2}{n}\, h_m(x) \]</div>
+<p>So the residual \( h_m(x) = y - F_m(x) \) <em>is</em> the negative gradient (up to the constant \( 2/n \)). Gradient boosting fits the next weak <b>decision tree</b> to that residual.</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — "functional gradient descent"</div>
+  <p><b>Why call it gradient descent "in function space"?</b> Ordinary gradient descent nudges <em>parameters</em> in the direction that lowers the loss. Gradient boosting nudges the <em>whole function</em> \( F \): the negative gradient tells you, at each data point, which direction \( F \) should move to lower the loss. A weak tree is then fit to <em>approximate that direction</em>, and you take a step. Residual-fitting for MSE is just the most intuitive instance of this general recipe.</p>
+</div>
+
+<h3>Generalizing to any loss</h3>
+<div class="formula"><span class="lbl">Mean squared error</span>\[ \text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2 \]</div>
+<div class="formula"><span class="lbl">Binary cross-entropy</span>\[ \text{LogLoss} = -\frac{1}{n}\sum_{i=1}^{n}\bigl[\, y_i \log p_i + (1 - y_i)\log(1 - p_i)\,\bigr] \]</div>
+<div class="formula"><span class="lbl">Multiclass cross-entropy</span>\[ \text{MLogLoss} = -\frac{1}{n}\sum_{i=1}^{n}\sum_{j=1}^{m} y_{ij}\log p_{ij} \]</div>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern — the "too correct" quirk</div>
+  <p>Plot loss against \( yF \) (positive = correct, negative = error). Most losses (exponential, log-likelihood) shrink monotonically as \( yF \) grows — being more correct is always rewarded. But <b>squared error \( (y-F)^2 \) starts <em>rising again</em> once \( yF \gt 1 \)</b>: it actually penalizes predictions that are "too correct." That's why squared-error loss is a poor fit for classification — it punishes confident right answers, which is exactly backwards.</p>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">Pitfalls</div>
+  <p>GBM is <b>sequential</b> → less parallelizable than bagging. It can <b>overfit</b> ("overboosting"), so it needs regularization (learning rate, tree depth limits, etc.). That regularization is precisely what the XGBoost family adds.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">10</div><p class="qtext">"In gradient boosting, each new learner always fits the raw residuals \( y - F(x) \)." The most precise correction is:</p></div>
+<ol class="opts" data-explain="It fits the negative gradient of the chosen loss w.r.t. the model output; residual-fitting is the SPECIAL CASE that arises only when the loss is MSE. For LogLoss the target is the gradient of cross-entropy, not raw residuals. Distractor C reverses cause and effect; distractor A overstates by saying 'always residuals'.">
+  <li data-correct="0"><span class="otxt">Correct — it always fits raw residuals, for every loss.</span></li>
+  <li data-correct="1"><span class="otxt">It fits the negative gradient of the loss; residual-fitting is the MSE special case.</span></li>
+  <li data-correct="0"><span class="otxt">It fits the negative gradient, and MSE is the only loss it cannot use.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Extreme gradient boosting: XGBoost, LightGBM, CatBoost</h2>
+<p class="section-note">The workhorses that win Kaggle on tabular data. They keep GBM's idea but improve <em>how</em> the loss is optimized and add regularization.</p>
+
+<div class="selfcheck">
+  <div class="q">XGBoost is "GBM but better" in two concrete ways. One is about <em>how it reads the loss surface</em>, the other about <em>controlling complexity</em>. What are they?</div>
+  <details><summary></summary>
+  <div class="reveal">(1) <b>Second-order optimization</b>: it uses both first and second derivatives of the loss — the <b>gradient and the Hessian</b> — which gives more information about the curvature of the loss and lets it reach the minimum faster and more stably than first-order GBM. (2) <b>Regularization (L1 / L2)</b> on model complexity — over tree depth or number of leaf nodes — so the objective becomes <b>loss + a penalty for tree complexity</b>, improving generalization.</div>
+  </details>
+</div>
+
+<h3>The two improvements</h3>
+<dl class="defs">
+  <dt>Second-order optimization</dt>
+  <dd>Uses second partial derivatives (the <b>Hessian</b>, alongside the gradient/Jacobian). Knowing the curvature, not just the slope, lets the optimizer take better-sized steps toward the loss minimum — faster training.</dd>
+  <dt>Regularization (L1 or L2)</dt>
+  <dd>A penalty on complexity — tree depth or number of leaves. The objective combines <b>loss + simplicity of the trees</b>, which directly fights overboosting.</dd>
+</dl>
+<div class="formula"><span class="lbl">XGBoost-style objective (schematic)</span>\[ \text{Objective} = \underbrace{\sum_i L(y_i, \hat{y}_i)}_{\text{fit the data}} \;+\; \underbrace{\sum_k \Omega(f_k)}_{\text{penalize tree complexity}} \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>Why does second-order info help?</b> First-order gradient descent only knows the <em>slope</em> of the loss at the current point — it must guess a step size. The Hessian tells you the <em>curvature</em>, so you know how quickly the slope is changing and can choose a near-optimal step directly (a Newton-like update). Fewer, better-aimed steps → faster, more stable convergence than plain GBM.</p>
+</div>
+
+<h3>The three libraries</h3>
+<table class="tbl">
+<thead><tr><th>Feature</th><th>XGBoost</th><th>LightGBM</th><th>CatBoost</th></tr></thead>
+<tbody>
+<tr><td>Tree growth</td><td>Level-wise</td><td>Leaf-wise</td><td>Symmetric (oblivious)</td></tr>
+<tr><td>Speed</td><td>Fast</td><td>Very fast</td><td>Moderate</td></tr>
+<tr><td>Categorical handling</td><td>Manual preprocessing</td><td>Limited native</td><td>Native</td></tr>
+<tr><td>Overfitting risk</td><td>Medium</td><td>Higher (if untuned)</td><td>Lower</td></tr>
+<tr><td>Small dataset</td><td>Good</td><td>Good</td><td>Excellent</td></tr>
+<tr><td>Huge dataset</td><td>Good</td><td>Excellent</td><td>Good</td></tr>
+<tr><td>Special trick</td><td>2nd-order grad+Hessian, strong L1/L2</td><td>Histogram-based, memory efficient</td><td>Ordered boosting (cuts leakage), ordered target encoding</td></tr>
+</tbody>
+</table>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern — level-wise vs leaf-wise</div>
+  <p><b>Level-wise (XGBoost)</b> grows the tree one full <em>level</em> at a time — balanced, conservative, stable. <b>Leaf-wise (LightGBM)</b> always splits whichever <em>single leaf</em> would reduce loss the most — it chases the biggest gain, so it grows deep, lopsided trees fast and is extremely accurate, but <b>overfits more easily</b> if you don't cap depth. <b>Symmetric/oblivious (CatBoost)</b> forces every node at the same depth to use the <em>same</em> split — very regular, fast to evaluate, naturally regularized.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Picking guide</div>
+  <p>Mostly numerical tabular data → start with <b>XGBoost</b>. Very large dataset where speed matters → <b>LightGBM</b>. Many categorical features and you want minimal preprocessing → <b>CatBoost</b> (native categoricals + ordered boosting reduce target leakage, excellent on small/medium data with many categoricals).</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">11</div><p class="qtext">What does XGBoost use that plain GBM does not?</p></div>
+<ol class="opts" data-explain="XGBoost uses second-order information — the gradient AND the Hessian — for faster, more stable optimization, plus L1/L2 regularization. Plain GBM uses first-order gradients only. Bootstrapping (A) belongs to bagging, not boosting; a gating network (C) belongs to mixture of experts.">
+  <li data-correct="0"><span class="otxt">Bootstrap sampling of the rows for each tree.</span></li>
+  <li data-correct="1"><span class="otxt">Second-order information (gradient + Hessian) plus L1/L2 regularization.</span></li>
+  <li data-correct="0"><span class="otxt">A gating network to weight each tree.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">12</div><p class="qtext">Match the tree-growth strategy: XGBoost / LightGBM / CatBoost respectively use…</p></div>
+<ol class="opts" data-explain="XGBoost grows level-wise (balanced), LightGBM grows leaf-wise (best-gain leaf, deep and fast but overfit-prone), CatBoost grows symmetric/oblivious trees (same split per level). The other orderings scramble these — leaf-wise is LightGBM's signature, and symmetric trees are CatBoost's.">
+  <li data-correct="0"><span class="otxt">leaf-wise / symmetric / level-wise.</span></li>
+  <li data-correct="1"><span class="otxt">level-wise / leaf-wise / symmetric.</span></li>
+  <li data-correct="0"><span class="otxt">symmetric / level-wise / leaf-wise.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Boosting refinements: DART, interaction &amp; monotonic constraints</h2>
+<p class="section-note">Three practical add-ons that address specific failure modes of boosted trees.</p>
+
+<h3>DART — dropouts meet boosted trees</h3>
+<p>(Vinayak &amp; Gilad-Bachrach, 2015.) Borrows <b>dropout</b> from deep neural nets and applies it to boosted trees.</p>
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>What problem does DART solve?</b> XGBoost typically combines a huge number of trees with a small learning rate. In that setting, <b>trees added early become dominant and trees added late become nearly irrelevant</b> (over-specialization). By <em>randomly dropping</em> some existing trees when computing the next one, DART forces later trees to contribute meaningfully — improving results in some situations.</p>
+</div>
+
+<h3>Feature interaction constraints</h3>
+<p>Variables that appear together on a single <em>traversal path</em> are <b>interacting</b>: a child node's condition is predicated on its parent's. When tree depth exceeds 1, many variables interact merely to shave training loss — and the tree may capture a <b>spurious (noise) relationship</b> that won't generalize. An interaction constraint lets you declare which variables are <em>allowed</em> to interact and which are not.</p>
+<div class="diagram">
+<svg viewBox="0 0 480 180" role="img" aria-label="Interaction path">
+  <rect x="180" y="10" width="120" height="34" rx="8" fill="#F1EADB" stroke="#CC785C"/><text x="240" y="32" font-size="12" text-anchor="middle">x₁₀ lt −1.5 ?</text>
+  <rect x="300" y="70" width="110" height="34" rx="8" fill="#F1EADB" stroke="#CC785C"/><text x="355" y="92" font-size="12" text-anchor="middle">x₇ lt 0.3 ?</text>
+  <rect x="320" y="130" width="110" height="34" rx="8" fill="#F1EADB" stroke="#CC785C"/><text x="375" y="152" font-size="12" text-anchor="middle">x₁ lt 0.5 ?</text>
+  <rect x="30" y="70" width="100" height="34" rx="8" fill="#F6F2E9" stroke="#D6CAB2"/><text x="80" y="92" font-size="12" text-anchor="middle">x₂ lt 2 ?</text>
+  <line x1="225" y1="44" x2="90" y2="70" stroke="#7E776B" stroke-width="1"/><text x="135" y="58" font-size="10" fill="#7E776B">Yes/Miss</text>
+  <line x1="270" y1="44" x2="350" y2="70" stroke="#A8472A" stroke-width="1.6"/><text x="312" y="60" font-size="10" fill="#A8472A">No</text>
+  <line x1="360" y1="104" x2="375" y2="130" stroke="#A8472A" stroke-width="1.6"/><text x="384" y="120" font-size="10" fill="#A8472A">Yes</text>
+  <text x="375" y="178" font-size="11" text-anchor="middle" fill="#3F6B4F">→ Predict +1.3</text>
+</svg>
+<figcaption>The red path means \( x_{10}, x_7, x_1 \) all <em>interact</em> — each child split is conditioned on its parent.</figcaption>
+</div>
+
+<h3>Monotonic relationship constraints</h3>
+<p>Force a feature to have a <b>monotonic</b> effect on the prediction — always increasing, or always decreasing.</p>
+<div class="callout note">
+  <div class="ttl">Why it matters — domain knowledge</div>
+  <p>Sometimes the <em>acceptable</em> form of a model is fixed by domain rules: predicted risk should only <em>rise</em> with a given feature, never wiggle. Without the constraint, a tree fits noisy up-and-down curves; <b>with</b> it, you get clean step-like monotone trends that honor the rule and generalize better. This is as much about <em>trust and compliance</em> as accuracy.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">13</div><p class="qtext">Two variables appearing together on the same root-to-leaf path of a boosted tree are said to be…</p></div>
+<ol class="opts" data-explain="Interacting — a child's split condition is predicated on its parent's, which is exactly what an interaction is. With depth greater than 1 this can capture spurious noise interactions, which is why interaction constraints exist. They are not 'independent' (the opposite) nor 'monotonic' (that's about the direction of a single feature's effect).">
+  <li data-correct="0"><span class="otxt">independent of each other.</span></li>
+  <li data-correct="1"><span class="otxt">interacting — and possibly capturing a spurious relationship.</span></li>
+  <li data-correct="0"><span class="otxt">monotonically related to the response.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Bagging vs. boosting through the bias–variance lens</h2>
+<p class="section-note">This is the conceptual spine of the chapter — and the single richest source of true/false exam traps. Get this table into long-term memory.</p>
+
+<div class="selfcheck">
+  <div class="q">Without looking: bagging reduces ___ and suits ___ base models; boosting reduces ___ and suits ___ base models. Fill the four blanks and name one algorithm for each.</div>
+  <details><summary></summary>
+  <div class="reveal">Bagging reduces <b>variance</b> and suits <b>high-variance, low-bias (complex)</b> base models — e.g. <b>random forest</b> over deep trees. Boosting reduces <b>bias</b> and suits <b>low-variance, high-bias (simple)</b> base models — e.g. <b>AdaBoost / GBM / XGBoost</b> over weak learners. Mnemonic: <em>Bagging = diversity (parallel); Boosting = cooperation (sequential).</em></div>
+  </details>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 460 230" role="img" aria-label="Bias-variance U curve">
+  <line x1="50" y1="190" x2="430" y2="190" stroke="#7E776B" stroke-width="1.2"/>
+  <line x1="50" y1="20" x2="50" y2="190" stroke="#7E776B" stroke-width="1.2"/>
+  <text x="240" y="218" font-size="12" text-anchor="middle" fill="#4F4B43">Model complexity →</text>
+  <text x="20" y="105" font-size="12" text-anchor="middle" fill="#4F4B43" transform="rotate(-90 20 105)">Error</text>
+  <path d="M60 40 Q160 150 240 175 Q320 188 420 186" fill="none" stroke="#A8472A" stroke-width="2"/>
+  <text x="95" y="48" font-size="11" fill="#A8472A">Bias²</text>
+  <path d="M60 188 Q200 184 290 150 Q360 120 420 40" fill="none" stroke="#5C8A6B" stroke-width="2"/>
+  <text x="380" y="56" font-size="11" fill="#3F6B4F">Variance</text>
+  <path d="M60 95 Q190 70 240 78 Q330 92 420 70" fill="none" stroke="#22201C" stroke-width="2.4"/>
+  <text x="150" y="66" font-size="11" fill="#22201C">Total error</text>
+  <line x1="240" y1="60" x2="240" y2="190" stroke="#C99A2E" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <text x="240" y="34" font-size="10" text-anchor="middle" fill="#8A6A1E">optimum</text>
+</svg>
+<figcaption>Complexity lowers bias but raises variance. Bagging pulls down the green curve; boosting pulls down the red.</figcaption>
+</div>
+
+<table class="tbl">
+<thead><tr><th>Aspect</th><th>Bagging</th><th>Boosting</th></tr></thead>
+<tbody>
+<tr><td>Base-model construction</td><td>Independent, <b>parallel</b></td><td>Sequential (each fixes previous)</td></tr>
+<tr><td>Data sampling</td><td>Bootstrap (with replacement)</td><td><b>No bootstrapping</b>; reweight instances</td></tr>
+<tr><td>Core idea</td><td>Add <b>diversity</b></td><td><b>Cooperation</b> between classifiers</td></tr>
+<tr><td>Reduces</td><td><b>Variance</b> (not necessarily bias)</td><td><b>Bias</b> (not necessarily variance)</td></tr>
+<tr><td>Best base models</td><td>High-variance, low-bias (complex)</td><td>Low-variance, high-bias (simple)</td></tr>
+<tr><td>Example</td><td>Random forest</td><td>AdaBoost, GBM, XGBoost</td></tr>
+<tr><td>Overfitting</td><td>Robust by design; more trees ≈ safe</td><td>Risk of "overboosting"; needs regularization</td></tr>
+<tr><td>Combine via</td><td>Majority vote / probability averaging</td><td>Weighted additive combination</td></tr>
+</tbody>
+</table>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — the empirical curves (slide 44)</div>
+  <p><b>Why does a random forest's validation accuracy flatten while AdaBoost's declines?</b> Adding trees to a <em>random forest</em> just averages in more diverse, decorrelated estimates — variance keeps falling, validation flattens (~0.91) and <b>never degrades</b>, even at 5000 trees. Adding rounds to <em>AdaBoost</em> keeps pushing the ensemble to fit ever-harder (often noisy) points — train accuracy climbs to ~0.96, but validation <b>peaks early (~0.92) then declines</b> (~0.89). That's overboosting: more cooperation eventually means fitting noise.</p>
+</div>
+
+<div class="callout exam">
+  <div class="ttl">The reversal trap</div>
+  <p>The examiner's favorite move is to <b>swap</b> the bias/variance assignments: "bagging reduces bias, boosting reduces variance" is <b>FALSE</b>. Equally, "bagging suits simple models, boosting suits complex models" is <b>FALSE</b>. Lock in: <em>baGGing → variance → complex; booSTing → bias → simple.</em></p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">14</div><p class="qtext">Which statement is TRUE?</p></div>
+<ol class="opts" data-explain="Boosting reduces bias and is best applied to simple, high-bias, low-variance base learners (weak stumps). Bagging reduces variance and suits complex, high-variance models. Distractors A and C swap one of these assignments — the classic reversal trap.">
+  <li data-correct="0"><span class="otxt">Bagging reduces bias and suits simple high-bias models.</span></li>
+  <li data-correct="1"><span class="otxt">Boosting reduces bias and suits simple high-bias models.</span></li>
+  <li data-correct="0"><span class="otxt">Boosting reduces variance and suits complex high-variance models.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">15</div><p class="qtext">Why can bagging be parallelized while boosting fundamentally cannot (across models)?</p></div>
+<ol class="opts" data-explain="Bagging's models are built independently on their own bootstrap samples, so all can train at once. Boosting is sequential: each new model needs the reweighted data / residuals produced by the previous one, so model t+1 cannot start before model t finishes. (Trees within a boosting round can still be parallelized 'somewhat'.) Distractor B confuses sample size; distractor C is false — boosting uses no bootstrap.">
+  <li data-correct="1"><span class="otxt">Each boosting model depends on the previous one's output (reweighting / residuals), so they must run in sequence.</span></li>
+  <li data-correct="0"><span class="otxt">Boosting uses much larger bootstrap samples that don't fit in parallel memory.</span></li>
+  <li data-correct="0"><span class="otxt">Boosting models are trained on disjoint bootstraps that cannot be merged.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Deep learning for tabular data — can it beat the trees?</h2>
+<p class="section-note">The closing debate. Short answer: mostly "no(t really)" — with one emerging exception.</p>
+
+<div class="selfcheck">
+  <div class="q">Tabular data is unlike images or text in ways that <em>favor tree ensembles</em>. List two structural reasons deep nets struggle on tables, and one reason trees thrive.</div>
+  <details><summary></summary>
+  <div class="reveal">Deep nets struggle because tabular data has <b>no strong spatial structure</b> (so CNN priors don't apply) and <b>no natural sequential structure</b> (so NLP-style models don't apply), plus datasets are often <b>small/medium</b> (10k–100k rows) and features are <b>heterogeneous</b> (numeric + categorical). Tree ensembles thrive because they <b>capture nonlinear interactions easily — "for free"</b> through their splits, and gradient boosting consistently wins honest benchmarks on this kind of data.</div>
+  </details>
+</div>
+
+<h3>Why tabular is different — and the verdict</h3>
+<p>Tabular data is heterogeneous (numeric + categorical), often small, and has <b>strong classical baselines</b>. The honest-benchmark verdict: <b>gradient boosting usually wins</b>. <b>MLPs</b> (numeric → normalized, categorical → embeddings/one-hot) are a simple, strong baseline but <em>underperform GBMs</em>.</p>
+
+<h3>Tabular-specific architectures</h3>
+<p>TabNet (attention + sparsity), FT-Transformer (feature-wise attention), SAINT (row + column attention), NODE / DeepGBM (hybrids). The shared idea: <b>treat each feature as a "token" and use self-attention to learn feature interactions explicitly</b> — the thing trees get for free. Still, mostly "no(t really)."</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why</div>
+  <p><b>Why does "treat each feature as a token + self-attention" not automatically win?</b> Self-attention is a powerful but <em>data-hungry</em> way to learn interactions, and it has no built-in inductive bias for tabular structure. Trees encode interactions through axis-aligned splits with almost no data cost. On the small/medium datasets typical of tabular problems, the net has to <em>learn</em> what a tree <em>assumes</em> — so it usually loses.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters — the practical takeaway</div>
+  <p>For structured/tabular problems, <b>gradient-boosted trees remain the default</b>. Don't reach for a deep net out of fashion. Cautionary literature (Makridakis 2018; Dacrema 2019 "Are we really making much progress?"; the "Transformers Are What You Don't Need" repo) warns that flashy neural results often don't survive honest re-evaluation.</p>
+</div>
+
+<h3>Prior-Data Fitted Networks — TabPFN</h3>
+<p>The emerging exception. <b>TabPFN = Tabular Prior-Data Fitted Network</b>: a Transformer trained <em>once</em> on <b>millions of synthetic tabular tasks</b>, then applied directly to new datasets — a <em>foundation model</em> for tables.</p>
+<ul class="clean">
+  <li>Learns to do <b>Bayesian inference over tasks</b>.</li>
+  <li>At inference you <b>feed in your small dataset in-context</b> — <em>no training per dataset</em>.</li>
+  <li><b>No hyperparameter tuning.</b></li>
+  <li>Approximates <b>Bayesian model averaging</b> over many possible tabular models.</li>
+</ul>
+<p><b>Status:</b> v1 underperformed, but <b>v2 / v2.5 are often on par with or better than GBM-based models</b>. Datasets larger than 10k rows are a bit trickier but doable. (Repo: PriorLabs/TabPFN.)</p>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern — what makes TabPFN weird</div>
+  <p>Normal ML: <em>train a fresh model on your data</em>. TabPFN: the model is <b>already trained</b> — on millions of fake datasets — and you just <em>show it</em> your data as a prompt (in-context), like asking a language model a question. It outputs predictions in one forward pass, with <b>zero tuning</b>. Conceptually it's averaging over "every tabular model that could plausibly explain your data," which is why it approximates Bayesian model averaging.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">16</div><p class="qtext">Why does gradient boosting tend to beat deep nets on tabular data?</p></div>
+<ol class="opts" data-explain="Tabular data lacks the spatial (CNN) and sequential (NLP) structure that deep nets exploit, datasets are often small, and trees capture nonlinear interactions cheaply 'for free' — so GBMs win honest benchmarks. Distractor A is false (deep nets have far more parameters); distractor C is false — capturing interactions is exactly what trees do well, not a weakness.">
+  <li data-correct="0"><span class="otxt">Gradient boosting has far more parameters than any neural net.</span></li>
+  <li data-correct="1"><span class="otxt">Tabular data lacks spatial/sequential structure and is often small, while trees capture interactions cheaply.</span></li>
+  <li data-correct="0"><span class="otxt">Trees are the only models that cannot represent nonlinear interactions, which avoids overfitting.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">17</div><p class="qtext">What is genuinely novel about how TabPFN is used at prediction time?</p></div>
+<ol class="opts" data-explain="TabPFN is pretrained once on millions of synthetic tasks; you feed your dataset IN-CONTEXT in a single forward pass with NO per-dataset training and NO hyperparameter tuning, approximating Bayesian model averaging. Distractor A describes ordinary ML (per-dataset training); distractor B describes bagging, not TabPFN.">
+  <li data-correct="0"><span class="otxt">It trains a fresh deep net on your dataset with heavy hyperparameter tuning.</span></li>
+  <li data-correct="0"><span class="otxt">It draws many bootstrap samples of your data and averages decision trees.</span></li>
+  <li data-correct="1"><span class="otxt">It is pretrained once; you feed your data in-context with no training and no tuning.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>Can you teach it back?</h2>
+<p class="section-note">The real test of understanding: explain each, out loud, to an imaginary classmate — no notes. If you stumble, jump back to that section via the contents rail.</p>
+
+<div class="card">
+  <ul class="check">
+    <li>Walk through the "can we have it all?" problem and why pruning alone can't solve it.</li>
+    <li>Explain why combination rules need a new cutoff but voting does not.</li>
+    <li>Define a bootstrap sample, explain why ~37% is left out, and what OOB validation does (and doesn't) replace.</li>
+    <li>State the <em>two</em> sources of randomness in a random forest and why feature sampling is per-split.</li>
+    <li>Reproduce AdaBoost: \( \varepsilon_t \), \( \alpha_t = \tfrac12\ln\tfrac{1-\varepsilon_t}{\varepsilon_t} \), the reweighting sign trick, the stop at \( \varepsilon_t \gt 0.5 \), and \( H(x)=\operatorname{sign}(\sum \alpha_t h_t) \).</li>
+    <li>Explain why fitting residuals = fitting the negative MSE gradient, and why that's only a special case.</li>
+    <li>Name XGBoost's two improvements and the three libraries' tree-growth strategies.</li>
+    <li>Recite the bias–variance verdict without swapping bagging and boosting.</li>
+    <li>Argue why GBMs still beat deep nets on tabular data, and what TabPFN changes.</li>
+  </ul>
+  <p style="margin-bottom:2px;"><b>If you can do all nine from memory, you're ready.</b> If any felt shaky, that section is one click away in the contents rail.</p>
+</div>
+
+<div class="callout exam">
+  <div class="ttl">Final exam-trap sweep</div>
+  <p>Per-split feature sampling · two randomness sources · bootstrap 100% ≠ all · OOB ≠ test set · no pruning needed · more trees won't overfit (RF) but more rounds can (AdaBoost) · \( \lfloor N/3 \rfloor \) regression vs \( \lfloor\sqrt N\rfloor \) classification · boosting has no bootstrap · bagging→variance→complex, boosting→bias→simple · AdaBoost minimizes exponential loss · gradient boosting fits the negative gradient (residuals = MSE special case) · XGBoost = grad+Hessian · level-/leaf-/symmetric growth · CatBoost native categoricals + ordered boosting · sklearn averages probabilities · GBM beats DL on tabular · TabPFN = in-context Bayesian, no tuning.</p>
+</div>
+
+<footer>
+  <span>Chapter 04 · Trees, Ensembles &amp; Regularization — Preparation guide</span>
+  <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+</footer>
+
+</main>
+
+<script>
+/* Left contents rail — inline verbatim inside a <script> before </body>. */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+</script>
+
+<script>
+/* Interactive quiz — inline verbatim inside a <script> before </body>. */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        // legacy: lock + reveal correct
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+</script>
+
+</body>
+</html>

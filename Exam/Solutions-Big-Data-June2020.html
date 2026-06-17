@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solutions · Advanced Analytics in a Big Data World · June 2020</title>
+<style>
+  :root{
+    --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9;
+    --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+    --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+    --line:#E3DAC9; --line-strong:#D6CAB2;
+    --good:#46785A; --bad:#B0573A;
+    --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:880px; margin:0 auto; padding:0 22px 90px;}
+  h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em;}
+  a{color:var(--clay-deep);}
+
+  header.hero{background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.22), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #ECE4D3 100%);
+    border-bottom:1px solid var(--line-strong);}
+  .hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:6px 13px; border-radius:999px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+  header.hero h1{font-size:clamp(28px,5vw,40px); line-height:1.1; margin:18px 0 8px; color:var(--ink);}
+  .subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+  .verify-note{margin-top:18px; font-size:13.5px; color:var(--muted);}
+
+  .section-head{display:flex; align-items:baseline; gap:14px; margin:54px 0 18px;}
+  .section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+  .section-head h2{font-size:24px; margin:0; flex:1;}
+  .section-head .weight{font-size:13px; font-weight:600; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+
+  .block{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:24px 28px; margin:18px 0;}
+  .block.q{border-left:4px solid var(--clay);}
+  .block .qhead{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+  .block .qnum{flex:none; width:38px; height:38px; border-radius:11px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-family:Georgia,serif;
+    font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 10px rgba(168,71,42,.25);}
+  .block h3{font-size:20px; margin:0; color:var(--ink); padding-top:5px;}
+  .block .topic-tag{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--clay-deep); background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+    padding:3px 11px; border-radius:999px; margin-bottom:10px;}
+  .block p{margin:11px 0;}
+  .block h4{font-family:Georgia,serif; font-size:16.5px; margin:22px 0 6px; color:var(--clay-deep);}
+  .block ul{margin:10px 0; padding-left:22px;}
+  .block li{margin:6px 0;}
+  .block b{color:var(--ink);}
+
+  code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+    padding:.1em .42em; border-radius:5px; font-size:.88em; color:#5A4632;}
+  .formula{background:#2B2722; color:#F0E7D6; font-family:ui-monospace,Menlo,monospace; font-size:14.5px;
+    padding:12px 16px; border-radius:10px; margin:12px 0; overflow-x:auto; line-height:1.55;}
+  .formula .c{color:#E0A07F;}
+
+  table.cmp{border-collapse:collapse; width:100%; margin:16px 0; font-size:14.5px;}
+  table.cmp th, table.cmp td{border:1px solid var(--line-strong); padding:9px 13px; text-align:left; vertical-align:top;}
+  table.cmp th{background:var(--surface-2); color:var(--ink); font-weight:650;}
+  table.cmp td:first-child{font-weight:600; color:var(--clay-deep); background:#FBF7EF; white-space:nowrap;}
+
+  table.data{border-collapse:collapse; margin:14px 0; font-size:14px;}
+  table.data th, table.data td{border:1px solid var(--line-strong); padding:7px 13px; text-align:center;}
+  table.data th{background:var(--surface-2); color:var(--ink); font-weight:650;}
+  table.data td.lab{background:#FBF7EF; font-weight:600; text-align:left;}
+  .tp{color:var(--good);font-weight:700;} .fp{color:var(--bad);font-weight:700;}
+
+  .keypoints{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:14px 18px 14px 20px; margin:18px 0;}
+  .keypoints .h{font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--clay-deep); font-weight:700; margin-bottom:6px;}
+  .keypoints ul{margin:0; padding-left:20px;}
+  .keypoints li{margin:5px 0; font-size:14.5px; color:var(--ink-soft);}
+
+  .callout{display:flex; gap:13px; align-items:flex-start; margin:16px 0; background:#F3ECDD;
+    border:1px dashed #D9C79C; border-radius:12px; padding:14px 18px; font-size:15px; color:#7d6630;}
+  .callout b{color:#5e4d20;}
+  .callout .ic{flex:none; font-size:18px;}
+
+  figure{margin:22px 0; text-align:center;}
+  figure svg{max-width:100%; height:auto; background:#FBFAF6; border:1px solid var(--line);
+    border-radius:14px; padding:10px; box-shadow:var(--shadow);}
+  figcaption{font-size:13px; color:var(--muted); margin-top:10px; font-style:italic;}
+
+  footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+    color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  .nav-note{margin-top:28px; font-size:14px; color:var(--muted);}
+  .nav-note a{text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+
+  /* MC solution cards */
+  .mcq{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 24px 18px; margin:16px 0; box-shadow:var(--shadow);}
+  .mcq .q-top{display:flex; gap:13px; align-items:flex-start;}
+  .mcq .qnum{flex:none; width:36px; height:36px; border-radius:10px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-family:Georgia,serif;
+    font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 10px rgba(168,71,42,.25);}
+  .mcq .qtext{font-size:16.5px; color:var(--ink); font-weight:550; margin:5px 0 0; line-height:1.5; flex:1;}
+  .answer-tag{display:inline-flex; align-items:center; gap:7px; margin-top:13px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-weight:650; font-size:13.5px;
+    padding:5px 13px; border-radius:999px; box-shadow:0 3px 9px rgba(168,71,42,.22);}
+  .answer-tag .lbl{font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; opacity:.85; font-weight:700;}
+  ol.opts{list-style:none; margin:14px 0 4px; padding:0; counter-reset:opt;}
+  ol.opts li{counter-increment:opt; display:flex; gap:11px; align-items:flex-start; position:relative;
+    padding:10px 13px; margin:7px 0; border:1px solid var(--line); border-radius:10px; background:var(--surface-2);}
+  ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:24px; height:24px; border-radius:7px;
+    background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:12.5px;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;}
+  ol.opts li .otxt{flex:1; padding-top:1px; font-size:15px;}
+  ol.opts li .vpill{flex:none; align-self:center; font-size:11px; font-weight:700; letter-spacing:.04em;
+    padding:3px 9px; border-radius:999px; white-space:nowrap;}
+  .v-true{background:#E7F0E8; color:#46785A; border:1px solid #BCD6BE;}
+  .v-false{background:#F6E5DC; color:#B0573A; border:1px solid #E6C3B0;}
+  ol.opts li.answer{background:#fff; border-color:var(--clay); box-shadow:0 0 0 1px var(--clay) inset, 0 4px 14px rgba(204,120,92,.14);}
+  ol.opts li.answer::after{content:"★ answer"; position:absolute; top:-10px; right:12px; background:var(--clay-deep);
+    color:#fff; font-size:10px; font-weight:700; letter-spacing:.06em; padding:2px 9px; border-radius:999px; text-transform:uppercase;}
+  .motivation{margin-top:15px; padding:14px 17px; background:#FBF7EF; border:1px solid var(--line);
+    border-left:3px solid var(--clay); border-radius:11px; font-size:15px; color:var(--ink-soft);}
+  .motivation b{color:var(--ink);}
+  .motivation .h{display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--clay-deep); font-weight:700; margin-bottom:5px;}
+  .mini-key{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:6px 8px; margin:6px 0 18px; overflow:hidden;}
+  table.key{width:100%; border-collapse:collapse; font-size:14px;}
+  table.key td{padding:8px 14px; border-top:1px solid var(--line);}
+  table.key tr:first-child td{border-top:none;}
+  table.key td.q{font-weight:700; color:var(--clay-deep); white-space:nowrap; width:42px; font-family:Georgia,serif;}
+  table.key td.a b{color:var(--ink);}
+
+  @media print{ body{background:#fff;} .block,.mcq,.mini-key,figure svg{box-shadow:none;} header.hero{background:#fff;} .block,.mcq{break-inside:avoid;} }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Worked Solutions</span>
+    <h1>Solutions — June 2020</h1>
+    <p class="subtitle">Advanced Analytics in a Big Data World. Motivated answers to the practice multiple-choice questions, topic primers, and full worked answers to the three open questions.</p>
+    <p class="verify-note">The original exam supplied specific scored data for question 1; since that data was not preserved, the ROC answer below is illustrated with a representative worked example using the exact same method.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- MC SOLUTIONS -->
+  <div class="section-head"><span class="bar"></span><h2>Multiple-choice solutions</h2><span class="weight">40%</span></div>
+  <p style="color:var(--muted);font-size:15px;margin:-6px 0 18px;">Answers to the six practice questions (two per examined topic). Each option is tagged <span style="color:#46785A;font-weight:700">True</span>/<span style="color:#B0573A;font-weight:700">False</span>; the ★ marks the answer.</p>
+
+  <div class="mini-key">
+    <table class="key">
+      <tr><td class="q">Q1</td><td class="a"><b>B</b> — Bagging = parallel/variance↓; boosting = sequential/bias↓.</td></tr>
+      <tr><td class="q">Q2</td><td class="a"><b>B</b> — AdaBoost reweights errors; gradient boosting fits residuals.</td></tr>
+      <tr><td class="q">Q3</td><td class="a"><b>B</b> — Perplexity ≈ effective number of neighbors.</td></tr>
+      <tr><td class="q">Q4</td><td class="a"><b>B</b> — UMAP: better global structure, faster, can embed new points.</td></tr>
+      <tr><td class="q">Q5</td><td class="a"><b>C</b> — Lasso zeros coefficients (selection); Ridge only shrinks.</td></tr>
+      <tr><td class="q">Q6</td><td class="a"><b>B</b> — Ridge keeps all correlated predictors → stable.</td></tr>
+    </table>
+  </div>
+
+  <!-- Q1 -->
+  <div class="mcq">
+    <div class="q-top"><div class="qnum">1</div><p class="qtext">Core difference between bagging and boosting? <span style="color:var(--muted);font-weight:400">(Bagging vs. Boosting)</span></p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> B</span>
+    <ol class="opts">
+      <li><span class="otxt">Both train base learners sequentially, each correcting the previous one's errors.</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">Bagging trains learners independently (in parallel) and mainly reduces variance; boosting trains them sequentially and mainly reduces bias.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Bagging mainly reduces bias, while boosting mainly reduces variance.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Bagging reweights misclassified instances, while boosting uses bootstrap samples.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      <b>Bagging</b> (e.g. random forest) trains many independent models on bootstrap samples and averages them, cancelling their idiosyncratic errors → it cuts <b>variance</b> while leaving bias roughly unchanged. <b>Boosting</b> (AdaBoost, GBM) trains learners <b>sequentially</b>, each fixing the ensemble’s current mistakes, which mainly drives down <b>bias</b>. (A describes boosting only; C swaps the two effects; D swaps the two mechanisms.)</div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="mcq">
+    <div class="q-top"><div class="qnum">2</div><p class="qtext">Distinguish AdaBoost from gradient boosting. <span style="color:var(--muted);font-weight:400">(Bagging vs. Boosting)</span></p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> B</span>
+    <ol class="opts">
+      <li><span class="otxt">AdaBoost fits each new learner to the residuals; gradient boosting reweights misclassified instances.</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">AdaBoost increases the weights of misclassified instances; gradient boosting fits each new learner to the negative gradient (residuals) of the loss.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Both are bagging methods that average independently trained deep trees.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Both require fully grown (unpruned) trees as base learners.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      Both are <b>boosting</b> methods, but they “focus on mistakes” differently. <b>AdaBoost</b> re-weights: misclassified instances get larger weights so the next learner concentrates on them. <b>Gradient boosting</b> instead fits each new tree to the <b>negative gradient of the loss</b> (the residuals). Option A states these exactly the wrong way round; C and D are simply false (they are sequential, and use weak/shallow learners).</div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="mcq">
+    <div class="q-top"><div class="qnum">3</div><p class="qtext">Which hyperparameter sets t-SNE’s local neighborhood size? <span style="color:var(--muted);font-weight:400">(t-SNE vs. UMAP)</span></p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> B · Perplexity</span>
+    <ol class="opts">
+      <li><span class="otxt">Learning rate</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">Perplexity</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">min_dist</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Number of estimators</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      <b>Perplexity</b> is t-SNE’s key knob — loosely the <b>effective number of neighbors</b>, set by the variance of each point’s conditional Gaussian. Learning rate is an optimisation setting, <span class="mono">min_dist</span> is a <i>UMAP</i> parameter, and “number of estimators” belongs to tree ensembles.</div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="mcq">
+    <div class="q-top"><div class="qnum">4</div><p class="qtext">Which statement about t-SNE and UMAP is correct? <span style="color:var(--muted);font-weight:400">(t-SNE vs. UMAP)</span></p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> B</span>
+    <ol class="opts">
+      <li><span class="otxt">Both are linear projection methods, like PCA.</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">UMAP typically preserves global structure better and scales to large datasets faster than t-SNE.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">t-SNE can project new, unseen points into an existing embedding, whereas UMAP cannot.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">UMAP has no hyperparameters, while t-SNE has perplexity.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      <b>UMAP</b> is generally faster, scales better, tends to preserve <b>global structure</b> better, and — unlike t-SNE — can <b>transform new out-of-sample points</b> via a learned mapping. Both are <b>nonlinear</b> (so A is false); C reverses the out-of-sample property (it’s UMAP that can embed new points); and D is false because UMAP has hyperparameters <span class="mono">n_neighbors</span> and <span class="mono">min_dist</span>.</div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="mcq">
+    <div class="q-top"><div class="qnum">5</div><p class="qtext">Which statement about Lasso (L1) and Ridge (L2) is correct? <span style="color:var(--muted);font-weight:400">(Lasso vs. Ridge)</span></p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> C</span>
+    <ol class="opts">
+      <li><span class="otxt">Ridge drives some coefficients exactly to zero, performing automatic feature selection.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Lasso penalizes the sum of squared coefficients, while Ridge penalizes the sum of absolute values.</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">Lasso can set some coefficients exactly to zero (feature selection), whereas Ridge only shrinks coefficients toward zero without eliminating them.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Both methods always keep every feature with a non-zero coefficient.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      The <b>L1</b> penalty’s diamond-shaped constraint has corners on the axes, so <b>Lasso</b> drives some coefficients <b>exactly to zero</b> → built-in feature selection. <b>Ridge</b>’s circular <b>L2</b> constraint only <b>shrinks</b> coefficients smoothly toward (never exactly to) zero. A and B swap the two methods; D is false for Lasso.</div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="mcq">
+    <div class="q-top"><div class="qnum">6</div><p class="qtext">Many correlated predictors; want a stable model keeping all of them — which approach? <span style="color:var(--muted);font-weight:400">(Lasso vs. Ridge)</span></p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> B · Ridge</span>
+    <ol class="opts">
+      <li><span class="otxt">Lasso (L1), because it keeps exactly one feature from each correlated group and zeros the rest.</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">Ridge (L2), because it shrinks coefficients smoothly and spreads weight across correlated predictors, giving stable estimates.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Ordinary least squares with no penalty, because regularization cannot handle correlation.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Lasso (L1), because it assigns infinite weight to correlated features.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      With highly correlated predictors that you want to <b>keep</b>, <b>Ridge</b> is preferred: it spreads weight across the correlated group and produces <b>stable</b> estimates. Option A is actually a <i>true</i> description of lasso’s tendency to pick one and drop the rest — but that <b>contradicts the goal</b> of retaining all features, so it is wrong for <i>this</i> question. C and D are false. (Elastic Net is the natural compromise when you want both selection and grouping.)</div>
+  </div>
+
+  <!-- TOPIC PRIMERS -->
+  <div class="section-head"><span class="bar"></span><h2>Topic primers</h2><span class="weight">reference</span></div>
+  <p style="color:var(--muted);font-size:15px;margin:-6px 0 18px;">Deeper background on each examined topic.</p>
+
+  <!-- Bagging / Boosting -->
+  <div class="block">
+    <span class="topic-tag">Topic 1</span>
+    <h3>Bagging vs. Boosting</h3>
+    <p>Both are <b>ensemble methods</b> that combine many weak/unstable base learners (usually trees), but they attack different parts of the error.</p>
+    <table class="cmp">
+      <tr><th></th><th>Bagging</th><th>Boosting</th></tr>
+      <tr><td>How</td><td>Train models <b>independently</b> on bootstrap samples; combine by averaging / majority vote.</td><td>Train models <b>sequentially</b>, each correcting the ensemble’s current errors; combine by weighted sum.</td></tr>
+      <tr><td>Training</td><td>Parallel (independent).</td><td>Sequential (each depends on the last).</td></tr>
+      <tr><td>Mainly reduces</td><td><b>Variance</b> — averages deep, low-bias / high-variance trees.</td><td><b>Bias</b> — boosts shallow, high-bias weak learners.</td></tr>
+      <tr><td>“Focus on errors”</td><td>—</td><td><b>AdaBoost:</b> re-weight misclassified points. <b>Gradient boosting:</b> fit residuals / negative gradients with a learning rate.</td></tr>
+      <tr><td>Examples</td><td>Random Forest (bagging + random feature subsets).</td><td>AdaBoost, GBM, XGBoost, LightGBM.</td></tr>
+      <tr><td>Overfitting</td><td>Robust — more trees just plateau.</td><td>Can overfit with too many rounds / noisy data; control via learning rate, early stopping, depth, regularization.</td></tr>
+    </table>
+    <div class="callout"><span class="ic">💡</span><span><b>Memory hook:</b> <b>Bagging</b> = parallel + independent + averaging → cuts <b>variance</b>. <b>Boosting</b> = sequential + error-correcting → cuts <b>bias</b> (at higher overfitting risk).</span></div>
+  </div>
+
+  <!-- t-SNE / UMAP -->
+  <div class="block">
+    <span class="topic-tag">Topic 2</span>
+    <h3>t-SNE vs. UMAP</h3>
+    <p>Both are <b>nonlinear neighbor-embedding</b> techniques for visualising high-dimensional data in 2-D/3-D: model neighbor similarities in high-D, then find a low-D layout that preserves them. Both are <b>stochastic</b>.</p>
+    <table class="cmp">
+      <tr><th></th><th>t-SNE</th><th>UMAP</th></tr>
+      <tr><td>Objective</td><td>Minimise <b>KL divergence</b> between high-D and low-D pairwise affinities (Gaussian → heavy-tailed Student-t).</td><td>Cross-entropy on a <b>fuzzy simplicial set</b> (weighted neighbor graph) from manifold theory.</td></tr>
+      <tr><td>Key knob(s)</td><td><b>Perplexity</b> (≈ effective # of neighbors).</td><td><b>n_neighbors</b> (local↔global) &amp; <b>min_dist</b> (cluster tightness).</td></tr>
+      <tr><td>Structure</td><td>Great <b>local</b> structure; inter-cluster distances not meaningful.</td><td>Preserves <b>local and global</b> structure better.</td></tr>
+      <tr><td>Speed / scale</td><td>Slower; non-parametric — can’t embed new points (must re-run).</td><td>Faster, scales better; <b>can transform new points</b> into an existing embedding.</td></tr>
+    </table>
+    <div class="callout"><span class="ic">💡</span><span>Use <b>t-SNE</b> for clean local cluster separation in a one-off picture; use <b>UMAP</b> for speed, scalability, more trustworthy global geometry, and projecting new data.</span></div>
+  </div>
+
+  <!-- Lasso / Ridge -->
+  <div class="block">
+    <span class="topic-tag">Topic 3</span>
+    <h3>Lasso vs. Ridge</h3>
+    <p>Both fight overfitting by adding a penalty on coefficient size to the loss — the difference is <b>how</b> they penalise, which changes their behaviour completely.</p>
+    <div class="formula"><span class="c">Ridge (L2):</span>  min  RSS + &#955; &#931; &#946;<sub>j</sub>&#178;&#160;&#160;&#160;&#160;&#160;&#160;<span class="c">Lasso (L1):</span>  min  RSS + &#955; &#931; |&#946;<sub>j</sub>|</div>
+    <table class="cmp">
+      <tr><th></th><th>Lasso (L1)</th><th>Ridge (L2)</th></tr>
+      <tr><td>Penalty</td><td>Sum of <b>absolute</b> values.</td><td>Sum of <b>squared</b> values.</td></tr>
+      <tr><td>Effect on coeffs</td><td>Drives some <b>exactly to zero</b> → feature selection, sparse model.</td><td>Shrinks all toward zero but <b>keeps them all</b>.</td></tr>
+      <tr><td>Geometry</td><td><b>Diamond</b> constraint — corners on the axes → hits zeros.</td><td><b>Circle</b> constraint — smooth, no corners → no exact zeros.</td></tr>
+      <tr><td>Correlated features</td><td>Arbitrarily picks one, zeros the rest.</td><td>Spreads weight across them → stable under multicollinearity.</td></tr>
+      <tr><td>Use when</td><td>Many irrelevant features; want selection / interpretability.</td><td>Most features useful; strong multicollinearity.</td></tr>
+    </table>
+    <p><b>Elastic Net</b> mixes both penalties — lasso-style selection plus ridge-style stability and a grouping effect for correlated predictors. For both, λ is tuned by cross-validation, features should be <b>standardised</b> first, and λ = 0 recovers OLS.</p>
+  </div>
+
+  <!-- OPEN QUESTIONS -->
+  <div class="section-head"><span class="bar"></span><h2>Open questions</h2><span class="weight">60%</span></div>
+
+  <!-- Q1 ROC -->
+  <div class="block q">
+    <div class="qhead"><div class="qnum">1</div><h3>Confusion matrix, precision, recall &amp; the ROC curve at a threshold</h3></div>
+
+    <h4>Definitions</h4>
+    <p>A classifier outputs a <b>score</b> per instance; a <b>threshold</b> t turns scores into labels: predict <b>positive</b> if score ≥ t. Cross-tabulating predictions against truth gives four counts — <b>TP</b>, <b>FP</b>, <b>TN</b>, <b>FN</b>:</p>
+    <div class="formula">Precision = <span class="c">TP / (TP + FP)</span>&#160;&#160;&#160;&#8212; of predicted positives, how many are right
+Recall = TPR = <span class="c">TP / (TP + FN)</span>&#160;&#8212; of real positives, how many were caught
+FPR = <span class="c">FP / (FP + TN)</span> = 1 &#8722; specificity</div>
+
+    <h4>Worked example — 8 scored instances</h4>
+    <p>Four actual positives (A, B, D, F) and four negatives (C, E, G, H), sorted by descending score:</p>
+    <table class="data">
+      <tr><th>Inst.</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+      <tr><td class="lab">Score</td><td>0.95</td><td>0.90</td><td>0.80</td><td>0.70</td><td>0.55</td><td>0.40</td><td>0.30</td><td>0.10</td></tr>
+      <tr><td class="lab">Label</td><td>P</td><td>P</td><td>N</td><td>P</td><td>N</td><td>P</td><td>N</td><td>N</td></tr>
+    </table>
+    <p>Take threshold <b>t = 0.60</b> → predicted positive = {A, B, C, D}. Then TP = 3 (A, B, D), FP = 1 (C), FN = 1 (F), TN = 3 (E, G, H):</p>
+    <table class="data">
+      <tr><th></th><th>Pred Positive</th><th>Pred Negative</th></tr>
+      <tr><td class="lab">Actual Positive</td><td><span class="tp">TP = 3</span></td><td>FN = 1</td></tr>
+      <tr><td class="lab">Actual Negative</td><td><span class="fp">FP = 1</span></td><td>TN = 3</td></tr>
+    </table>
+    <div class="formula">Precision = 3/(3+1) = <span class="c">0.75</span>&#160;&#160;&#160; Recall = 3/(3+1) = <span class="c">0.75</span>&#160;&#160;&#160; FPR = 1/(1+3) = <span class="c">0.25</span></div>
+
+    <h4>Building the ROC curve</h4>
+    <p>The ROC curve plots <b>TPR (y)</b> against <b>FPR (x)</b> as the threshold sweeps from high (nothing positive) to low (everything positive). Each threshold just below a distinct score gives one point; with 4 positives and 4 negatives, each correct catch is a +0.25 step up and each false alarm a +0.25 step right:</p>
+    <table class="data">
+      <tr><th>Add instance →</th><th>—</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+      <tr><td class="lab">TPR</td><td>0</td><td>.25</td><td>.50</td><td>.50</td><td>.75</td><td>.75</td><td>1.0</td><td>1.0</td><td>1.0</td></tr>
+      <tr><td class="lab">FPR</td><td>0</td><td>0</td><td>0</td><td>.25</td><td>.25</td><td>.50</td><td>.50</td><td>.75</td><td>1.0</td></tr>
+    </table>
+
+    <figure>
+      <svg viewBox="0 0 440 420" role="img" aria-label="ROC curve">
+        <style>
+          .axis{stroke:#9a8f7c;stroke-width:1.4;}
+          .grid{stroke:#E3DAC9;stroke-width:1;}
+          .tick{font:500 11px -apple-system,sans-serif;fill:#7E776B;}
+          .albl{font:600 12px Georgia,serif;fill:#4F4B43;}
+          .roc{fill:none;stroke:#A8472A;stroke-width:2.6;stroke-linejoin:round;}
+          .diag{stroke:#b6ac98;stroke-width:1.6;stroke-dasharray:6 5;}
+          .auc{fill:rgba(204,120,92,.14);stroke:none;}
+          .note{font:italic 11px -apple-system,sans-serif;fill:#7E776B;}
+        </style>
+        <!-- grid -->
+        <g class="grid">
+          <line x1="60" y1="280" x2="380" y2="280"/><line x1="60" y1="200" x2="380" y2="200"/>
+          <line x1="60" y1="120" x2="380" y2="120"/>
+          <line x1="140" y1="40" x2="140" y2="360"/><line x1="220" y1="40" x2="220" y2="360"/>
+          <line x1="300" y1="40" x2="300" y2="360"/>
+        </g>
+        <!-- AUC shading -->
+        <polygon class="auc" points="60,360 60,280 60,200 140,200 140,120 220,120 220,40 300,40 380,40 380,360"/>
+        <!-- axes -->
+        <line class="axis" x1="60" y1="40" x2="60" y2="360"/>
+        <line class="axis" x1="60" y1="360" x2="380" y2="360"/>
+        <!-- diagonal -->
+        <line class="diag" x1="60" y1="360" x2="380" y2="40"/>
+        <text class="note" x="330" y="210" transform="rotate(-45 330 210)">random (AUC = 0.5)</text>
+        <!-- ROC curve -->
+        <polyline class="roc" points="60,360 60,280 60,200 140,200 140,120 220,120 220,40 300,40 380,40"/>
+        <!-- operating point -->
+        <circle cx="140" cy="120" r="5.5" fill="#A8472A" stroke="#fff" stroke-width="1.5"/>
+        <text class="note" x="150" y="112" style="fill:#A8472A;font-weight:700">t = 0.60  (FPR .25, TPR .75)</text>
+        <!-- AUC label -->
+        <text class="albl" x="250" y="320" style="fill:#A8472A">AUC = 0.8125</text>
+        <!-- ticks -->
+        <g class="tick" text-anchor="middle">
+          <text x="60" y="378">0</text><text x="140" y="378">.25</text><text x="220" y="378">.50</text>
+          <text x="300" y="378">.75</text><text x="380" y="378">1.0</text>
+        </g>
+        <g class="tick" text-anchor="end">
+          <text x="52" y="364">0</text><text x="52" y="284">.25</text><text x="52" y="204">.50</text>
+          <text x="52" y="124">.75</text><text x="52" y="44">1.0</text>
+        </g>
+        <text class="albl" x="220" y="404" text-anchor="middle">False Positive Rate (FPR)</text>
+        <text class="albl" x="20" y="200" text-anchor="middle" transform="rotate(-90 20 200)">True Positive Rate (TPR)</text>
+      </svg>
+      <figcaption>ROC curve for the worked example. The point from the t = 0.60 calculation sits at (0.25, 0.75); the area under the step curve is 0.8125.</figcaption>
+    </figure>
+
+    <p><b>Reading it:</b> the dashed diagonal is a random classifier (TPR = FPR); a good model bows toward the <b>top-left</b> corner. <b>AUC</b> = 0.5 (random) to 1.0 (perfect) and equals the probability a random positive outranks a random negative. Here AUC = <b>0.8125</b> — a good ranking model. ROC is threshold-free and, because it uses only within-class rates, robust to class imbalance in a way precision is not.</p>
+
+    <div class="keypoints"><div class="h">Key points</div><ul>
+      <li>Threshold turns scores into labels → tally TP/FP/TN/FN into the confusion matrix.</li>
+      <li>Precision = TP/(TP+FP); Recall = TPR = TP/(TP+FN); FPR = FP/(FP+TN).</li>
+      <li>ROC = TPR vs FPR while sweeping the threshold across every distinct score.</li>
+      <li>Diagonal = random; bow to top-left = good; AUC summarises ranking quality.</li>
+    </ul></div>
+  </div>
+
+  <!-- Q2 Permutation importance -->
+  <div class="block q">
+    <div class="qhead"><div class="qnum">2</div><h3>Permutation feature importance — algorithm, drawbacks, and why it couldn’t be applied</h3></div>
+
+    <h4>The algorithm</h4>
+    <p>Permutation importance measures how much a model relies on a feature by <b>destroying</b> that feature’s link to the target and watching performance drop:</p>
+    <ul>
+      <li><b>Baseline.</b> With the <i>already-fitted</i> model and labelled data, compute a baseline score <span class="mono">s</span> (AUC, accuracy, R²…).</li>
+      <li><b>Permute one feature.</b> Randomly shuffle column <i>j</i> — this keeps its marginal distribution but breaks its association with the target and other features.</li>
+      <li><b>Re-score.</b> Run the <b>same fitted model</b> (no retraining) on the corrupted data → score <span class="mono">s<sub>j</sub></span>.</li>
+      <li><b>Importance = drop:</b> <span class="mono">s − s<sub>j</sub></span>. Big drop → heavily used feature.</li>
+      <li><b>Repeat &amp; average</b> over several shuffles for a stable estimate.</li>
+    </ul>
+    <p>It is <b>model-agnostic</b> and <b>post-hoc</b> — it only needs to call <span class="mono">predict()</span>.</p>
+
+    <div class="callout"><span class="ic">⛔</span><span><b>Why it couldn’t be applied on this exam:</b> permutation importance is a property of a <b>fitted model</b>, not of data. Every step needs predictions from the trained function, and importance is defined as a <b>change in a performance score</b> (needs predictions + true labels). With only a data matrix and <b>no trained algorithm</b> provided, there is no baseline <span class="mono">s</span> and no permuted score <span class="mono">s<sub>j</sub></span> to compare — so there is simply nothing to compute.</span></div>
+
+    <h4>Drawbacks</h4>
+    <ul>
+      <li><b>Needs a fitted model + labelled scoring data</b> — can’t be computed from data alone (the reason it failed here).</li>
+      <li><b>Correlated features dilute importance:</b> shuffling one is “covered” by its correlated partner, so the drop is small and importance is understated/split across the group.</li>
+      <li><b>Unrealistic rows:</b> shuffling one column independently creates out-of-distribution combinations the model never saw, which can mislead.</li>
+      <li><b>Metric-dependent</b> and <b>computationally costly</b> (≈ #features × #repeats re-scorings).</li>
+      <li><b>Train vs test:</b> on the training set it rewards overfit features; use a held-out <b>test set</b> for generalisation-relevant importance.</li>
+    </ul>
+  </div>
+
+  <!-- Q3 RF vs iForest -->
+  <div class="block q">
+    <div class="qhead"><div class="qnum">3</div><h3>What makes a random forest “random” — and random forest vs. isolation forest</h3></div>
+
+    <h4>The two sources of randomness</h4>
+    <p>A random forest injects randomness in <b>two</b> places, and that double randomisation is the point: it <b>decorrelates</b> the trees so averaging them actually reduces variance.</p>
+    <ul>
+      <li><b>Bagging of rows:</b> each tree is trained on a bootstrap sample (random rows <i>with replacement</i>).</li>
+      <li><b>Random feature subspace at each split:</b> only a random subset of features (<span class="mono">max_features</span>, e.g. √p) is considered when choosing each split — so no single dominant feature makes all trees alike.</li>
+    </ul>
+    <p>Within those constraints each split is still chosen <b>greedily</b> on an impurity criterion (Gini / entropy / variance), and predictions combine by majority vote or averaging.</p>
+
+    <h4>Random forest vs. isolation forest</h4>
+    <p>They share the “many random trees” architecture but are built for opposite goals:</p>
+    <table class="cmp">
+      <tr><th></th><th>Random forest</th><th>Isolation forest</th></tr>
+      <tr><td>Paradigm</td><td>Supervised</td><td>Unsupervised</td></tr>
+      <tr><td>Goal</td><td>Predict a label (classification / regression)</td><td>Detect anomalies / outliers</td></tr>
+      <tr><td>Split choice</td><td><b>Best</b> split on a label-based impurity criterion, over a random feature subset</td><td><b>Fully random:</b> random feature + random split value — no label, no criterion</td></tr>
+      <tr><td>Trees</td><td>Deep trees that fit the target</td><td>Shallow random partitions grown just to isolate points</td></tr>
+      <tr><td>Output</td><td>Vote / average of leaf predictions</td><td>Anomaly score from <b>average path length</b> to isolate a point</td></tr>
+      <tr><td>Intuition</td><td>Decorrelated trees averaged to cut variance</td><td>Anomalies are “few and different,” so they isolate in <b>fewer</b> splits → shorter path → higher score</td></tr>
+    </table>
+    <div class="callout"><span class="ic">💡</span><span><b>Key contrast:</b> in a random forest the randomness is a <i>regularizer</i> serving accurate supervised prediction; in an isolation forest the randomness <i>is the detector itself</i> — outliers are easy to isolate, so short average path lengths flag them, with no labels involved.</span></div>
+  </div>
+
+  <p class="nav-note">← Back to the exam: <a href="Exam-Big-Data-June2020.html">Exam-Big-Data-June2020.html</a></p>
+
+  <footer>
+    <span>Worked solutions · Advanced Analytics in a Big Data World · KU Leuven</span>
+    <span>June 2020</span>
+  </footer>
+</div>
+</body>
+</html>

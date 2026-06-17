@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 05 · Deep Learning for Images — Preparation</title>
+<!-- MathJax — inline verbatim in <head>. Renders LaTeX: inline \( … \), display \[ … \].
+     Use LaTeX for ALL math (greek \alpha\beta\sigma, subscripts x_{i}, superscripts e^{-z},
+     fractions \frac{a}{b}, sums \sum, etc.). Code/pre are skipped so pseudocode stays literal. -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   Inline this ENTIRE block verbatim inside each self-contained .html <style>.
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz  (used by exams + crash-course self-checks)
+   Markup:  <ol class="opts" data-explain="...">
+              <li data-correct="1"><span class="otxt">A</span></li> ... </ol>
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+/* per-option mode: a tried-wrong option locks but the question stays open */
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail (auto-built by sidebar.js) ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) for prep guides ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Chapter 05 · Preparation</span>
+    <h1>Deep Learning for Images</h1>
+    <p class="subtitle">Understand it deeply — not just memorize. From the single perceptron to diffusion models, every "why" drilled.</p>
+    <div class="meta-row">
+      <span class="chip"><b>Foundations</b> perceptron · backprop · UAT</span>
+      <span class="chip"><b>Training</b> activations · init · regularization</span>
+      <span class="chip"><b>CNNs</b> convolution · pooling · ResNet · ViT</span>
+      <span class="chip"><b>Generative</b> AE · VAE · GAN · diffusion</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="callout note">
+  <div class="ttl">How to use this guide</div>
+  <p>This is <b>not a summary to skim</b> — it is a guided session. For each concept you will: (1) try to <b>restate the problem in your own words</b> before reading the answer; (2) read <b>how the solution works and why it was designed that way</b>; (3) connect it to the <b>broader picture</b>. Work top to bottom. When you hit a <span class="pill">restate</span> prompt or a quiz, <b>stop and answer it out loud</b> before revealing — the struggle is where learning happens.</p>
+  <p>Use the left rail to jump around once you've done a first full pass. The <span class="pill gold">Drill the why</span> boxes are the heart of the chapter — if you can answer those, you understand it. Need it simpler? The hardest ideas get an <b>ELI-intern</b> box that re-explains from scratch.</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:6px">Mastery checklist — what you must be able to explain</h3>
+  <ul class="check">
+    <li>When deep learning beats shallow models, and what "deep" actually refers to.</li>
+    <li>How a perceptron computes its output, and why XOR killed the single perceptron.</li>
+    <li>Gradient descent: the update rule, the role of the learning rate, epoch vs. iteration.</li>
+    <li>Why backpropagation was needed and how the chain rule makes it work.</li>
+    <li>Why sigmoid/tanh cause vanishing gradients, and how ReLU + good init fix it.</li>
+    <li>Softmax vs. sigmoid outputs; which init matches which activation.</li>
+    <li>Every overfitting weapon: early stopping, L1/L2, dropout, batch norm, augmentation, transfer learning — and the subtle traps in each.</li>
+    <li>Convolution mechanics: filters, stride, padding, weight sharing, the output-size formula.</li>
+    <li>Pooling, the CNN families (LeNet→ResNet), and why ResNet's skip connections matter.</li>
+    <li>How CNNs are interpreted (saliency, occlusion, feature visualization).</li>
+    <li>The generative ladder: autoencoder → VAE → GAN → diffusion → Stable Diffusion, and exactly what each adds.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<h2>1 · When do you actually need deep learning?</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: your boss has a clean spreadsheet of customer churn (20 columns, 50k rows). Should you reach for a deep neural network? Why or why not — in your own words?</div>
+  <details><summary></summary>
+  <div class="reveal">Probably not. On <b>structured/tabular</b> data, shallow models (logistic regression, SVM, gradient-boosted trees) usually match or beat deep nets, train faster, and are easier to interpret. Deep learning's real edge is <b>unstructured</b> data — images, audio, text, video — where the raw input has no hand-engineered features and the network must <i>learn</i> the representation. The slides explicitly cite papers (Makridakis 2018, Dacrema 2019) questioning whether DL even helps on tables, with TabPFN-style tabular foundation models (2025) as a recent counter-trend.</div>
+  </details>
+</div>
+
+<h3>The problem &amp; the branches</h3>
+<p>Computers were always good at structured problems with clear features. The hard frontier was <b>unstructured</b> data that humans process effortlessly but that has no obvious columns: a photo is just a grid of pixel intensities. As Andrew Ng put it (memorize the gist):</p>
+<div class="callout"><p><em>"The goal is to create algorithms that can take in very unstructured data, like images, audio waves or text blocks … and predict the properties of those inputs."</em></p></div>
+
+<dl class="defs">
+  <dt>Deep learning</dt>
+  <dd>Neural networks with <b>many successive layers of representations</b>, trained by gradient descent from exposure to data. Modern nets use tens to hundreds of layers.</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — what does "deep" mean?</div>
+  <p>"Deep" does <b>NOT</b> mean "deeper understanding." It refers only to <b>successive layers of representation</b> (also called layered / hierarchical / differential function learning). Each layer transforms the previous layer's output into a more abstract representation: pixels → edges → textures → object parts → objects. The depth is literal — it counts layers, not insight.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Broader context</div>
+  <p>This framing is the spine of the whole course: shallow/tabular models (taught earlier) vs. deep/unstructured models (this deck and the next). Many cross-links recur — overfitting, L1/L2 regularization, early stopping, AUC — and PCA returns as the <i>linear special case of an autoencoder</i>. Keep that map in mind.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">1</div><p class="qtext">Which statement best captures the course's position on deep learning?</p></div>
+<ol class="opts" data-explain="Deep learning's advantage is on unstructured data; on clean tabular data shallow models often win. 'Deep' is about layers, not understanding. So the structured-vs-unstructured distinction is the key.">
+  <li data-correct="0"><span class="otxt">Deep learning beats every other model on every data type, so always use it.</span></li>
+  <li data-correct="0"><span class="otxt">"Deep" means the network develops a deeper conceptual understanding of the task.</span></li>
+  <li data-correct="1"><span class="otxt">Deep learning shines on unstructured data (images/audio/text); on tabular data shallow models often win.</span></li>
+</ol></div>
+
+<h3>A history you can be examined on</h3>
+<p>The history matters because each "winter" was triggered by a real limitation, and each revival by a real fix. Don't memorize dates blindly — tie each one to <i>what problem it solved</i>.</p>
+
+<table class="tbl">
+  <thead><tr><th>Year</th><th>Event</th><th>Why it matters</th></tr></thead>
+  <tbody>
+    <tr><td>1940s</td><td>"Electronic Brain" (McCulloch &amp; Pitts)</td><td>Adjustable weights, but weights are <b>not learned</b>.</td></tr>
+    <tr><td>1957</td><td>Perceptron (Rosenblatt)</td><td>First <b>learnable</b> weights + threshold.</td></tr>
+    <tr><td>1969</td><td>XOR problem (Minsky &amp; Papert)</td><td>Single perceptron can't do nonlinear → <b>first AI winter</b>.</td></tr>
+    <tr><td>1986</td><td>MLP + Backpropagation (Rumelhart, Hinton, Williams)</td><td>Multi-layer nets become trainable → revival.</td></tr>
+    <tr><td>1995</td><td>SVM (Vapnik, Cortes)</td><td>Kernel methods dominate → second winter.</td></tr>
+    <tr><td>2006</td><td>Unsupervised pretraining / deep belief nets (Hinton)</td><td>"Deep network born" — stack pretrained layers.</td></tr>
+    <tr><td>2010</td><td>ImageNet + LSVRC challenge</td><td>Big labeled data; first two years top error ≈ 25%.</td></tr>
+    <tr><td>2012</td><td>AlexNet (Krizhevsky, Sutskever, Hinton)</td><td><b>Halved the error.</b> Combined GPUs (most important), dropout, ReLU.</td></tr>
+    <tr><td>2020s</td><td>Transformers &amp; attention (GPT, ViT)</td><td>Third winter "relatively unlikely"; issues: explainability, compute/energy, ethics.</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2>2 · The perceptron — the atom of the network</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: a perceptron takes some numbers and produces one number. Walk through, step by step, exactly what happens between input and output.</div>
+  <details><summary></summary>
+  <div class="reveal">(1) Each input unit's activation is just the input value \(x_i\). (2) Multiply each \(x_i\) by a weight \(w_i\) and sum: \(\sum_i w_i x_i\). (3) Add a bias \(w_b\) — this is an extra input fixed to 1 with its own weight, exactly like the intercept in regression. (4) Pass the result through an activation function \(f(\cdot)\). The output is the neuron's "activation."</div>
+  </details>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 460 200" role="img" aria-label="Perceptron diagram">
+  <circle cx="40" cy="40" r="16" fill="#D9E2EA" stroke="#5B7C99"/><text x="40" y="45" text-anchor="middle" font-size="13">x₁</text>
+  <circle cx="40" cy="95" r="16" fill="#D9E2EA" stroke="#5B7C99"/><text x="40" y="100" text-anchor="middle" font-size="13">x₂</text>
+  <circle cx="40" cy="150" r="16" fill="#D9E2EA" stroke="#5B7C99"/><text x="40" y="155" text-anchor="middle" font-size="13">1</text>
+  <line x1="56" y1="40" x2="210" y2="90" stroke="#CC785C"/><text x="120" y="55" font-size="11" fill="#A8472A">w₁</text>
+  <line x1="56" y1="95" x2="210" y2="95" stroke="#CC785C"/><text x="120" y="88" font-size="11" fill="#A8472A">w₂</text>
+  <line x1="56" y1="150" x2="210" y2="100" stroke="#CC785C"/><text x="120" y="140" font-size="11" fill="#A8472A">w_b</text>
+  <polygon points="215,70 285,95 215,120" fill="#F0E4C4" stroke="#C99A2E"/><text x="238" y="99" font-size="12">Σ+b</text>
+  <rect x="300" y="78" width="60" height="34" rx="8" fill="#DDE8DC" stroke="#5C8A6B"/><text x="330" y="100" text-anchor="middle" font-size="13">f(·)</text>
+  <line x1="360" y1="95" x2="430" y2="95" stroke="#3F6B4F"/><polygon points="430,90 442,95 430,100" fill="#3F6B4F"/><text x="408" y="85" font-size="12">out</text>
+</svg>
+<figcaption>Inputs → weighted sum + bias → activation → output. The bias unit is a constant 1 with its own weight.</figcaption>
+</div>
+
+<div class="formula"><span class="lbl">Sigmoid perceptron</span>\[ o(X) = \sigma\!\left(\sum_i w_i x_i + w_b\right) = \frac{1}{1 + e^{-\left(\sum_i w_i x_i + w_b\right)}} \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why train iteratively at all?</div>
+  <p>For simple statistical models (e.g. linear regression) a <b>closed-form analytical optimum</b> exists — you can solve for the weights directly. But neural networks are <b>nonlinear</b> (activations bend the function), so no closed form exists. The weights must be found <b>numerically, via an iterative algorithm</b> — gradient descent. Once trained, weights are fixed; only the <i>activation</i> changes per input instance.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>3 · Gradient descent — how weights learn</h2>
+
+<h3>The core idea</h3>
+<p><span class="kterm">Gradient descent</span> minimizes a loss function by following its gradient (first partial derivative w.r.t. each weight) downhill toward a minimum.</p>
+
+<div class="formula"><span class="lbl">General update rule</span>\[ w_{i,\,t+1} = w_{i,\,t} - \lambda \frac{\partial L}{\partial w_i} \]</div>
+
+<p>For a sigmoid perceptron with squared-error loss this simplifies beautifully. Let \(o = \sum_i w_i x_i + b\) and \(\hat y = \sigma(o)\), with \(L = (y - \hat y)^2\):</p>
+
+<div class="formula"><span class="lbl">Derivation using the sigmoid derivative \(\sigma'(o)=\sigma(o)(1-\sigma(o))\)</span>\[ \frac{\partial L}{\partial w_i} = -2\,(y - \hat y)\,\sigma(o)\bigl(1 - \sigma(o)\bigr)\,x_i \]</div>
+
+<p>The constants \(2\) and \(\sigma(o)(1-\sigma(o))\) are positive and get absorbed into the learning rate, leaving the famous <b>perceptron update</b>:</p>
+
+<div class="formula"><span class="lbl">Perceptron simplified update</span>\[ w_{i,\,t+1} = w_{i,\,t} + \text{learningRate}\cdot(\text{expected} - \text{predicted})\cdot x_i \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — the sign and the \(x_i\) factor</div>
+  <p>Why <b>(expected − predicted)</b>? If we under-predicted (expected greater than predicted) the term is positive, so we push the weight up — which raises future predictions. Why multiply by \(x_i\)? Because a weight only affects the output through its input: if \(x_i = 0\), that weight had no influence on this prediction, so it shouldn't move. Credit assignment is proportional to involvement.</p>
+</div>
+
+<h3>The learning rate — the most consequential knob</h3>
+<div class="vs">
+  <div class="col"><h4>Too high \(\lambda\)</h4><p>Big steps reach the valley fast — but you can <b>overshoot</b> and bounce out, or the loss <b>diverges</b> upward entirely.</p></div>
+  <div class="col"><h4>Too low \(\lambda\)</h4><p>Tiny steps are safe but <b>slow</b>, and you can get <b>trapped in a local minimum</b> with no momentum to escape.</p></div>
+</div>
+
+<div class="callout exam">
+  <div class="ttl">Exam trap — epoch vs. iteration</div>
+  <p><b>One iteration</b> = one instance (or mini-batch) fed forward, loss computed, weights updated. <b>One epoch</b> = one full pass over <i>all</i> training instances. Proper training needs many epochs; the training set is reshuffled after each epoch, and inputs should be normalized. Do not confuse the two.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">2</div><p class="qtext">In the perceptron update \( w \leftarrow w + \lambda(\text{expected}-\text{predicted})\,x_i \), why does the input \( x_i \) appear?</p></div>
+<ol class="opts" data-explain="A weight influences the output only through its input. If x_i is 0, that weight contributed nothing to this prediction, so it must not move. The update assigns error-credit proportional to involvement.">
+  <li data-correct="1"><span class="otxt">A weight only affects the output via its input, so error-credit is scaled by how much that input contributed.</span></li>
+  <li data-correct="0"><span class="otxt">It normalizes the learning rate so every weight moves by exactly the same amount.</span></li>
+  <li data-correct="0"><span class="otxt">It guarantees the loss is convex and therefore has a closed-form solution.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>4 · XOR and the multilayer perceptron</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: why can a single perceptron never learn XOR, no matter how long you train it?</div>
+  <details><summary></summary>
+  <div class="reveal">A single perceptron draws a <b>single straight decision boundary</b> (a hyperplane). XOR's classes — (0,0)→0, (0,1)→1, (1,0)→1, (1,1)→0 — are <b>not linearly separable</b>: no single line puts the two 1's on one side and the two 0's on the other. Training only moves that one line around; it can never carve out the required non-linear region. Minsky &amp; Papert (1969) made this point and it triggered the first AI winter.</div>
+  </details>
+</div>
+
+<dl class="defs">
+  <dt>Multilayer perceptron (MLP)</dt>
+  <dd>More than one perceptron, organized in layers: typically <b>input → hidden → output</b>. Every neuron in a layer is <b>fully connected</b> ("dense") to the next, so a feed-forward pass is just matrix multiplication. The hidden layer lets the network combine multiple lines into a non-linear region — solving XOR.</dd>
+</dl>
+
+<div class="callout note">
+  <div class="ttl">Broader context — what this raises</div>
+  <p>Stacking perceptrons solves the expressiveness problem but opens a new one: <b>how do you update the hidden weights</b> when you don't know what their "correct" output should be? That question is what backpropagation answers — and it took the field ~17 years (1969→1986) to crack.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>5 · Backpropagation</h2>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern — backpropagation</div>
+  <p>Imagine a relay race where the last runner crosses the line a few seconds late. You want to assign blame to <i>every</i> runner. The last runner's error is obvious (you saw the finish). But the second-to-last runner's contribution is "how much their handoff fed into the last runner's leg" — so you pass blame <b>backward</b>, scaling it by how strongly each connection fed the next. That scaling-by-connection-strength, applied repeatedly, is the chain rule. That's all backprop is: a tidy way to hand the output error back through the layers.</p>
+</div>
+
+<h3>Why it was hard, and how it works</h3>
+<p><b>The problem:</b> for the output node you know the true target, so the perceptron update applies directly. For <b>hidden</b> nodes you have <i>no ground truth</i> — what should neuron 4 in the middle have output? Backprop solves this with the <b>chain rule of partial derivatives</b>, applied layer by layer.</p>
+
+<ol class="steps">
+  <li><b>Feed-forward</b> (easy): matrix multiplications + activations give the output \(y\).</li>
+  <li>At the output node, the error signal is \(\delta = z - y\) (expected − predicted).</li>
+  <li><b>Propagate \(\delta\) backward:</b> each node's delta is a <b>weighted sum of the downstream deltas</b> (e.g. \(\delta_4 = w_{40}\,\delta\); \(\delta_1 = w_{14}\delta_4 + w_{15}\delta_5\)).</li>
+  <li><b>Update each weight:</b> \(w' = w + \eta\,\delta\,\frac{df(e)}{de}\,x\) — learning rate × local delta × derivative of activation × input.</li>
+</ol>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why does the activation derivative appear in the update?</div>
+  <p>The weight affects the loss <i>through</i> the neuron's activation. The chain rule says: rate of change of loss w.r.t. weight = (loss sensitivity to the pre-activation) × (how the pre-activation changes with the weight). The activation's derivative is exactly that first link. This is also <b>why the choice of activation function matters so much</b> — if its derivative is tiny, the whole product shrinks. Hold that thought; it's the seed of the vanishing-gradient problem.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>6 · Universal approximation &amp; autodiff</h2>
+
+<h3>Universal approximation theorem (UAT)</h3>
+<p><b>Statement:</b> an MLP with a <b>single hidden layer</b> is a universal approximator for classification — <i>provided</i> you give it enough neurons, enough data, and enough training time.</p>
+
+<div class="callout warn">
+  <div class="ttl">Pitfall — UAT is theoretical</div>
+  <p>If one wide hidden layer were enough in practice, we wouldn't need deep learning at all. In reality, <b>depth is far more efficient</b> than width: stacking layers reuses lower-level features (edges → textures → parts) instead of memorizing every region with a giant flat layer. The intuition: a circular "+" region inside "−" can be approximated by intersecting more and more lines (square → octagon → near-circle) as you add hidden units — possible, but wildly inefficient compared to going deep.</p>
+</div>
+
+<h3>Automatic differentiation</h3>
+<dl class="defs">
+  <dt>Autodiff</dt>
+  <dd>How TensorFlow/PyTorch/JAX compute <b>exact</b> gradients: by inspecting the <b>computational graph</b> of operations and applying the chain rule mechanically over the whole composition.</dd>
+</dl>
+
+<table class="tbl">
+  <thead><tr><th>Method</th><th>What it does</th><th>Catch</th></tr></thead>
+  <tbody>
+    <tr><td>Symbolic</td><td>Manipulates closed-form expressions</td><td>Expressions can <b>explode</b> in size</td></tr>
+    <tr><td>Numerical</td><td>Finite differences: \(f'(x)\approx\frac{f(x+h)-f(x)}{h}\)</td><td>Only <b>approximate</b></td></tr>
+    <tr><td><b>Autodiff</b></td><td>Chain rule over the op graph</td><td><b>Exact &amp; efficient</b> — the winner</td></tr>
+  </tbody>
+</table>
+<p class="section-note">Why it's needed: some functions aren't fully differentiable (absolute-error loss, ReLU at 0); autodiff handles these compositions efficiently. As tinygrad puts it: "a decent autograd tensor library is 90% of what you need for neural networks."</p>
+
+<!-- ============================================================ -->
+<h2>7 · Activation functions &amp; vanishing gradients</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: you stack 30 sigmoid layers and the early layers barely train. What's going wrong, mechanically?</div>
+  <details><summary></summary>
+  <div class="reveal">During backprop, the gradient at an early layer is a <b>product</b> of activation derivatives from every layer above it. Sigmoid/tanh derivatives are <b>always less than 1</b> (sigmoid's peaks at 0.25). Multiply 30 numbers each below 1 and the result is vanishingly small — and noise accumulates with depth. So gradients near the input become tiny and inaccurate. Since the <b>first layers learn the most important features</b>, the network effectively can't learn. This is the <b>vanishing-gradient problem</b> (Glorot &amp; Bengio 2010).</div>
+  </details>
+</div>
+
+<h3>The older symmetric activations</h3>
+<div class="formula"><span class="lbl">Sigmoid (0..1) and tanh (−1..1)</span>\[ \sigma(s) = \frac{1}{1+e^{-s}}, \qquad \tanh(s) = \frac{e^{s}-e^{-s}}{e^{s}+e^{-s}} \]</div>
+<p>The sigmoid's derivative \(\sigma'(o)=\sigma(o)(1-\sigma(o))\) peaks at <b>0.25</b> (at \(o=0\)) and tends to 0 in the tails — precisely what drives vanishing gradients.</p>
+
+<h3>ReLU and its variants — the fix</h3>
+<div class="formula"><span class="lbl">ReLU — output 0..+∞</span>\[ f(s) = \max(0,\,s) \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why does ReLU help, and why not just use a linear activation?</div>
+  <p>For \(s\gt 0\), ReLU's gradient is a <b>constant 1</b> — it doesn't shrink as it passes back through layers, so gradients survive depth → faster learning. But why not plain linear \(f(x)=x\)? Because a stack of linear layers collapses into a single linear function — it <b>can't learn non-linear features</b>. ReLU is non-linear (piecewise: flat then sloped), giving you both gradient flow <i>and</i> expressiveness.</p>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">Dying ReLU</div>
+  <p>A large gradient can push a neuron's weights so that it outputs 0 for <b>every</b> datapoint. Then its gradient is forever 0 and it <b>never recovers</b> — it's "dead." With too high a learning rate, up to <b>40% of the network can die</b>. A sensible learning rate makes this rare; variants below also guard against it.</p>
+</div>
+
+<table class="tbl">
+  <thead><tr><th>Function</th><th>\(x\lt 0\)</th><th>\(x\ge 0\)</th><th>Range</th></tr></thead>
+  <tbody>
+    <tr><td>ReLU</td><td>0</td><td>\(x\)</td><td>\([0,\infty)\)</td></tr>
+    <tr><td>Leaky ReLU</td><td>\(0.01x\)</td><td>\(x\)</td><td>\((-\infty,\infty)\)</td></tr>
+    <tr><td>PReLU</td><td>\(\alpha x\)</td><td>\(x\)</td><td>\((-\infty,\infty)\)</td></tr>
+    <tr><td>ELU</td><td>\(\alpha(e^{x}-1)\)</td><td>\(x\)</td><td>\((-\alpha,\infty)\)</td></tr>
+    <tr><td>SELU</td><td>\(\lambda\alpha(e^{x}-1)\)</td><td>\(\lambda x\)</td><td>\((-\lambda\alpha,\infty)\)</td></tr>
+  </tbody>
+</table>
+<p class="section-note">Leaky/PReLU/ELU keep a small slope for \(x\lt 0\) so neurons can recover (no dying). <b>GELU</b> is a smoother ReLU used in BERT, GPT-2, ViTs and modern ConvNets; swapping ReLU→GELU left ConvNet accuracy unchanged (80.6%).</p>
+
+<div class="callout exam">
+  <div class="ttl">Exam trap</div>
+  <p>ReLU is for <b>hidden layers only</b>. The <b>output layer</b> still uses sigmoid (binary/multilabel) or softmax (multiclass). Putting ReLU on the output would break probability outputs.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">3</div><p class="qtext">Why do sigmoid/tanh cause vanishing gradients in deep networks but ReLU largely avoids it?</p></div>
+<ol class="opts" data-explain="Backprop multiplies activation derivatives across layers. Sigmoid/tanh derivatives are below 1 (sigmoid maxes at 0.25), so the product shrinks with depth. ReLU's derivative is a constant 1 for positive inputs, so it does not shrink.">
+  <li data-correct="0"><span class="otxt">Sigmoid outputs negative numbers that cancel the gradient; ReLU only outputs positives.</span></li>
+  <li data-correct="0"><span class="otxt">ReLU has a closed-form inverse, so gradients are computed exactly rather than approximated.</span></li>
+  <li data-correct="1"><span class="otxt">Backprop multiplies activation derivatives; sigmoid/tanh derivatives are below 1 and shrink with depth, while ReLU's is a constant 1 for positive inputs.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>8 · Weight initialization</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: why can't we just initialize all weights from a standard normal distribution and call it a day?</div>
+  <details><summary></summary>
+  <div class="reveal">The matrix product of inputs with a standard-normal weight matrix has, on average, a standard deviation of about \(\sqrt{\text{number of input connections}}\) — so activations <b>grow</b> layer by layer and explode (or, with poor scaling, vanish). We want each layer's output to keep <b>std ≈ 1</b> so gradients flow back cleanly. The fix is to scale the initialization variance to the layer's fan-in/fan-out.</div>
+  </details>
+</div>
+
+<table class="tbl">
+  <thead><tr><th>Scheme</th><th>Matched activations</th><th>Variance \(\sigma^2\) (Normal)</th></tr></thead>
+  <tbody>
+    <tr><td><b>Glorot / Xavier</b></td><td>none, tanh, logistic, softmax</td><td>\(1/\text{fan\_avg}\)</td></tr>
+    <tr><td><b>He / Kaiming</b></td><td>ReLU and variants</td><td>\(2/\text{fan\_in}\)</td></tr>
+    <tr><td><b>LeCun</b></td><td>SELU</td><td>\(1/\text{fan\_in}\)</td></tr>
+  </tbody>
+</table>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why does He use \(2/\text{fan\_in}\) but Glorot use \(1/\text{fan\_avg}\)?</div>
+  <p>ReLU zeroes out roughly <b>half</b> its inputs (everything negative), halving the variance that passes through. He compensates with the factor of <b>2</b> to restore std ≈ 1. Glorot assumes a symmetric activation (tanh/sigmoid) that doesn't kill half the signal, so it balances forward and backward variance using the <i>average</i> fan. Match the init to the activation or you reintroduce exploding/vanishing activations.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>9 · Outputs &amp; loss functions</h2>
+
+<h3>Softmax vs. sigmoid outputs</h3>
+<div class="formula"><span class="lbl">Softmax — multiclass, outputs sum to 1</span>\[ \sigma(z)_i = \frac{e^{-\beta z_i}}{\sum_j e^{-\beta z_j}}, \quad i = 1\ldots k \]</div>
+
+<div class="callout exam">
+  <div class="ttl">Exam trap — softmax approximates argmax, not max</div>
+  <p>Softmax is the "normalized exponential function," a <b>smooth approximation to argmax</b> (which class wins), NOT to max (the largest value). It is used when classes are <b>mutually exclusive</b> (multiclass). For <b>multilabel</b> (labels independent — an image can be both "beach" and "sunset"), use <b>k independent sigmoids</b> instead. Hidden layers commonly use ReLU while the output uses softmax/sigmoid.</p>
+</div>
+
+<h3>Loss functions, including focal loss</h3>
+<p>Standard losses: MSE (regression, also common for binary), cross entropy, binary cross entropy, hinge. For <b>class imbalance</b>, balanced cross entropy adds a per-class weight. <b>Focal loss</b> (Lin et al. 2017) goes further:</p>
+
+<div class="formula"><span class="lbl">Cross entropy vs. Focal loss</span>\[ \text{CE}(p_t) = -\log(p_t), \qquad \text{FL}(p_t) = -(1-p_t)^{\gamma}\log(p_t) \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — what does the \((1-p_t)^\gamma\) factor do?</div>
+  <p>For an <b>easy</b> example the model is already confident, so \(p_t\) is near 1 → \((1-p_t)^\gamma\) is near 0 → that example's loss is <b>down-weighted</b>. For a <b>hard</b> example \(p_t\) is small → the factor stays near 1 → its loss is preserved. So training keeps pushing on hard examples instead of getting overconfident on easy ones. \(\gamma\) controls strength; \(\gamma=0\) reduces focal loss back to plain cross entropy.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>10 · GD variants, optimizers &amp; schedules</h2>
+
+<table class="tbl">
+  <thead><tr><th>Variant</th><th>Presents</th><th>Updates</th><th>Character</th></tr></thead>
+  <tbody>
+    <tr><td>Batch GD</td><td>All instances</td><td>Once, on averaged error</td><td>Precise but slow</td></tr>
+    <tr><td>Stochastic (SGD)</td><td>One at a time</td><td>After every example</td><td>"Drunk walk" — noisy</td></tr>
+    <tr><td><b>Mini-batch</b></td><td>Small shuffled batches</td><td>After each batch</td><td>The common compromise</td></tr>
+  </tbody>
+</table>
+
+<p><b>Optimizers</b> add momentum and adaptive learning rates on top of SGD (RMSprop, Adagrad, Adam, NAG, Adadelta…). <b>Adam(W)</b> remains very popular — 4 hyperparameters with good defaults.</p>
+
+<h3>Learning-rate schedules &amp; the saddle-point insight</h3>
+<div class="callout why">
+  <div class="ttl">Drill the why — why bounce the learning rate up and down (cyclical LR)?</div>
+  <p>The real obstacle in a deep loss landscape is <b>not poor local minima — it's saddle points</b> (flat regions where the gradient is tiny in some directions). A constant small LR crawls through these plateaus. Cyclical LR (Smith 2017) periodically <b>increases</b> the LR, letting the optimizer <b>traverse saddle-point plateaus quickly</b>. The companion belief: <b>almost all local minima have function value close to the global optimum</b>, so finding <i>a</i> local minimum is good enough — it's the saddles, not the minima, that cost you.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Diagnose by loss curve</div>
+  <p>Very high LR → loss <b>diverges</b> upward. Low LR → slow near-linear decline. High LR → drops fast then <b>plateaus high</b>. Good LR → fast smooth drop to a low plateau. The one-cycle policy (Smith 2018) ramps LR up then down (momentum inversely).</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>11 · Preventing overfitting</h2>
+
+<p>Continued training always lowers <b>training</b> error but eventually the network <b>memorizes</b> the training set and validation error rises. Tracking a <b>validation set</b> is essential. Here is the full toolkit.</p>
+
+<h3>Early stopping &amp; regularization</h3>
+<ul class="clean">
+  <li><b>Early stopping:</b> halt when validation error hits its minimum — but don't be too eager, since mini-batch noise and high parametrization make the curve jittery.</li>
+  <li><b>Regularization (penalize large weights):</b> L1, L2, and <b>maxnorm</b> (a hard upper bound on the weight norm).</li>
+</ul>
+
+<h3>Dropout</h3>
+<div class="callout tip">
+  <div class="ttl">ELI-intern — dropout</div>
+  <p>During training you randomly "switch off" a fraction of neurons each step (set their activation to 0). It's like forcing a study group where, on each problem, random members must sit out — so no one can free-ride and everyone has to actually learn the material. The network can't rely on any single neuron, so each one must be useful on its own. At test time everyone's back, so you <b>scale activations down</b> to account for the fact that more neurons are now firing than during training.</p>
+</div>
+
+<dl class="defs">
+  <dt>Dropout (Srivastava, Hinton et al. 2014)</dt>
+  <dd>At each training step, individual nodes are dropped with some probability (forced to 0 activation), a <b>different set per sample/epoch</b>; gradients flow only through active neurons. At test time, use <b>all</b> activations but <b>scaled down</b> by the keep factor.</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why does dropout reduce overfitting?</div>
+  <p>It approximates training an <b>ensemble of many sparse sub-networks</b> that share weights — and ensembles generalize better. It also <b>breaks co-adaptation</b>: a neuron can't depend on a specific partner always being present, so it must extract a feature that is useful in its own right → more robust representations. Placement is usually on fully connected layers; on the input layer it acts as "dropout augmentation," useful when features are correlated.</p>
+</div>
+
+<div class="callout exam">
+  <div class="ttl">Exam trap — validation loss below training loss</div>
+  <p>It can look like the model does <b>better on validation than on training</b>. That's not magic: training loss is measured <b>with dropout on</b> (a harder, handicapped network), while validation is measured <b>with dropout off</b> (the full network). As long as validation loss keeps decreasing, keep training.</p>
+</div>
+
+<h3>Batch normalization</h3>
+<dl class="defs">
+  <dt>Batch normalization (Ioffe &amp; Szegedy 2015)</dt>
+  <dd>Normalize the activations of <b>hidden</b> layers (not just the inputs) per mini-batch, to reduce <b>internal covariate shift</b>.</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — what problem does batch norm actually solve?</div>
+  <p>We normalize the network's <i>inputs</i> — but each hidden layer's inputs are the previous layer's <i>outputs</i>, which <b>shift every time the earlier weights update</b>. So the gradient a layer computed (assuming its inputs were stable) is no longer optimal once the layer below changes. Batch norm <b>stabilizes the distribution of each layer's inputs</b>, so updates stay valid. Bonus: it permits <b>higher learning rates</b> (no extreme activations) and adds a <b>slight regularization</b> effect — some practitioners drop dropout in favor of batch norm alone. Variants (layer/instance/group norm) differ in which dimensions — batch N, channels C, spatial H/W — are normalized together.</p>
+</div>
+
+<h3>Data augmentation &amp; transfer learning</h3>
+<ul class="clean">
+  <li><b>Data augmentation:</b> grow the training set with transformations (flips, random crops, color jitter, rotations, cutouts, grayscale). A couple of these can <b>double or triple</b> your examples and force the network onto the important, transformation-invariant features → less overfitting. Sometimes applied at prediction time (test-time augmentation) to stabilize outputs. Libraries: Keras ImageDataGenerator, imgaug, <b>albumentations</b>.</li>
+  <li><b>Transfer learning:</b> take a <b>pre-trained</b> model as a feature extractor, replace the last layer(s) with your own classifier, and retrain only those while keeping the rest <b>frozen</b>. Lower layers already detect generic features (edges, curves), so you start from learned weights instead of random init → far less data needed.</li>
+</ul>
+
+<div class="callout note">
+  <div class="ttl">Teachable Machine — transfer learning in the extreme</div>
+  <p>Google's Teachable Machine runs a <b>pretrained SqueezeNet on ImageNet (1000 classes)</b> to turn each image into a 1000-dim output vector. "Training" just <b>stores those vectors + your labels</b>; "prediction" does <b>k-nearest-neighbors</b> on distance to stored vectors. It works even for objects ImageNet never saw — it may "think lemon" for a banana, but <i>consistently</i>, so it still maps to your "banana" label.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">4</div><p class="qtext">During training your validation loss is consistently lower than your training loss. The most likely benign explanation is:</p></div>
+<ol class="opts" data-explain="Training loss is measured with dropout active (a handicapped, harder network), while validation runs with dropout off (full network). So validation can legitimately look easier. It is not necessarily a bug or a leak.">
+  <li data-correct="0"><span class="otxt">A data leak: validation examples are easier copies of training examples.</span></li>
+  <li data-correct="1"><span class="otxt">Dropout is on during training (harder, handicapped net) but off during validation (full net).</span></li>
+  <li data-correct="0"><span class="otxt">The learning rate is too high, so training loss is artificially inflated.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>12 · Why convolutional layers exist</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: a dense MLP handles MNIST fine. Why does it fall apart on 1000-class color photos of cats, cars and boats?</div>
+  <details><summary></summary>
+  <div class="reveal">MNIST is easy mode: black-white, small (28×28), centered, clean background, only 10 classes. Scaling a <b>fully connected</b> net to large color photos means an explosion of weights — every pixel connects to every neuron — which is infeasible to train <b>and</b> throws away spatial structure (a cat is a cat whether top-left or bottom-right). We need a layer that (a) shares parameters and (b) respects spatial topology. That's convolution.</div>
+  </details>
+</div>
+
+<!-- ============================================================ -->
+<h2>13 · The convolutional layer</h2>
+
+<dl class="defs">
+  <dt>Convolutional layer</dt>
+  <dd>Learns a number of <b>filters (kernels)</b> while <b>retaining spatial topology</b> — it does not fully connect everything. Each filter slides over the image computing a <b>spatially local weighted sum</b> (sum of products over the window).</dd>
+</dl>
+
+<div class="diagram">
+<svg viewBox="0 0 470 180" role="img" aria-label="Convolution sliding window">
+  <g stroke="#5B7C99" fill="#D9E2EA">
+    <rect x="20" y="20" width="120" height="120"/>
+  </g>
+  <g stroke="#A8472A" fill="none" stroke-width="2"><rect x="20" y="20" width="48" height="48"/></g>
+  <text x="80" y="160" font-size="12" text-anchor="middle" fill="#4F4B43">5×5 input · 3×3 filter</text>
+  <text x="230" y="80" font-size="22" fill="#CC785C">→</text>
+  <g stroke="#5C8A6B" fill="#DDE8DC"><rect x="280" y="40" width="80" height="80"/></g>
+  <text x="320" y="86" font-size="14" text-anchor="middle">4</text>
+  <text x="320" y="150" font-size="12" text-anchor="middle" fill="#4F4B43">feature map</text>
+</svg>
+<figcaption>The filter computes a weighted sum over each window; sliding right produces the next output value.</figcaption>
+</div>
+
+<h3>The mechanics — every term</h3>
+<ul class="clean">
+  <li><b>Stride:</b> move the window \(n\) pixels at a time.</li>
+  <li><b>Padding:</b> optional extra border pixels so edges are handled and output size can be preserved.</li>
+  <li><b>Weight (parameter) sharing:</b> the <b>same kernel is reused at every position</b> — this is the key efficiency. One small set of weights detects a feature anywhere in the image.</li>
+  <li><b>Multi-channel input:</b> for a color image the kernel has <b>depth = number of input channels</b> (e.g. 3×3×3). The per-channel results are <b>summed</b> into one 2D output (slide example: red 4 + green 3 + blue 1 = 8).</li>
+  <li><b>Output depth:</b> a layer learns <b>multiple filters</b>, and each produces one 2D feature map, so the output tensor's depth = number of filters.</li>
+</ul>
+
+<div class="formula"><span class="lbl">Output size of a convolution</span>\[ \text{output} = \frac{W - F + 2P}{S} + 1 \]</div>
+<p class="section-note">\(W\)=input size, \(F\)=filter size, \(P\)=padding, \(S\)=stride. Example (AlexNet first layer): \(W=224, F=11, S=4, P=0 \Rightarrow (224-11)/4 + 1 = 54.25 \to 55\).</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why is weight sharing the whole point?</div>
+  <p>Two payoffs in one. <b>Far fewer parameters:</b> instead of a unique weight per pixel-to-neuron link, you learn one small kernel reused everywhere → trainable even on huge images. <b>Translation equivariance:</b> because the same kernel scans every position, a feature (an edge, an eye) is detected regardless of <i>where</i> it appears — exactly the spatial structure a dense net throws away.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">5</div><p class="qtext">A 7×7 input, a 3×3 filter, stride 1, padding 0. What is the output spatial size?</p></div>
+<ol class="opts" data-explain="(W − F + 2P)/S + 1 = (7 − 3 + 0)/1 + 1 = 4 + 1 = 5. So the output is 5×5.">
+  <li data-correct="0"><span class="otxt">7×7</span></li>
+  <li data-correct="0"><span class="otxt">3×3</span></li>
+  <li data-correct="1"><span class="otxt">5×5</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>14 · Pooling &amp; the whole CNN</h2>
+
+<dl class="defs">
+  <dt>Pooling layer</dt>
+  <dd>Simple <b>downsampling</b> of a feature map. Has a size and stride and <b>the same depth as the layer before</b> (it shrinks spatial dimensions, not channels).</dd>
+</dl>
+
+<ul class="clean">
+  <li><b>Max pooling</b> takes the maximum in each window (highlights the strongest feature presence); <b>average pooling</b> takes the mean (smoother).</li>
+  <li><b>Global pooling</b> collapses a whole feature map to a <b>single value</b> — an aggressive summary, often used <b>instead of a fully connected layer</b> to turn feature maps into a prediction.</li>
+</ul>
+
+<details class="fold"><summary>Worked example — 2×2 pooling, stride 2 on a 4×4 grid</summary>
+<p>Grid: \([[3,13,17,11],[5,3,1,23],[7,1,2,3],[11,17,1,4]]\).</p>
+<ul class="clean">
+  <li><b>Max pooling</b> → \([[13,23],[17,4]]\)</li>
+  <li><b>Average pooling</b> → \([[6,13],[9,2.5]]\)</li>
+  <li><b>Global average pooling</b> → single value \(7.625\)</li>
+</ul>
+</details>
+
+<div class="callout note">
+  <div class="ttl">The whole CNN</div>
+  <p>A series of <b>convolutional + pooling layers</b> (which do the heavy lifting of feature extraction), then <b>fully connected layers</b>, then a <b>softmax output</b>. Conv layers extract; FC layers classify.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>15 · CNN architecture families</h2>
+
+<table class="tbl">
+  <thead><tr><th>Architecture</th><th>Key contribution</th></tr></thead>
+  <tbody>
+    <tr><td><b>LeNet</b> (LeCun, 1990s)</td><td>First successful CNN applications.</td></tr>
+    <tr><td><b>AlexNet</b> (2012)</td><td>Popularized CNNs in vision; introduced GPUs, dropout, ReLU.</td></tr>
+    <tr><td><b>GoogLeNet</b></td><td><b>Inception module</b> dramatically reduces parameters.</td></tr>
+    <tr><td><b>VGGNet</b></td><td>Showed <b>depth is critical</b> (~140M params); still used for transfer learning.</td></tr>
+    <tr><td><b>ResNet / ResNeXt</b></td><td><b>Skip connections</b> + heavy batch norm; <b>no FC layers at the end</b>.</td></tr>
+    <tr><td><b>SqueezeNet</b></td><td>AlexNet-level accuracy with <b>50× fewer parameters</b> → deployable.</td></tr>
+  </tbody>
+</table>
+
+<h3>ResNet &amp; skip connections</h3>
+<div class="selfcheck">
+  <div class="q">Restate: ReLU fixed vanishing gradients. So why do <i>very</i> deep plain networks still fail to train, and what does ResNet add?</div>
+  <details><summary></summary>
+  <div class="reveal">ReLU helps, but when networks get <b>too deep</b> the vanishing-gradient problem returns — learning becomes possible only with very large batches and tiny learning rates. ResNet adds <b>skip connections</b> that hand the input directly forward: a block computes a <b>residual correction</b> \(F(x)\) and adds the identity back, \(\text{output}=F(x)+x\), then applies ReLU. This gives gradients a <b>direct path</b> back to the early layers, bypassing the long chain of shrinking derivatives.</div>
+  </details>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 420 150" role="img" aria-label="ResNet residual block">
+  <text x="20" y="80" font-size="13">x</text>
+  <line x1="34" y1="75" x2="80" y2="75" stroke="#4F4B43"/>
+  <rect x="80" y="58" width="70" height="34" rx="6" fill="#D9E2EA" stroke="#5B7C99"/><text x="115" y="80" font-size="11" text-anchor="middle">weight</text>
+  <rect x="170" y="58" width="70" height="34" rx="6" fill="#DDE8DC" stroke="#5C8A6B"/><text x="205" y="80" font-size="11" text-anchor="middle">ReLU+w</text>
+  <circle cx="290" cy="75" r="14" fill="#F0E4C4" stroke="#C99A2E"/><text x="290" y="80" font-size="16" text-anchor="middle">+</text>
+  <line x1="240" y1="75" x2="276" y2="75" stroke="#4F4B43"/>
+  <path d="M34 75 Q160 10 290 61" fill="none" stroke="#A8472A" stroke-dasharray="5 4"/>
+  <text x="150" y="28" font-size="11" fill="#A8472A">identity skip (x)</text>
+  <line x1="304" y1="75" x2="360" y2="75" stroke="#4F4B43"/><polygon points="360,70 372,75 360,80" fill="#4F4B43"/>
+  <text x="378" y="80" font-size="12">F(x)+x</text>
+</svg>
+<figcaption>The block learns only the residual \(F(x)\); the identity \(x\) is added back, giving gradients a shortcut home.</figcaption>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Surprising consequence</div>
+  <p>In ordinary feedforward nets, <b>removing a layer breaks information flow</b>. In ResNets you <i>can</i> remove a block — the "unraveled" view shows that even without \(f_2\) there remain valid paths through the skip connections. The network behaves like an ensemble of many shorter paths.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>16 · Beyond classification — tasks &amp; variants</h2>
+
+<table class="tbl">
+  <thead><tr><th>Task</th><th>Output</th><th>Methods</th></tr></thead>
+  <tbody>
+    <tr><td>Classification</td><td>One class label</td><td>The CNN families above</td></tr>
+    <tr><td>Localization</td><td>Label <b>+ bounding box</b></td><td>R-CNN, Fast/Faster R-CNN, MultiBox</td></tr>
+    <tr><td>Segmentation</td><td>Label <b>+ outline per object</b></td><td><b>U-Net</b> (encoder-decoder + skip connections)</td></tr>
+    <tr><td>Detection</td><td>Many objects + boxes</td><td><b>YOLO</b> (S×S grid, IOU loss)</td></tr>
+  </tbody>
+</table>
+
+<h3>U-Net</h3>
+<p>An <b>encoder-decoder</b> with <b>skip connections</b> and pixel-shuffling. The contracting path (conv 3×3 + ReLU, max pool 2×2) narrows down to 1024 channels; the expanding path (up-conv 2×2) widens back, with <b>copy-and-crop</b> skip arrows linking equal-resolution levels, ending in a 1×1 conv → segmentation map. Those skip connections let the decoder recover fine spatial detail the encoder compressed away. (You'll see U-Net <b>again</b> inside diffusion models.)</p>
+
+<h3>YOLO ("You Only Look Once")</h3>
+<p>Divides the image into an <b>S×S grid</b>, detects object presence in each cell, does <b>bounding-box regression</b>, and uses <b>Intersection Over Union (IOU)</b> as the loss metric. One pass → fast multiple-object detection.</p>
+
+<h3>CNN biases &amp; the Vision Transformer</h3>
+<div class="callout why">
+  <div class="ttl">Drill the why — what's the CNN's blind spot, and how does ViT differ?</div>
+  <p>Standard CNNs lean heavily on <b>small texture/edge filters</b> (Gabor-like) and are <b>biased toward texture, not shape</b> (Geirhos et al. 2018) — a cat-shaped image with elephant texture gets called "Indian elephant." They also struggle with <b>pose and overall composition</b> (scrambled face features still "look like a face"; capsule networks tried to fix this but didn't take off). Increasing <b>shape bias</b> improves robustness. The <b>Vision Transformer (ViT)</b> (Dosovitskiy 2020, "An image is worth 16×16 words") takes a different route: split the image into <b>fixed-size patches</b>, linearly embed each, add <b>position embeddings</b> and a learnable <b>class token</b>, and feed the sequence to a standard Transformer encoder. The headline: a <b>pure transformer on patches can match or beat CNNs</b> — CNNs are not strictly necessary.</p>
+</div>
+
+<h3>Adversarial attacks</h3>
+<dl class="defs">
+  <dt>Adversarial example</dt>
+  <dd>An input <b>intentionally crafted</b> to make a model misclassify. The classic: panda (57.7%) + a tiny imperceptible \(\varepsilon\) noise → "gibbon" at 99.3% confidence.</dd>
+</dl>
+<ul class="clean">
+  <li><b>Any</b> ML classifier (not just CNNs) can be tricked.</li>
+  <li><b>How:</b> find the <b>minimal input perturbation</b> that maximizes confident misclassification — if framed as a loss, solve it with gradient descent.</li>
+  <li><b>White-box:</b> gradient-based, requires access to the trained network (very powerful). <b>Black-box:</b> also possible (single-pixel attacks, backdoors, "radioactive" data). Physical: stickers on a STOP sign flip its classification.</li>
+</ul>
+
+<div class="q"><div class="q-top"><div class="qnum">6</div><p class="qtext">Geirhos et al. (2018) showed ImageNet-trained CNNs are primarily biased toward what cue, and what fixes it?</p></div>
+<ol class="opts" data-explain="CNNs over-rely on texture (Gabor-like filters): a cat-shaped image with elephant texture is called an elephant. Increasing shape bias improves accuracy and robustness.">
+  <li data-correct="1"><span class="otxt">Texture bias; increasing shape bias improves accuracy and robustness.</span></li>
+  <li data-correct="0"><span class="otxt">Color bias; converting inputs to grayscale fixes it.</span></li>
+  <li data-correct="0"><span class="otxt">Position bias; adding position embeddings fixes it.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>17 · Interpreting CNNs</h2>
+
+<p>How do you inspect something with <b>millions</b> of parameters? A toolbox of techniques, roughly from simplest to most powerful:</p>
+
+<dl class="defs">
+  <dt>Hinton diagrams</dt>
+  <dd>Visualize weights: <b>square size = magnitude</b>, <b>square color = sign</b>. Only for simple MLPs ("also, just use Shapley values").</dd>
+  <dt>Layer activations</dt>
+  <dd>Show activations during the forward pass. For ReLU CNNs they start <b>blobby and dense</b>, becoming <b>sparser and more localized</b> as training progresses. Not viable for very deep nets.</dd>
+  <dt>Weight visualization</dt>
+  <dd>Visualize filter weights — <b>most interpretable on the first conv layer</b> (it looks directly at pixels). Deeper filters are hard to read.</dd>
+  <dt>Maximally exciting inputs</dt>
+  <dd>Feed many images, find which ones <b>most activate</b> a neuron, and look at those top-n. Plus deconvolving per layer: L1 → edges/colors, L2 → simple textures, L3 → complex patterns/objects.</dd>
+  <dt>Feature visualization</dt>
+  <dd>Instead of searching real images, <b>optimize</b> an input (via SGD) that maximally excites a filter. Reveals the hierarchy edges → textures → patterns → parts → objects.</dd>
+  <dt>Activation atlases</dt>
+  <dd>Collect a million activation vectors, embed them in 2D, grid them, and feature-visualize each cell's average.</dd>
+</dl>
+
+<h3>Occlusion &amp; saliency</h3>
+<div class="callout why">
+  <div class="ttl">Drill the why — occlusion vs. saliency, what's the difference?</div>
+  <p><b>Image occlusion</b> is a <i>perturbation</i> method: slide a grey patch across the image and watch how the class probability drops as a function of patch position → a heat map showing which regions the model actually relies on (does "dog" use the dog or the background?). <b>Saliency</b> is a <i>gradient</i> method: \(\text{saliency} = \) the gradient of the class probability with respect to the input pixels — which pixels, if nudged, would most change the output. Occlusion asks "what happens if I hide this?"; saliency asks "what is the output most sensitive to?" Both can be visualized as overlays; <b>LIME and SHAP</b> also work on images.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>18 · Generative models — Deep Dream &amp; style transfer</h2>
+
+<div class="callout note">
+  <div class="ttl">Roadmap for the generative half</div>
+  <p>We climb a ladder of generators, each adding one capability the last lacked: <b>Deep Dream / style transfer</b> (manipulate via a frozen net) → <b>autoencoder</b> (compress &amp; reconstruct) → <b>VAE</b> (make the latent space generative) → <b>GAN</b> (sharp samples via an adversarial game) → <b>diffusion</b> (iterative denoising) → <b>Stable Diffusion</b> (diffusion in a latent space, with text conditioning). Keep asking: <i>what does each one fix?</i></p>
+</div>
+
+<h3>Deep Dream</h3>
+<p>Uses a CNN to <b>find and enhance</b> the patterns it already detects, producing an over-processed "dream." Mechanism: pick some layers and <b>maximize the intensity of their outputs</b> (lower layers → low-level features; higher → high-level), then tweak the input image via gradient descent to amplify them. Losses: activation-maximization, <b>continuity/total-variation loss</b> (local coherence), and an <b>L2 loss</b> (stop pixels going too bright/dark). Tricks: jitter, Gaussian blur, <b>octaves</b> (downscale, dream at each scale, merge). <b>Drawback:</b> limited to what the pretrained filters get excited by — you can't really steer the creation.</p>
+
+<h3>Style transfer</h3>
+<p>Uses the featurization layers of a <b>pretrained (not retrained)</b> CNN to combine a content image with a style image. Stitch content + style + combination through the net; the combination image (starting as noise or content+jitter) is the thing optimized.</p>
+<dl class="defs">
+  <dt>Content loss</dt>
+  <dd>Difference between <b>content</b> and <b>combination</b> in a single <b>higher</b>-level layer (sum of squared errors) — preserves <i>what</i> is in the image.</dd>
+  <dt>Style loss</dt>
+  <dd>Difference between <b>combination</b> and <b>style</b> across <b>lower</b> layers (which capture brush strokes), based on the <b>Gram matrix</b> (\(A\cdot A^\top\), capturing feature-map correlations), normalized and summed — preserves <i>how</i> it looks.</dd>
+  <dt>Total-variation loss</dt>
+  <dd>Optional smoothness term penalizing differences between neighboring pixels.</dd>
+</dl>
+
+<!-- ============================================================ -->
+<h2>19 · Autoencoders</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: an autoencoder is trained to output exactly what you fed in. That sounds pointless — why is it useful?</div>
+  <details><summary></summary>
+  <div class="reveal">The trick is the <b>bottleneck</b>: the network is forced to squeeze the input through a low-dimensional layer before reconstructing it. To reconstruct well through that narrow waist, it must learn a <b>compressed, information-rich representation</b>. That bottleneck vector is the prize — usable as embeddings (dimensionality reduction), for denoising, for generation (decode a random latent vector), and for anomaly detection via reconstruction error (anomalies reconstruct poorly).</div>
+  </details>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 420 150" role="img" aria-label="Autoencoder funnel">
+  <polygon points="20,30 110,55 110,95 20,120" fill="#D9E2EA" stroke="#5B7C99"/><text x="60" y="80" font-size="11" text-anchor="middle">encoder</text>
+  <rect x="190" y="62" width="36" height="26" rx="5" fill="#F0E4C4" stroke="#C99A2E"/><text x="208" y="79" font-size="9" text-anchor="middle">z</text>
+  <line x1="110" y1="75" x2="190" y2="75" stroke="#4F4B43"/>
+  <polygon points="310,55 400,30 400,120 310,95" fill="#DDE8DC" stroke="#5C8A6B"/><text x="355" y="80" font-size="11" text-anchor="middle">decoder</text>
+  <line x1="226" y1="75" x2="310" y2="75" stroke="#4F4B43"/>
+  <text x="60" y="142" font-size="11" text-anchor="middle" fill="#4F4B43">input</text>
+  <text x="208" y="108" font-size="10" text-anchor="middle" fill="#8A6A1E">bottleneck</text>
+  <text x="355" y="142" font-size="11" text-anchor="middle" fill="#4F4B43">≈ input</text>
+</svg>
+<figcaption>Encoder → bottleneck (latent z) → decoder. Output is trained to match the input.</figcaption>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — linear autoencoder vs. PCA (classic trap)</div>
+  <p>When the encoder and decoder are each a <b>single linear layer</b>, the autoencoder finds the <b>best linear subspace</b> to project data with minimal information loss — exactly PCA's goal. But the equivalence is incomplete: PCA's components are <b>orthogonal and ordered by variance</b>, and PCA's solution is <b>unique</b>. The linear autoencoder has <b>no orthogonality constraint</b> (new features need not be independent), no variance ordering, and its SGD solution is just <b>one of many</b> bases spanning the same optimal subspace. So: same subspace, different (looser) basis.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Anomaly detection (connects to isolation forest)</div>
+  <p>Use the <b>reconstruction error</b> as a feature, or the bottleneck as embeddings, and compare/combine with a traditional method. Slide AUCs: reconstruction error <b>0.72</b>, embedding <b>0.81</b>, isolation forest <b>0.67</b> — here the learned embedding wins.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>20 · Variational autoencoders (VAEs)</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: a plain autoencoder can compress and reconstruct beautifully. Why can't you just sample a random latent vector and decode it to generate new images?</div>
+  <details><summary></summary>
+  <div class="reveal">Because the plain autoencoder's latent space is <b>irregular</b>. A powerful non-linear AE can map inputs to scattered, arbitrary points with no structure between them — so a random point (or a point between two real ones) decodes to garbage. There's no <b>continuity</b> (nearby points should decode to similar things) and no <b>completeness</b> (every point should decode to something meaningful). VAEs fix this by regularizing the latent space.</div>
+  </details>
+</div>
+
+<h3>How a VAE works</h3>
+<ol class="steps">
+  <li>Encode the input as a <b>distribution</b> over latent space, not a single point: \(p(z\mid x)\). In practice a <b>Gaussian</b>, so the encoder returns a <b>mean \(\mu_x\) and covariance \(\sigma_x\)</b>.</li>
+  <li><b>Sample</b> a point \(z\) from that distribution.</li>
+  <li><b>Decode</b> \(z\) and compute reconstruction error.</li>
+  <li><b>Backpropagate</b> the loss.</li>
+</ol>
+
+<div class="formula"><span class="lbl">VAE loss = reconstruction + KL regularization</span>\[ \mathcal{L} = \lVert x - \hat x \rVert^2 + \mathrm{KL}\bigl[\,\mathcal{N}(\mu_x, \sigma_x)\,\Vert\,\mathcal{N}(0, I)\,\bigr] \]</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why regularize <i>both</i> mean and variance toward a standard normal?</div>
+  <p>Encoding as distributions <b>alone is not enough</b>. Without a regularizer the model cheats: it shrinks variances toward 0 (so each "distribution" collapses to a point — back to a plain autoencoder) or pushes means far apart (so clusters don't overlap and the space stays gappy). The KL term toward \(\mathcal{N}(0,I)\) controls <b>variance</b> (enforcing local regularity — points near a real encoding decode similarly) <b>and</b> the <b>mean</b> (enforcing global regularity — clusters overlap and fill the space). Regularize both → a continuous, complete latent space you can actually sample from. The cost: outputs can be a bit <b>blurry</b> (e.g. plausible but soft faces).</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>21 · GANs</h2>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern — GAN</div>
+  <p>Picture a <b>forger</b> (the generator) and a <b>detective</b> (the discriminator). The forger paints fake banknotes from random scribbles; the detective is shown a mix of real and fake notes and must call each one. Every round, the detective gets better at spotting fakes, which forces the forger to paint more convincingly, which forces the detective to sharpen further. This arms race drives the forger toward producing notes indistinguishable from real ones — without ever being shown how to paint, only whether it got caught.</p>
+</div>
+
+<dl class="defs">
+  <dt>GAN (Goodfellow et al. 2014)</dt>
+  <dd>Two networks: a <b>generator G</b> (turns a noise vector from latent space into a fake instance) and a <b>discriminator D</b> (outputs a probability, 0 = fake). <b>D</b> is in a feedback loop with the ground truth; <b>G</b> is in a feedback loop with D. G tries to fool D; D tries to catch G.</dd>
+</dl>
+
+<div class="callout note">
+  <div class="ttl">Discriminative vs. generative — the background you need</div>
+  <p><b>Discriminative</b> models learn \(P(Y\mid X)\) — the <b>boundary</b> between classes (map features → labels). <b>Generative</b> models learn \(P(X\mid Y)\) — the <b>distribution</b> of each class ("how you get x"), and can sample new data, via Bayes \(P(\text{label}\mid \text{data}) \propto P(\text{data}\mid\text{label})\,P(\text{label})\). GANs use a form of self-supervision, so they're an example of <b>self-supervised learning</b>.</p>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">Why GANs are notoriously hard to train</div>
+  <ul class="clean">
+    <li><b>No convergence guarantee:</b> two models in a non-cooperative two-player game, each updating its own cost concurrently → Nash equilibrium is hard to reach.</li>
+    <li><b>Vanishing gradients:</b> a <i>perfect</i> discriminator gives loss ≈ 0, which <b>starves the generator</b> of learning signal.</li>
+    <li><b>Mode collapse:</b> the generator collapses to producing <b>the same few outputs</b> — it may fool D but fails to cover the real data distribution.</li>
+    <li><b>No good evaluation metric</b> to judge the generator.</li>
+  </ul>
+  <p>Tricks that help: <b>leaky ReLU &gt; ReLU</b>, sample latents from a <b>Gaussian</b>, tanh on G's output, batch norm, <b>ADAM</b>, label smoothing, and <b>don't mix real and fake</b> in one D batch.</p>
+</div>
+
+<h3>WGAN, CycleGAN, StyleGAN</h3>
+<dl class="defs">
+  <dt>WGAN (Arjovsky et al. 2017)</dt>
+  <dd>Replaces JS/KL divergence with the <b>Wasserstein distance (Earth Mover's Distance)</b> — the minimum cost of "moving dirt" to reshape one distribution into the other (cost = dirt moved × distance). A better-behaved similarity metric → more stable training.</dd>
+  <dt>CycleGAN (Zhu et al. 2017)</dt>
+  <dd><b>Unpaired</b> image-to-image translation (summer↔winter, horse↔zebra). Uses <b>two GANs</b> (G: A→B, G: B→A) with a <b>cycle-consistency</b> constraint: A → B → back to A should return the original. No matched pairs needed.</dd>
+  <dt>StyleGAN (Karras et al. 2019+)</dt>
+  <dd>A <b>style-based generator</b>: a mapping network turns latent z into w; a synthesis network uses <b>AdaIN</b> with per-layer style and noise, starting from a const 4×4×512 and upsampling. Powers thispersondoesnotexist-style photorealism.</dd>
+</dl>
+
+<div class="q"><div class="q-top"><div class="qnum">7</div><p class="qtext">A GAN generator starts outputting the same handful of near-identical images regardless of the input noise. This is:</p></div>
+<ol class="opts" data-explain="Mode collapse: the generator produces a limited set of outputs, fooling D on those but failing to cover the real data distribution. Vanishing gradients (perfect D) is a different failure; Nash difficulty is the general non-convergence issue.">
+  <li data-correct="0"><span class="otxt">Vanishing gradients from a perfect discriminator.</span></li>
+  <li data-correct="0"><span class="otxt">Internal covariate shift, fixable by batch norm.</span></li>
+  <li data-correct="1"><span class="otxt">Mode collapse — the generator covers only a sliver of the real distribution.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>22 · Diffusion models</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate: GANs make sharp images but are unstable. What's the core idea of a diffusion model, and why is it easier to train?</div>
+  <details><summary></summary>
+  <div class="reveal">Diffusion turns generation into a sequence of <b>tiny, easy denoising steps</b> instead of one adversarial leap. Forward: gradually add Gaussian noise to an image over many steps until it's pure noise. Train a model to <b>predict the noise added</b> at each step. To generate: start from pure Gaussian noise and run the model in reverse N times, removing a little noise each step. No adversarial game → no mode collapse, no "generator that just won't learn" — much easier than GANs.</div>
+  </details>
+</div>
+
+<h3>Forward &amp; reverse</h3>
+<ol class="steps">
+  <li>Build a chain of N increasingly noisy images by <b>gradually adding Gaussian noise</b>.</li>
+  <li>Train a model to <b>predict the noise</b> added from one step to the next.</li>
+  <li>If steps are small enough, the final image ≈ the same Gaussian you sample from. <b>Generate</b> by sampling Gaussian noise and passing it <b>N times</b> through the trained model (reverse diffusion / denoising).</li>
+</ol>
+
+<div class="callout note">
+  <div class="ttl">Architecture &amp; conditioning</div>
+  <p>Diffusion models typically use a <b>U-Net</b> — same input/output shape is ideal for "input an image, output per-pixel noise," with skip connections linking same-resolution halves. Pure diffusion is just a latent sampler, so to <b>prompt</b> it you either <b>condition</b> (feed a class/text embedding through the input layer and via attention at inner layers) or use <b>classifier guidance</b> (add the gradient of a classifier's target-class score to the predicted noise each step, nudging the image toward that class).</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>23 · DALL·E, CLIP &amp; Stable Diffusion</h2>
+
+<table class="tbl">
+  <thead><tr><th>System</th><th>Year</th><th>How it works</th></tr></thead>
+  <tbody>
+    <tr><td><b>DALL·E</b></td><td>Jan 2021</td><td><b>Transformer + VAE</b>. The VAE turns images into tokens; the transformer is trained <b>autoregressively</b> on the concatenation of text tokens + image tokens, generating image tokens one by one, then the VAE decodes them.</td></tr>
+    <tr><td><b>GLIDE</b></td><td>2021</td><td>OpenAI's <b>diffusion</b> model for text-conditional synthesis — hypothesized to beat VAE.</td></tr>
+    <tr><td><b>DALL·E 2</b></td><td>Apr 2022</td><td>Diffusion (GLIDE-based) conditioned on <b>CLIP image embeddings</b> instead of raw text. Pipeline: text encoder → prior → decoder.</td></tr>
+  </tbody>
+</table>
+
+<dl class="defs">
+  <dt>CLIP</dt>
+  <dd>Jointly trains an <b>image encoder and a text encoder</b>: embed both, push matching image-text pairs to similarity 1 and non-matching to 0, update both. Another <b>self-supervised</b> example. Using CLIP image embeddings as conditioning improves <b>sample diversity</b> and enables variations (encode/decode an image) and interpolation between image/caption pairs.</dd>
+</dl>
+
+<h3>Stable Diffusion — latent diffusion</h3>
+<div class="callout why">
+  <div class="ttl">Drill the why — how does Stable Diffusion fit on a consumer GPU?</div>
+  <p>Running diffusion directly in <b>pixel space</b> is slow and expensive — every denoising step operates on a full-resolution image. Stable Diffusion instead runs diffusion in the <b>lower-dimensional latent space of a pretrained autoencoder</b>, then decodes the final latent to an image. This <b>separates the compression phase from the generative phase</b>: the autoencoder handles "make it small," diffusion handles "make it new," and far fewer dimensions means far less compute. Conditioning (text, semantic maps, images) enters the denoising U-Net via <b>cross-attention (Q, K, V)</b>. Stability AI open-sourced both <b>code and weights</b>.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">8</div><p class="qtext">What is the defining trick that makes Stable Diffusion ("latent diffusion") efficient enough for consumer hardware?</p></div>
+<ol class="opts" data-explain="Latent diffusion runs the (expensive) diffusion process in the low-dimensional latent space of a pretrained autoencoder, then decodes — separating compression from generation and slashing compute, rather than diffusing in full pixel space.">
+  <li data-correct="0"><span class="otxt">It replaces the U-Net with a single dense layer to cut parameters.</span></li>
+  <li data-correct="1"><span class="otxt">It runs diffusion in a pretrained autoencoder's latent space rather than in pixel space, decoding only at the end.</span></li>
+  <li data-correct="0"><span class="otxt">It trains adversarially like a GAN, which is inherently cheaper than diffusion.</span></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2>24 · Big comparisons to hold in your head</h2>
+
+<div class="vs">
+  <div class="col"><h4>Sigmoid / tanh</h4><p>Range 0..1 / −1..1; derivative below 1 → <b>vanishing gradients</b>; used in the <b>output</b> layer.</p></div>
+  <div class="col"><h4>ReLU</h4><p>Range 0..+∞; constant gradient 1 → fast; used in <b>hidden</b> layers; can <b>die</b> (40% if LR too high).</p></div>
+</div>
+<div class="vs">
+  <div class="col"><h4>Autoencoder</h4><p>Encodes input as a <b>point</b> \(z=e(x)\); irregular latent space; not directly generative.</p></div>
+  <div class="col"><h4>VAE</h4><p>Encodes a <b>distribution</b>, samples z, adds <b>KL regularization</b> → regular, generative latent space; can be blurry.</p></div>
+</div>
+<div class="vs">
+  <div class="col"><h4>GAN</h4><p>Generator vs. discriminator game; <b>sharp</b> but hard to train (mode collapse, no convergence guarantee).</p></div>
+  <div class="col"><h4>Diffusion</h4><p>Iterative denoising of Gaussian noise; <b>high quality &amp; easier</b> than GANs; usually U-Net based.</p></div>
+</div>
+
+<table class="tbl">
+  <thead><tr><th></th><th>PCA</th><th>Linear autoencoder</th></tr></thead>
+  <tbody>
+    <tr><td>Goal</td><td>Best linear subspace, min. info loss</td><td>Same</td></tr>
+    <tr><td>Components</td><td><b>Orthogonal</b>, ordered by variance</td><td><b>No orthogonality</b>, any basis</td></tr>
+    <tr><td>Solution</td><td>Unique</td><td>One of many SGD solutions</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2>25 · Rapid-fire exam traps</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4 style="margin-top:0">Foundations</h4>
+    <ul class="clean">
+      <li>Single perceptron <b>cannot</b> solve XOR; an MLP can.</li>
+      <li>"Deep" = layers of representation, not understanding.</li>
+      <li>Bias = intercept (constant-1 input with its own weight).</li>
+      <li>NN weights are found <b>numerically</b>, not in closed form.</li>
+      <li>Epoch = full pass; iteration = one (mini-batch) update.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4 style="margin-top:0">Training</h4>
+    <ul class="clean">
+      <li>He init for ReLU (\(2/\text{fan\_in}\)); Glorot for tanh/sigmoid/softmax (\(1/\text{fan\_avg}\)); LeCun for SELU.</li>
+      <li>Softmax ≈ <b>argmax</b> (not max); multilabel → per-output sigmoid.</li>
+      <li>Saddle points, not poor local minima, are the real obstacle.</li>
+      <li>Validation loss can beat training loss (dropout off at validation).</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4 style="margin-top:0">CNNs</h4>
+    <ul class="clean">
+      <li>Output size \(=\frac{W-F+2P}{S}+1\).</li>
+      <li>Weight sharing = key efficiency; kernel depth = input channels; number of filters = output depth.</li>
+      <li>Pooling keeps the same depth; global pooling → one value.</li>
+      <li>ResNet: \(F(x)+x\), no FC layers at the end.</li>
+      <li>ViT: pure transformer on patches can beat CNNs.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4 style="margin-top:0">Generative</h4>
+    <ul class="clean">
+      <li>Linear AE ≈ PCA but no orthogonality/variance ordering.</li>
+      <li>VAE: encode distribution, sample, <b>KL</b> regularize both mean &amp; variance.</li>
+      <li>WGAN uses Wasserstein/EMD; CycleGAN = two GANs, unpaired.</li>
+      <li>DALL·E = transformer+VAE (2021); DALL·E 2 = diffusion on CLIP embeddings (2022).</li>
+      <li>Stable Diffusion = latent diffusion (diffuse in an AE's latent space).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>26 · Can you teach it back?</h2>
+
+<div class="card">
+  <p>The real test of mastery: explain each of these to an imaginary student, out loud, with no notes. If you stumble, jump back to that section.</p>
+  <ul class="check">
+    <li>Walk through a perceptron's forward pass and write its sigmoid formula from memory.</li>
+    <li>Explain why a single line can't separate XOR, then how a hidden layer fixes it.</li>
+    <li>Derive the perceptron update from squared-error loss, explaining where the \(\sigma(o)(1-\sigma(o))\) and \(x_i\) factors come from.</li>
+    <li>Tell the vanishing-gradient story end to end, and explain why ReLU + He init fix it.</li>
+    <li>Distinguish dropout from batch norm: what each does, why it works, and one trap in each.</li>
+    <li>Compute a convolution output size and explain why weight sharing matters.</li>
+    <li>Explain ResNet's \(F(x)+x\) and why it lets you remove a layer.</li>
+    <li>Climb the generative ladder: state in one sentence each what VAE adds over an autoencoder, what GAN adds, what diffusion adds, and what latent diffusion adds.</li>
+    <li>Contrast saliency vs. occlusion, and linear autoencoder vs. PCA.</li>
+  </ul>
+</div>
+
+<footer>
+  <span>Chapter 05 · Deep Learning for Images — Active-learning preparation guide</span>
+  <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+</footer>
+
+</main>
+
+<script>
+/* Left contents rail — inline verbatim inside a <script> before </body>.
+   Auto-builds a fixed, full-height sidebar from the page's section headings
+   (h2 = level 1, h3 = level 2) plus any element carrying data-nav-label
+   (used for per-question anchors). Adds smooth scroll, scrollspy, and a
+   mobile slide-in toggle. No external dependencies. */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+</script>
+
+<script>
+/* Interactive quiz — inline verbatim inside a <script> before </body>.
+   Two modes, auto-detected per question:
+
+   • PER-OPTION mode (exam MCQs): every <li> carries its own data-explain.
+       - Click a WRONG option -> it turns red and shows WHY THAT option is wrong,
+         WITHOUT revealing the correct answer; the question stays open so you can try again.
+       - Click the CORRECT option -> it turns green, shows why it's right, and locks.
+   • LEGACY mode (crash-course / prep self-checks): one data-explain on the <ol>.
+       - First click locks the question, marks the correct answer, and reveals the reasoning.
+
+   A fixed scorebar tracks solved + first-try-correct counts. Re-typesets MathJax in feedback. */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        // legacy: lock + reveal correct
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>

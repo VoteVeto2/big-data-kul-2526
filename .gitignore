@@ -1,0 +1,9 @@
+
+# Notes should not be there, due to possible copyright issues.
+Notes/0*
+
+# CC use python to build htmls
+.build/
+
+# OS
+.DS_Store

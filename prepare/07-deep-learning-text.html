@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 07 · Deep Learning for Text — Preparation Guide</title>
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   Inline this ENTIRE block verbatim inside each self-contained .html <style>.
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz  (used by exams + crash-course self-checks)
+   Markup:  <ol class="opts" data-explain="...">
+              <li data-correct="1"><span class="otxt">A</span></li> ... </ol>
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+/* per-option mode: a tried-wrong option locks but the question stays open */
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail (auto-built by sidebar.js) ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) for prep guides ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+</style>
+<!-- MathJax — inline verbatim in <head>. Renders LaTeX: inline \( … \), display \[ … \].
+     Use LaTeX for ALL math (greek \alpha\beta\sigma, subscripts x_{i}, superscripts e^{-z},
+     fractions \frac{a}{b}, sums \sum, etc.). Code/pre are skipped so pseudocode stays literal. -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Chapter 07 · Preparation</span>
+    <h1>Deep Learning for Text — from Bag-of-Words to GPT</h1>
+    <p class="subtitle">Understand it deeply — not just memorize. We walk the whole arc: why text is hard, how we turned words into numbers, why embeddings beat sparse vectors, why recurrence gave way to attention, and why a decoder-only Transformer powers GPT.</p>
+    <div class="meta-row">
+      <span class="chip"><b>Theme</b> representation learning</span>
+      <span class="chip"><b>Arc</b> TF-IDF → word2vec → RNN → Attention → Transformer</span>
+      <span class="chip"><b>Mode</b> Socratic · why-driven</span>
+      <span class="chip"><b>Interactive</b> self-checks throughout</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>How to use this guide</h2>
+<div class="callout note">
+  <div class="ttl">▶ Read me first</div>
+  <p>This is <strong>not a summary</strong> — it is a guided session. Each concept follows the same rhythm: <strong>(1) the PROBLEM</strong> (restate it yourself before reading on), <strong>(2) the SOLUTION</strong> (how and <em>why this way</em>, with edge cases), and <strong>(3) the BROADER CONTEXT</strong> (why it matters, what it connects to).</p>
+  <p>Work it actively: when you hit a gold <strong>self-check</strong> box, <em>say your answer out loud before revealing</em>. When you hit a multiple-choice box, commit to a letter first. The whole chapter is one story — each idea exists to fix a flaw in the one before it. If you can narrate that chain of fixes, you understand it.</p>
+  <p>The left rail jumps to any section. Aim for one or two sittings; the order top-to-bottom is the intended path.</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:4px">Mastery checklist — you should be able to explain…</h3>
+  <ul class="check">
+    <li>Why text is "unstructured" and what featurization buys you</li>
+    <li>The exact TF-IDF formulas, including which denominator is <em>document length</em> and why IDF rewards rarity</li>
+    <li>Why BM25 <em>saturates</em> term frequency and normalizes length better than TF-IDF</li>
+    <li>What a word embedding is, why dense beats sparse, and the <span class="mono">king − man + woman ≈ queen</span> trick</li>
+    <li>CBOW vs. skip-gram: inputs, outputs, activations, data needs — without swapping them</li>
+    <li>What you keep after training word2vec (the hidden weight matrix \(W\)) and why</li>
+    <li>Why fastText can embed out-of-vocabulary words and word2vec/GloVe cannot</li>
+    <li>What an RNN's <em>state</em> is, why training uses BPTT, and why plain RNNs forget</li>
+    <li>How LSTM/GRU gating fixes that, and what LSTM passes between steps that GRU does not</li>
+    <li>The seq2seq bottleneck and exactly how attention (Q, K, V) removes it</li>
+    <li>Scaled dot-product attention \(\text{softmax}(QK^{\top}/\sqrt{d_k})V\) and why the \(\sqrt{d_k}\)</li>
+    <li>Why self-attention <em>mixes between tokens</em> while the FFNN processes each token alone</li>
+    <li>Why GPT is decoder-only with <em>masked</em> self-attention, and why masking enables generation</li>
+    <li>The Transformer's \(L^2\) cost bottleneck and how RNNs/SSMs sidestep it</li>
+  </ul>
+</div>
+
+<div class="section-head"><span class="bar"></span><h2>The big picture: why text needs its own toolkit</h2><span class="tag">motivation</span></div>
+<p class="section-note">Start at altitude. Before any formula, understand the problem the whole chapter is solving.</p>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem in your own words: why can't we just feed a sentence into a logistic regression the way we feed in a table of numbers?</div>
+  <details><summary></summary>
+  <div class="reveal">A classifier expects each instance to be a fixed-length vector of numbers. Text is a variable-length sequence of <em>symbols</em>, not numbers — there is no obvious feature vector. It also carries structure that a naive encoding throws away: word order, negation ("not good"), word importance, sarcasm, plus it is dirty (typos, abbreviations, homographs). So the central task is <strong>featurization</strong>: turn a document into a numeric vector — ideally one where geometric closeness means semantic similarity.</div>
+  </details>
+</div>
+
+<p>Text is <em>everywhere</em> — medical records, reviews, repair notes, tweets, legislation, emails — but it is <strong>unstructured</strong>: no straightforward feature-vector representation, written by humans for humans. The chapter mirrors the computer-vision story exactly: a <strong>"before vs. after deep learning"</strong> split = <strong>manual feature engineering vs. automated (learned) feature engineering</strong>.</p>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — what is the single unifying idea?</div>
+  <p><strong>Representation learning.</strong> Everything in this chapter — TF-IDF vectors, word2vec, RNN hidden states, attention outputs — is an attempt to find a <em>representation</em> of text such that the downstream task becomes easy. The slides state it bluntly: "the main task of ML and especially deep learning is <strong>learning compressed, dense representations that fit the downstream task</strong>." The arc of the chapter is just better and better ways to learn that representation.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">◇ Broader context — the map of the chapter</div>
+  <p>Five stages, each fixing the previous one's weakness: <strong>(1)</strong> classical featurization (BoW, TF-IDF, BM25, n-grams) — sparse, hand-crafted; <strong>(2)</strong> embeddings (word2vec, GloVe, fastText) — dense, learned, but order-blind; <strong>(3)</strong> RNNs (LSTM, GRU, seq2seq) — handle order, but forget and are slow; <strong>(4)</strong> attention &amp; Transformers — look at everything at once; <strong>(5)</strong> GPT, RLHF, and the post-Transformer frontier. Keep asking at each step: <em>what flaw is this fixing?</em></p>
+</div>
+
+<div class="section-head"><span class="bar"></span><h2>Classical featurization: Bag-of-Words, counts, and weighting</h2><span class="tag">stage 1</span></div>
+
+<h3>Corpus terminology and Bag-of-Words</h3>
+<dl class="defs">
+  <dt>Corpus (plural corpora)</dt><dd>A collection of documents. Usually each document is one instance, but an instance can also be a single sentence.</dd>
+  <dt>Token / term</dt><dd>An individual unit of a document — usually a word, but also punctuation, abbreviations, smileys.</dd>
+  <dt>Bag-of-Words (BoW)</dt><dd>Treat each document as an <em>unordered</em> collection of tokens. One feature per vocabulary word; value = 1 if present, 0 if absent. Grammar, order, and structure are discarded.</dd>
+</dl>
+
+<p><strong>Worked example.</strong> Vocabulary = {this, is, an, a, example, second}.</p>
+<ul class="clean">
+  <li>"This is an example" → <span class="mono">1 1 1 0 1 0</span></li>
+  <li>"This is a second example" → <span class="mono">1 1 0 1 1 1</span></li>
+</ul>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — what does BoW gain and lose?</div>
+  <p><strong>Gains:</strong> the simplest possible numeric representation, cheap to compute, treats every word as a potential keyword. <strong>Loses:</strong> all word order ("dog bites man" = "man bites dog"), and it causes an <strong>explosion of features</strong> — one dimension per vocabulary word, mostly zeros. That sparsity is the wound the rest of stage 1 (and embeddings) keeps trying to heal.</p>
+</div>
+
+<h3>Cleaning the vocabulary: normalization, stemming, stop-words</h3>
+<p>To fight the feature explosion and noise, we shrink the vocabulary:</p>
+<dl class="defs">
+  <dt>Normalization</dt><dd>Lowercase everything so "The" and "the" collapse to one feature.</dd>
+  <dt>Stemming</dt><dd>Strip <strong>suffixes</strong> to keep the root (plurals → singular). Porter's algorithm is essentially suffix-stripping. Crude but fast — may produce non-words.</dd>
+  <dt>Lemmatization</dt><dd>More principled: map to a real dictionary root, handling irregulars (better → good; flies → fly). May need <strong>Part-of-Speech (PoS) tagging</strong> when context decides the lemma.</dd>
+  <dt>Stop-word removal</dt><dd>Drop very common words ("the", "and", "of", "on") that carry little signal.</dd>
+</dl>
+
+<div class="diagram">
+<svg viewBox="0 0 460 130" width="460" height="130" role="img" aria-label="Stemming: word stem JUMP with inflection suffixes S, ED, ING">
+  <g font-family="Georgia, serif" font-size="15">
+    <rect x="20" y="50" width="120" height="34" rx="6" fill="#DDE8DC" stroke="#5C8A6B"/>
+    <text x="80" y="72" text-anchor="middle" fill="#3F6B4F">JUMP</text>
+    <text x="80" y="42" text-anchor="middle" font-size="11" fill="#7E776B" font-family="-apple-system,sans-serif" letter-spacing="1">WORD STEM</text>
+    <line x1="140" y1="67" x2="280" y2="30" stroke="#A8472A" stroke-width="1.5"/>
+    <line x1="140" y1="67" x2="280" y2="67" stroke="#A8472A" stroke-width="1.5"/>
+    <line x1="140" y1="67" x2="280" y2="104" stroke="#A8472A" stroke-width="1.5"/>
+    <rect x="280" y="14" width="70" height="30" rx="6" fill="#FBFAF6" stroke="#CC785C"/><text x="315" y="34" text-anchor="middle" fill="#A8472A">S</text>
+    <rect x="280" y="52" width="70" height="30" rx="6" fill="#FBFAF6" stroke="#CC785C"/><text x="315" y="72" text-anchor="middle" fill="#A8472A">ED</text>
+    <rect x="280" y="90" width="70" height="30" rx="6" fill="#FBFAF6" stroke="#CC785C"/><text x="315" y="110" text-anchor="middle" fill="#A8472A">ING</text>
+    <text x="395" y="68" text-anchor="middle" font-size="11" fill="#7E776B" font-family="-apple-system,sans-serif" letter-spacing="1">INFLECTIONS</text>
+  </g>
+</svg>
+<figcaption>Stemming collapses jumps / jumped / jumping back to the stem JUMP, shrinking the vocabulary.</figcaption>
+</div>
+
+<h3>From presence to counts: the document-term matrix</h3>
+<p>BoW with <strong>counts</strong> instead of binary presence gives the <strong>document-term matrix</strong> (rows = documents, columns = terms). Raw counts are usually normalized — e.g. divide by total words in the document. Three pitfalls to watch:</p>
+<ul class="clean">
+  <li><strong>Unseen terms at inference:</strong> a word never seen in training has no column.</li>
+  <li><strong>Document length varies:</strong> longer documents have larger raw counts for everything.</li>
+  <li><strong>Frequency extremes:</strong> a useful word is <em>not too common, not too rare</em> → impose both an upper and a lower limit on the fraction of documents a word may occur in.</li>
+</ul>
+
+<h3>TF-IDF: weighting local importance against global rarity</h3>
+
+<div class="selfcheck">
+  <div class="q">Raw term frequency makes "the" the most "important" word in every document. What two opposing pressures should a good weighting balance, and which part of TF-IDF supplies each?</div>
+  <details><summary></summary>
+  <div class="reveal"><strong>Local importance</strong> — a term that appears a lot <em>in this document</em> probably matters here (that's <strong>TF</strong>). <strong>Global rarity</strong> — a term that appears in <em>every</em> document (like "the") discriminates nothing, so it should be down-weighted (that's <strong>IDF</strong>, a measure of sparseness). TF-IDF multiplies the two: high TF, high IDF ⇒ a word both frequent here and rare overall ⇒ a strong signal.</div>
+  </details>
+</div>
+
+<div class="formula"><span class="lbl">Term frequency (term \(t_i\) in document \(d\))</span>
+\[ \mathrm{TF}(t_i, d) = \frac{f(t_i, d)}{\lvert d \rvert} \]
+</div>
+<div class="formula"><span class="lbl">Inverse document frequency (over corpus \(c\))</span>
+\[ \mathrm{IDF}(t_i) = 1 + \log\!\left( \frac{\lvert c \rvert}{\lvert \{ d \in c : t_i \in d \} \rvert} \right) \]
+</div>
+<div class="formula"><span class="lbl">TF-IDF weight, and the document vector</span>
+\[ \mathrm{TFIDF}(t_i, d) = \mathrm{TF}(t_i, d)\times \mathrm{IDF}(t_i), \qquad d = [\,w_1, w_2, \dots, w_m\,],\ \ w_i = \mathrm{TFIDF}(t_i, d) \]
+</div>
+
+<div class="callout warn">
+  <div class="ttl">⚠ Classic exam trap — read the denominators</div>
+  <p>The TF denominator is the <strong>document length \(\lvert d \rvert\)</strong> (how many words are in <em>this</em> document) — <strong>not</strong> the number of documents. The number of documents \(\lvert c \rvert\) lives in the <em>numerator</em> of IDF, divided by the <strong>document frequency</strong> (how many documents contain the term). And do not forget the leading <strong>"\(1 +\)"</strong> in IDF.</p>
+</div>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — why a logarithm in IDF, and why does it "decrease"?</div>
+  <p>The ratio \(\lvert c \rvert / df\) can be huge for a term in 1 document out of a million. A raw ratio would dwarf TF entirely; the \(\log\) <em>compresses</em> that range. As a term appears in more documents, \(df\) grows, the ratio shrinks toward 1, \(\log(1)=0\), and IDF approaches its floor of \(1\). So IDF is large for rare terms and \(\approx 1\) for ubiquitous ones — a smooth decreasing curve. "Inverse" is literal: it is inversely related to how many documents contain the term.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 380 200" width="380" height="200" role="img" aria-label="IDF decreasing curve">
+  <g font-family="-apple-system,sans-serif" font-size="11" fill="#7E776B">
+    <line x1="45" y1="160" x2="350" y2="160" stroke="#D6CAB2"/>
+    <line x1="45" y1="20" x2="45" y2="160" stroke="#D6CAB2"/>
+    <path d="M50,35 C90,90 150,135 220,150 C270,158 320,159 345,160" fill="none" stroke="#CC785C" stroke-width="2.5"/>
+    <text x="195" y="185" text-anchor="middle">Number of documents containing term t (0 → 100)</text>
+    <text x="18" y="95" text-anchor="middle" transform="rotate(-90 18 95)">IDF(t)</text>
+    <text x="40" y="40" text-anchor="end">6</text>
+    <text x="40" y="163" text-anchor="end">1</text>
+  </g>
+</svg>
+<figcaption>IDF falls from ~6 (very rare) toward 1 (in nearly every document).</figcaption>
+</div>
+
+<p><strong>Jazz example (slide 12).</strong> 15 jazz biographies from Wikipedia → ~2,000 features after stemming and stop-word removal. The query "Famous jazz saxophonist born in Kansas who played bebop and latin" is itself turned into a TF-IDF vector; <strong>cosine similarity</strong> ranks the documents: Charlie Parker 0.135 (top), Count Basie 0.119, Dizzie Gillespie 0.086, John Coltrane 0.079… The rare, discriminative term "latin" carries the highest per-term weight.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">1</div><p class="qtext">A term appears 3 times in a 100-word document, and that document is 1 of 50 in the corpus. The term occurs in 5 of those 50 documents. Which statement is correct?</p></div>
+<ol class="opts" data-explain="TF = 3/100 = 0.03 uses document length (100), not corpus size. IDF = 1 + log(50/5) = 1 + log 10. The term is moderately rare (5 of 50 documents), so IDF is well above its floor of 1 — it is not 'down-weighted toward 1'.">
+  <li data-correct="0"><span class="otxt">TF = 3/50, because we divide the count by the number of documents in the corpus.</span></li>
+  <li data-correct="1"><span class="otxt">TF = 3/100 (count ÷ document length), and IDF = 1 + log(50/5), which is clearly above 1.</span></li>
+  <li data-correct="0"><span class="otxt">IDF ≈ 1 here, because the term is common enough to be treated like a stop-word.</span></li>
+</ol></div>
+
+<h3>BM25: saturating frequency and normalizing length</h3>
+
+<div class="selfcheck">
+  <div class="q">TF grows <em>linearly</em>: a word appearing 100 times gets 100× the weight of appearing once. Why is that unreasonable for relevance ranking, and what would a better curve look like?</div>
+  <details><summary></summary>
+  <div class="reveal">Once a word appears, say, 5–10 times, you are already confident the document is about it — the 50th occurrence adds almost nothing. Linear TF over-rewards keyword stuffing and long documents. A better function <strong>saturates</strong>: it rises quickly at first, then flattens (diminishing returns). BM25 does exactly this, plus a tunable document-length correction. That is why BM25 often beats TF-IDF and, the slides note, <em>sometimes even beats embedding models</em> on retrieval.</div>
+  </details>
+</div>
+
+<div class="formula"><span class="lbl">BM25 query–document score</span>
+\[ \mathrm{BM25}(q, d) = \sum_{i=1}^{n} \mathrm{IDF}(q_i)\cdot \frac{ f(q_i, d)\,(k_1 + 1) }{ f(q_i, d) + k_1\!\left(1 - b + b\,\dfrac{\lvert d \rvert}{\mathrm{avgdl}}\right) } \]
+</div>
+<p>Here \(f(q_i,d)\) is the count of keyword \(q_i\) in \(d\), \(\mathrm{avgdl}\) is the average document length, and \(k_1\) (typically \(1.2\) to \(2.0\)) and \(b\) (typically \(0.75\)) are free parameters. The same expression per term \(t_i\) gives a feature weight \(w_{t_i,d}\), so BM25 can also produce a per-document feature vector.</p>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — read the formula's two knobs</div>
+  <p><strong>\(k_1\) controls saturation.</strong> As \(f \to \infty\), the fraction tends to the ceiling \(k_1+1\) — adding more occurrences yields ever-smaller gains. Set \(k_1\) small for fast saturation, large for more linear behavior. <strong>\(b\) controls length normalization.</strong> With \(b=1\) you fully divide by relative length \(\lvert d\rvert/\mathrm{avgdl}\) (penalizing long documents); with \(b=0\) length is ignored. TF-IDF has neither knob — that is precisely what BM25 adds.</p>
+</div>
+
+<div class="vs">
+  <div class="col"><h4>TF-IDF</h4><ul class="clean"><li>Document feature matrix</li><li>Linear TF</li><li>Length norm: divide TF by \(\lvert d\rvert\)</li><li>No free parameters</li><li>Strong baseline</li></ul></div>
+  <div class="col"><h4>BM25</h4><ul class="clean"><li>Query–document <em>ranking</em></li><li><strong>Saturated</strong> TF (nonlinear, \(k_1\))</li><li>Better length norm (\(b\), avgdl)</li><li>Params \(k_1\!\approx\!1.2\text{–}2.0\), \(b\!\approx\!0.75\)</li><li>Often beats TF-IDF; <em>sometimes beats embeddings</em></li></ul></div>
+</div>
+
+<h3>N-grams, high dimensionality, and classical NLP</h3>
+<p><strong>N-grams</strong> use sequences of adjacent words as terms, recovering a little of the word order BoW threw away. "The quick brown fox jumps" → bi-grams {quick_brown, brown_fox, fox_jumps}, often combined with the 1-grams. The cost: they <strong>greatly increase the feature set</strong> — sparsity gets worse.</p>
+
+<p>All of stage 1 yields very high-dimensional, sparse features. The toolbox for that: <strong>feature selection</strong>; fast scalable models (<strong>linear Naive Bayes</strong>, <strong>SVMs</strong>; clustering via <strong>NMF</strong>); <strong>the hashing trick</strong> (collapse many features into \(n\) hashed buckets); and dimensionality reduction (<strong>t-SNE, UMAP</strong>).</p>
+
+<p>Classical <strong>NLP</strong> learns language structure from data and handles context, negation, sarcasm better than BoW. Its best-known tasks: <strong>PoS tagging</strong>, <strong>Named Entity Recognition (NER)</strong> with per-entity salience scores, and <strong>topic modeling</strong> via <strong>LDA</strong> (per-document topic proportions \(\theta_d\), per-topic word distributions \(\varphi_k\), Dirichlet parameters \(\alpha, \beta\)) and <strong>LSA</strong>. Status today: mostly replaced by deep learning.</p>
+
+<div class="section-head"><span class="bar"></span><h2>Word embeddings: dense, learned, similarity-aware vectors</h2><span class="tag">stage 2</span></div>
+
+<h3>Why sparse representations hurt, and what we want instead</h3>
+
+<div class="selfcheck">
+  <div class="q">BoW / n-gram / TF-IDF vectors are huge and mostly zero. Beyond "wasteful," <em>why</em> does that sparsity actively hurt a learning algorithm — and what property do we wish the representation had instead?</div>
+  <details><summary></summary>
+  <div class="reveal">Each word gets its own orthogonal dimension, so "cat" and "kitten" are as far apart as "cat" and "democracy" — the geometry encodes <strong>no similarity</strong>. High dimension + sparsity also means data is spread thin (curse of dimensionality), and sequences of such vectors are even more uninformative. We want the opposite: <strong>dense, lower-dimensional, continuous</strong> vectors learned <em>from data</em>, where <strong>distance captures similarity</strong>. That object is an <strong>embedding</strong>.</div>
+  </details>
+</div>
+
+<dl class="defs">
+  <dt>Word embedding</dt><dd>A dense vector of real values per word, with dimension much smaller than the vocabulary. Each word becomes a point in "embedding space"; closeness (Euclidean or <strong>cosine</strong>) means relatedness.</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — the analogy "magic" is just vector arithmetic</div>
+  <p>"Man is to woman as king is to ___?" resolves by offsets:</p>
+  <div class="formula"><span class="lbl">The canonical analogy</span>\[ [\text{king}] - [\text{man}] + [\text{woman}] \approx [\text{queen}] \]</div>
+  <p>The vector \([\text{woman}]-[\text{man}]\) encodes the "male → female" direction; adding it to \([\text{king}]\) lands near \([\text{queen}]\). Verb-tense (walking→walked) and country–capital (China→Beijing) relations show up as roughly <em>parallel offset vectors</em>. This emerges because embeddings are trained to reflect <strong>context</strong>, and words sharing relations share contexts.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 380 170" width="380" height="170" role="img" aria-label="Parallel offset vectors for analogies">
+  <g font-family="-apple-system,sans-serif" font-size="12">
+    <circle cx="70" cy="120" r="4" fill="#A8472A"/><text x="60" y="138" fill="#4F4B43">man</text>
+    <circle cx="120" cy="60" r="4" fill="#A8472A"/><text x="108" y="52" fill="#4F4B43">woman</text>
+    <circle cx="230" cy="120" r="4" fill="#3C5870"/><text x="220" y="138" fill="#4F4B43">king</text>
+    <circle cx="280" cy="60" r="4" fill="#3C5870"/><text x="270" y="52" fill="#4F4B43">queen</text>
+    <line x1="70" y1="120" x2="120" y2="60" stroke="#CC785C" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+    <line x1="230" y1="120" x2="280" y2="60" stroke="#5C8A6B" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7E776B"/></marker></defs>
+    <text x="150" y="100" fill="#8A5C7C" font-style="italic" font-size="11">same "male→female" offset</text>
+  </g>
+</svg>
+<figcaption>The offset between paired words is roughly constant — analogies become addition.</figcaption>
+</div>
+
+<h3>How embeddings are constructed: self-supervision</h3>
+<p>The key trick: don't hand-build the vectors — <strong>learn them from a large corpus using a self-supervised task</strong> (the labels come for free from the text itself). Two families of task:</p>
+<ul class="clean">
+  <li><strong>Predict-from-context:</strong> skip-gram and CBOW (below) — guess a focus word from its neighbors, or vice versa.</li>
+  <li><strong>Adversarial / discriminative:</strong> swap a word in a 5-gram for a random word and have the model judge whether the 5-gram is real.</li>
+</ul>
+<p>The learner can be simple <strong>matrix factorization</strong> or a more powerful <strong>neural network</strong>. Either way, the learned embedding becomes a reusable feature vector — <strong>transfer learning</strong> to other tasks.</p>
+
+<h3>word2vec — CBOW and skip-gram</h3>
+<p><strong>word2vec</strong> (Google, 2013, Mikolov et al.) learns one vector per <em>word</em> (term level, not document level). Central idea: <em>a word is defined by its context</em>. Two training framings.</p>
+
+<div class="vs">
+  <div class="col"><h4>CBOW — predict word from context</h4>
+    <ul class="clean">
+      <li>Input = surrounding <strong>context</strong> words (each one-hot, length \(V\))</li>
+      <li>Output = the <strong>focus word</strong> (softmax)</li>
+      <li>Hidden activation = <strong>average</strong> of context vectors</li>
+      <li>Context order <strong>ignored</strong> (assumes input independence)</li>
+      <li>Averaging "smooths" ⇒ <strong>needs less data</strong></li>
+    </ul>
+  </div>
+  <div class="col"><h4>Skip-gram (CSG) — predict context from word</h4>
+    <ul class="clean">
+      <li>Input = the single <strong>focus</strong> word (one-hot)</li>
+      <li>Output = each <strong>context</strong> word (presented one by one)</li>
+      <li>Hidden = <strong>pass-through</strong> (no activation)</li>
+      <li><strong>Easier to implement</strong></li>
+      <li>Better-quality vectors but <strong>needs more data</strong></li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">⚠ Do not swap these — the favourite exam trick</div>
+  <p><strong>CBOW</strong> = Context → wOrd, averaging activation, <em>less</em> data. <strong>Skip-gram</strong> = word → context (it "skips" out to neighbors), pass-through, <em>more</em> data but better vectors. If you remember "CBOW averages (so it's smooth and data-cheap)," you won't flip them.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 460 200" width="460" height="200" role="img" aria-label="CBOW network">
+  <g font-family="-apple-system,sans-serif" font-size="11" fill="#4F4B43">
+    <rect x="20" y="30" width="60" height="22" rx="4" fill="#F6E5DC" stroke="#A8472A"/><text x="50" y="45" text-anchor="middle">context 1</text>
+    <rect x="20" y="88" width="60" height="22" rx="4" fill="#D9E2EA" stroke="#3C5870"/><text x="50" y="103" text-anchor="middle">context 2</text>
+    <rect x="20" y="146" width="60" height="22" rx="4" fill="#DDE8DC" stroke="#3F6B4F"/><text x="50" y="161" text-anchor="middle">context 3</text>
+    <line x1="80" y1="41" x2="200" y2="100" stroke="#CC785C"/><line x1="80" y1="99" x2="200" y2="100" stroke="#CC785C"/><line x1="80" y1="157" x2="200" y2="100" stroke="#CC785C"/>
+    <text x="135" y="78" text-anchor="middle" font-style="italic" fill="#A8472A">shared W (V×N)</text>
+    <rect x="200" y="84" width="74" height="32" rx="6" fill="#F1EADB" stroke="#D6CAB2"/><text x="237" y="104" text-anchor="middle">avg hidden (N)</text>
+    <line x1="274" y1="100" x2="370" y2="100" stroke="#5C8A6B"/><text x="322" y="92" text-anchor="middle" font-style="italic" fill="#3F6B4F">W'</text>
+    <rect x="370" y="84" width="72" height="32" rx="6" fill="#FBFAF6" stroke="#CC785C"/><text x="406" y="98" text-anchor="middle">softmax →</text><text x="406" y="111" text-anchor="middle">focus word</text>
+  </g>
+</svg>
+<figcaption>CBOW: the <em>same</em> weight matrix \(W\) is shared across all context words; their hidden activations are averaged, then a softmax predicts the focus word.</figcaption>
+</div>
+
+<p><strong>Numeric example (CBOW, slide 31).</strong> \(V=10\), \(N=4\), \(C=3\). The three one-hot context inputs select rows 2, 5, 9 of \(W\):</p>
+<div class="formula"><span class="lbl">averaging the selected rows → hidden activation</span>
+\[ \frac{[0,0,1,0] + [1,0,0,-1] + [1,1,0,0]}{3} = [0.66,\ 0.33,\ 0.33,\ -0.33] \]
+</div>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — why does CBOW reduce to a lookup table?</div>
+  <p>A one-hot vector times the matrix \(W\) just <em>selects a row</em> of \(W\) (all other rows are multiplied by 0). So after training, getting a word's embedding is a simple <strong>row lookup</strong> in \(W\) — the embedding layer is an integer "lookup table" of trainable weights of length \(N\). That is also why <strong>order does not matter</strong>: averaging selected rows is commutative. The whole context plus the desired focus word is one training example.</p>
+</div>
+
+<div class="callout tip">
+  <div class="ttl">✦ ELI-intern — what is actually being learned?</div>
+  <p>Picture a spreadsheet \(W\) with one row per vocabulary word and \(N\) columns. Initially the rows are random. Training nudges rows so that words appearing in similar contexts drift toward similar rows. The network (softmax output, the second matrix) is just <em>scaffolding</em> to generate a learning signal. When training ends you <strong>throw the network away and keep \(W\)</strong> — its rows <em>are</em> the word vectors. The hidden-layer size \(N\) = the embedding dimensionality. The whole thing is "an auto-encoder with context": dimensionality reduction guided by which words co-occur.</p>
+</div>
+
+<p><strong>Good implementations</strong> add: random context-word selection, <strong>subsampling</strong> (skip retraining very frequent words), and <strong>negative sampling</strong> (update only a few weights per step, not all of \(W'\)). To visualize 300- or 1000-dimensional vectors, project to 2D with a <em>second</em> step of PCA or t-SNE — don't train the embedding in 2D directly.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">2</div><p class="qtext">After training a word2vec model, what do you keep to use as word vectors, and why?</p></div>
+<ol class="opts" data-explain="A one-hot input multiplied by W selects a single row of W, so each row IS that word's embedding. You discard the output (softmax) layer — it was only scaffolding to create a training signal. The hidden-layer size equals the embedding dimensionality.">
+  <li data-correct="1"><span class="otxt">The hidden-layer weight matrix \(W\); each word's row is its embedding, and the output layer is discarded.</span></li>
+  <li data-correct="0"><span class="otxt">The output softmax weights, because they produce the probability distribution over words.</span></li>
+  <li data-correct="0"><span class="otxt">The one-hot input vectors, since they already uniquely identify each word.</span></li>
+</ol></div>
+
+<h3>GloVe, fastText, doc2vec</h3>
+<div class="grid">
+  <div class="card"><h4 style="margin-top:0">GloVe</h4><p>Global Vectors (Pennington et al.). Argues word2vec is suboptimal because it doesn't fully exploit <strong>global co-occurrence statistics</strong>. Combines skip-gram's analogy strengths with <strong>matrix factorization</strong> over the global co-occurrence matrix. Output is similar to word2vec.</p></div>
+  <div class="card"><h4 style="margin-top:0">fastText</h4><p>Facebook library. Builds a word vector from the vectors of its <strong>character n-grams</strong> (subwords), stored in a hashtable. Consequence: it can embed <strong>any word — even misspelled or made-up ones</strong>, which word2vec/GloVe cannot. Still used in industry.</p></div>
+  <div class="card"><h4 style="margin-top:0">doc2vec / par2vec</h4><p>Extends word2vec to <strong>whole documents</strong>: a Paragraph Matrix holds a paragraph-id vector alongside word vectors; these are averaged/concatenated to predict the next word — yielding a document-level embedding.</p></div>
+</div>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — why is fastText's OOV ability a big deal?</div>
+  <p>word2vec/GloVe assign vectors to <em>whole words</em> seen in training. A typo ("teh"), a rare compound, or a brand-new term has no vector — it's simply unknown. fastText composes a word's vector from its <strong>substrings</strong> ("where" = wh, whe, her, ere, re…), so even an unseen word inherits a sensible vector from its pieces. This handles misspellings, morphology, and concatenations — crucial for noisy, real-world text.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">3</div><p class="qtext">You must embed user-generated text full of typos and invented slang. Which model handles out-of-vocabulary words, and on what principle?</p></div>
+<ol class="opts" data-explain="fastText builds each word vector from its character n-grams (subwords), so any string — even an unseen one — gets a vector composed from its pieces. word2vec and GloVe map only whole, previously-seen words to vectors, so they cannot represent OOV terms.">
+  <li data-correct="0"><span class="otxt">GloVe, because it uses global co-occurrence statistics across the whole corpus.</span></li>
+  <li data-correct="0"><span class="otxt">word2vec skip-gram, because it produces higher-quality vectors than CBOW.</span></li>
+  <li data-correct="1"><span class="otxt">fastText, because it composes a word's vector from its character n-grams (subwords).</span></li>
+</ol></div>
+
+<h3>Generalizing embeddings: categoricals, graphs, and the big idea</h3>
+<p>An embedding is simply <strong>a layer that maps a categorical input to a vector of trainable weights</strong>, learned by ordinary SGD. So the idea generalizes far beyond words:</p>
+<ul class="clean">
+  <li><strong>Entity / categorical embeddings:</strong> for a high-cardinality categorical (e.g. store id, day-of-week), feed only that categorical into a small net → embedding → outcome. One-hot day-of-week needs 6 dims (7−1); an embedding compresses it, <strong>reducing overfitting</strong>. Jeremy Howard's size heuristic: \(1.6 \cdot \lvert \text{cats} \rvert^{0.56}\).</li>
+  <li><strong>node2vec:</strong> embeddings for graph nodes.</li>
+  <li>t-SNE, UMAP, PCA, auto-encoders are all, in this light, ways to <strong>create a representation</strong>.</li>
+</ul>
+
+<div class="callout note">
+  <div class="ttl">◇ Broader context — the thesis statement of the chapter</div>
+  <p>"The main task of ML and especially deep learning is <strong>learning compressed, dense representations that fit the downstream task</strong>." Words, documents, categories, graph nodes — same recipe. The chapter also flags a sharp ethical edge: embeddings absorb the biases of their corpus. The <strong>WEAT</strong> test and the "Man is to Computer Programmer as Woman is to Homemaker" result show learned gender bias baked into the geometry.</p>
+</div>
+
+<div class="section-head"><span class="bar"></span><h2>Recurrent neural networks: learning from sequences</h2><span class="tag">stage 3</span></div>
+
+<h3>The state idea and the recurrent cell</h3>
+
+<div class="selfcheck">
+  <div class="q">Embeddings give one vector per word, but a sentence is a <em>sequence</em> of varying length. What's the core problem, and what does an RNN keep around to solve it?</div>
+  <details><summary></summary>
+  <div class="reveal">A feed-forward net needs a fixed-size input, but sequences vary in length and order matters. The RNN's idea: feed inputs <strong>one at a time</strong> and carry a <strong>state</strong> — a compact summary of everything seen so far that's relevant to the task. At each step the new state is a function of the current input and the previous state, so information flows forward through time. The network performs the <em>same</em> task at every position (hence "recurrent"), with output depending on prior computations.</div>
+  </details>
+</div>
+
+<div class="formula"><span class="lbl">plain RNN cell — state update and output</span>
+\[ a^{\langle t\rangle} = \tanh\!\left(W_{ax}\,x^{\langle t\rangle} + W_{aa}\,a^{\langle t-1\rangle} + b_a\right), \qquad \hat{y}^{\langle t\rangle} = \mathrm{softmax}\!\left(W_{ya}\,a^{\langle t\rangle} + b_y\right) \]
+</div>
+<p>In the plain RNN the <strong>output at each step equals the hidden state</strong> (then optionally passed through a softmax). The state at time \(t\) depends on the state at \(t-1\), which depends on \(t-2\), and so on — a chain back to the start.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 470 140" width="470" height="140" role="img" aria-label="RNN unrolling through time">
+  <g font-family="-apple-system,sans-serif" font-size="12" fill="#4F4B43">
+    <rect x="20" y="55" width="40" height="40" rx="8" fill="#DDE8DC" stroke="#3F6B4F"/><text x="40" y="80" text-anchor="middle">A</text>
+    <path d="M40,55 C20,30 60,30 40,55" fill="none" stroke="#CC785C" stroke-width="1.5"/>
+    <text x="95" y="80" text-anchor="middle" font-size="16">=</text>
+    <g>
+      <rect x="130" y="55" width="40" height="40" rx="8" fill="#DDE8DC" stroke="#3F6B4F"/><text x="150" y="80" text-anchor="middle">A</text>
+      <rect x="220" y="55" width="40" height="40" rx="8" fill="#DDE8DC" stroke="#3F6B4F"/><text x="240" y="80" text-anchor="middle">A</text>
+      <rect x="310" y="55" width="40" height="40" rx="8" fill="#DDE8DC" stroke="#3F6B4F"/><text x="330" y="80" text-anchor="middle">A</text>
+      <rect x="400" y="55" width="40" height="40" rx="8" fill="#DDE8DC" stroke="#3F6B4F"/><text x="420" y="80" text-anchor="middle">A</text>
+      <line x1="170" y1="75" x2="220" y2="75" stroke="#CC785C" marker-end="url(#a2)"/>
+      <line x1="260" y1="75" x2="310" y2="75" stroke="#CC785C" marker-end="url(#a2)"/>
+      <line x1="350" y1="75" x2="400" y2="75" stroke="#CC785C" marker-end="url(#a2)"/>
+      <text x="150" y="118" text-anchor="middle">x₁</text><text x="240" y="118" text-anchor="middle">x₂</text><text x="330" y="118" text-anchor="middle">x₃</text><text x="420" y="118" text-anchor="middle">x₄</text>
+      <text x="150" y="42" text-anchor="middle">h₁</text><text x="240" y="42" text-anchor="middle">h₂</text><text x="330" y="42" text-anchor="middle">h₃</text><text x="420" y="42" text-anchor="middle">h₄</text>
+      <line x1="150" y1="55" x2="150" y2="48" stroke="#5C8A6B"/><line x1="240" y1="55" x2="240" y2="48" stroke="#5C8A6B"/><line x1="330" y1="55" x2="330" y2="48" stroke="#5C8A6B"/><line x1="420" y1="55" x2="420" y2="48" stroke="#5C8A6B"/>
+    </g>
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#CC785C"/></marker></defs>
+  </g>
+</svg>
+<figcaption>A self-looping cell \(A\) <em>unrolls</em> into a deep chain with <strong>weight sharing</strong> — the same \(A\) at every step.</figcaption>
+</div>
+
+<h3>BPTT and why plain RNNs struggle</h3>
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — why hidden-state recurrence, and why BPTT?</div>
+  <p><strong>Why recur on the hidden state</strong> (not just on the previous input)? A hidden state lets the network <em>learn what to remember and what to discard</em> across arbitrarily many steps, rather than being limited to a fixed window of raw inputs. <strong>Why BPTT?</strong> Because the same weights are reused at every time step, the unrolled network is a deep net with shared weights; to train it you <strong>backpropagate through the time-unfolded graph</strong> — ordinary backprop, just on the unrolled chain, accumulating each weight's gradient across all the steps it was used.</p>
+</div>
+
+<div class="callout warn">
+  <div class="ttl">⚠ The catch — RNNs forget</div>
+  <p>In <em>theory</em> RNNs handle arbitrarily long sequences; in <em>practice</em> they look back only a few steps. The usual neural-net demons return — <strong>vanishing gradients</strong> — and the impact of the initial state can be severe. An RNN is a nonlinear dynamical system, so weight changes can make it <strong>unstable (bifurcations)</strong>. Remembering "a bracket opened long ago and must be closed" is genuinely hard for a plain RNN.</p>
+</div>
+
+<h3>LSTM and GRU: gating to remember longer</h3>
+<p>The fix is <strong>gating</strong>: learn to conditionally set or reset state values based on the current input and previous state. Two designs:</p>
+
+<div class="vs">
+  <div class="col"><h4>LSTM (1997, Hochreiter &amp; Schmidhuber)</h4>
+    <ul class="clean">
+      <li>Gates: <strong>forget \(f_t\), input \(i_t\), output \(o_t\)</strong> (each via \(\sigma\)); candidate via \(\tanh\)</li>
+      <li>A <strong>cell state \(C_t\)</strong> runs along the top as a memory highway</li>
+      <li><strong>Two values passed to next step:</strong> cell state \(C_t\) and hidden \(h_t\)</li>
+      <li>Better for long-range dependencies in theory</li>
+    </ul>
+  </div>
+  <div class="col"><h4>GRU (2014, Cho et al.)</h4>
+    <ul class="clean">
+      <li>Gates: <strong>reset \(r_t\), update \(z_t\)</strong> (with a \((1-)\) complement), single \(\tanh\)</li>
+      <li><strong>One value passed</strong> to next step: hidden \(h_t\)</li>
+      <li><strong>Trains faster</strong>, often better on <em>less</em> data</li>
+      <li>Used at least as often as LSTM now — try both</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout tip">
+  <div class="ttl">✦ ELI-intern — what does a "gate" actually do?</div>
+  <p>A gate is a vector of numbers between 0 and 1 (from a sigmoid \(\sigma\)), multiplied element-wise into another vector. A 0 closes the gate (blocks that value), a 1 opens it (lets it through). The <strong>forget gate</strong> decides which parts of the old cell memory to erase; the <strong>input gate</strong> decides which new candidate info to write; the <strong>output gate</strong> decides what to expose as \(h_t\). Because the cell state \(C_t\) is mostly <em>added</em> to (not repeatedly multiplied by weights), gradients flow back through it without vanishing — that is the whole point. The network <em>learns</em> these gate values, so it learns its own memory policy.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">4</div><p class="qtext">Which statement about LSTM vs. GRU is correct?</p></div>
+<ol class="opts" data-explain="LSTM (1997) passes TWO things between steps — the cell state C_t and the hidden state h_t — with forget/input/output gates. GRU (2014) passes only h_t with reset/update gates, trains faster, and often wins on smaller data. The cell-state highway with mostly-additive updates is what fights vanishing gradients.">
+  <li data-correct="0"><span class="otxt">GRU passes both a cell state and a hidden state; LSTM passes only a hidden state.</span></li>
+  <li data-correct="1"><span class="otxt">LSTM passes two values (cell state \(C_t\) and hidden \(h_t\)); GRU passes only \(h_t\) and tends to train faster.</span></li>
+  <li data-correct="0"><span class="otxt">Both pass two values, but only the GRU uses a forget gate to fight vanishing gradients.</span></li>
+</ol></div>
+
+<h3>Bidirectional RNN and seq2seq</h3>
+<p>A <strong>bidirectional RNN</strong> runs one RNN forward and one backward over the sequence and combines their states per position. This is <strong>not cheating by looking at the future</strong> — it is legitimate when the whole sequence is already available at inference (e.g. tagging a complete sentence), as opposed to online, left-to-right prediction.</p>
+
+<p><strong>Sequence-to-sequence (seq2seq)</strong> pairs an <strong>encoder</strong> and a <strong>decoder</strong>:</p>
+<ul class="clean">
+  <li><strong>Encoder</strong> (LSTM/GRU) reads the whole input and compresses it into a fixed-length <strong>context vector</strong> — a summary of the source's meaning. (Early work used only the encoder's <em>last</em> state.)</li>
+  <li><strong>Decoder</strong> (LSTM/GRU) is initialized from the context vector and generates the output sequence one word at a time (e.g. "I like cats" → "J'aime les chats").</li>
+</ul>
+<p>Context-vector length = number of encoder units (e.g. 256, 512, 1024); an embedding layer sits on top of the input tokens.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 470 150" width="470" height="150" role="img" aria-label="seq2seq encoder decoder">
+  <g font-family="-apple-system,sans-serif" font-size="11" fill="#4F4B43">
+    <rect x="20" y="40" width="190" height="70" rx="10" fill="#DDE8DC" stroke="#3F6B4F"/><text x="115" y="32" text-anchor="middle" fill="#3F6B4F">Encoder (LSTM)</text>
+    <text x="55" y="80" text-anchor="middle">I</text><text x="110" y="80" text-anchor="middle">like</text><text x="170" y="80" text-anchor="middle">cats</text>
+    <rect x="260" y="40" width="190" height="70" rx="10" fill="#D9E2EA" stroke="#3C5870"/><text x="355" y="32" text-anchor="middle" fill="#3C5870">Decoder (LSTM)</text>
+    <text x="300" y="80" text-anchor="middle">J'aime</text><text x="355" y="80" text-anchor="middle">les</text><text x="410" y="80" text-anchor="middle">chats</text>
+    <line x1="210" y1="75" x2="260" y2="75" stroke="#CC785C" stroke-width="2.5" marker-end="url(#a3)"/>
+    <text x="235" y="128" text-anchor="middle" font-style="italic" fill="#A8472A">single fixed-length</text><text x="235" y="142" text-anchor="middle" font-style="italic" fill="#A8472A">context vector</text>
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#CC785C"/></marker></defs>
+  </g>
+</svg>
+<figcaption>The encoder squeezes the entire source into one vector — the decoder must reconstruct meaning from it.</figcaption>
+</div>
+
+<div class="section-head"><span class="bar"></span><h2>Attention: stop squeezing everything into one vector</h2><span class="tag">stage 3 → 4</span></div>
+
+<div class="selfcheck">
+  <div class="q">A long sentence must pass through a single fixed-length context vector to the decoder. Why is that a fundamental problem, and what would you let the decoder do instead?</div>
+  <details><summary></summary>
+  <div class="reveal">It is unreasonable to cram all the information of a long, possibly 50-word sentence into one vector of, say, 512 numbers — the early words get washed out (RNNs forget; the encoder's last state over-represents the end). Translating long sentences stays problematic. The fix: let the decoder, <em>at each output step</em>, look back at <strong>all</strong> the encoder's hidden states and <strong>focus</strong> on the few most relevant to the word it's generating now. That selective focusing is <strong>attention</strong>.</div>
+  </details>
+</div>
+
+<h3>What attention changes about seq2seq</h3>
+<p>Two differences from plain seq2seq:</p>
+<ol class="steps">
+  <li>The encoder passes <strong>all</strong> hidden states to the decoder, not just the last one.</li>
+  <li>Before producing each output word, the decoder does an extra step: <strong>score</strong> every encoder hidden state, <strong>softmax</strong> the scores, then take the <strong>score-weighted sum</strong> of the states — amplifying relevant words, drowning out the rest. (Trick that also helps: feeding the source <em>reversed</em> shortens the path from decoder to early words.)</li>
+</ol>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — Query, Key, Value in plain words</div>
+  <p>Think of a soft dictionary lookup. The <strong>Query</strong> is "what am I looking for right now?" = the decoder's current hidden state. The <strong>Keys</strong> are "what can I match against?" = the encoder hidden states. The match score (Query · Key) says how relevant each key is. Softmax turns scores into weights. The <strong>Values</strong> (also the encoder states) are what you actually retrieve — you return a <em>weighted blend</em> of values, weighted by relevance. So attention = a differentiable, soft lookup.</p>
+</div>
+
+<div class="formula"><span class="lbl">attention as a soft lookup (decoder step)</span>
+\[ \text{weights} = \mathrm{softmax}\!\left(\frac{Q^{\top}K}{\sqrt{n}}\right), \qquad \text{context} = \text{weights}\times V \]
+</div>
+
+<p><strong>Worked step (slide 64).</strong> Encoder states scored 13, 9, 9 → softmax 0.96, 0.02, 0.02 → multiply each state by its weight → sum → the context vector for <em>this</em> decoder step. The alignment heat-maps (English→French) come out roughly diagonal, with sensible reordering for phrases like "European Economic Area" ↔ "zone économique européenne".</p>
+
+<p>Many score functions exist; the one that wins is <strong>scaled dot-product</strong> (Vaswani 2017):</p>
+<div class="formula"><span class="lbl">scaled dot-product score</span>
+\[ \mathrm{score}(s_t, h_i) = \frac{s_t^{\top} h_i}{\sqrt{n}}, \qquad n = \text{source hidden-state dimension} \]
+</div>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — why divide by \(\sqrt{n}\)?</div>
+  <p>A dot product of two \(n\)-dimensional vectors sums \(n\) products, so its magnitude grows with \(n\). Large scores push softmax into a near one-hot regime where gradients vanish. Dividing by \(\sqrt{n}\) keeps the variance of the score roughly constant regardless of dimension, so softmax stays in a well-behaved range and training is stable. It is a <em>numerical-stability</em> fix, not a semantic one.</p>
+</div>
+
+<div class="callout note">
+  <div class="ttl">◇ Broader context — the pivotal question</div>
+  <p>With attention, we no longer compress the whole source into one fixed vector — the network attends to different parts at each output step. The slides then ask the question that launches the next era: <strong>"Maybe we can do away with recurrence altogether now?"</strong> If attention can connect any output to any input directly, do we even need the slow, forgetful recurrent chain? The answer is the Transformer.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">5</div><p class="qtext">In attention's Query/Key/Value framing for seq2seq, which mapping is correct?</p></div>
+<ol class="opts" data-explain="The Query is the decoder's current hidden state ('what am I looking for now?'). The Keys and Values are the encoder hidden states ('what can I match against / retrieve?'). You score Query against Keys, softmax, then take a weighted sum of Values.">
+  <li data-correct="0"><span class="otxt">Query = all encoder states; Keys = the decoder's current state; Values = the softmax scores.</span></li>
+  <li data-correct="0"><span class="otxt">Query = the source embeddings; Keys = the target embeddings; Values = the alignment matrix.</span></li>
+  <li data-correct="1"><span class="otxt">Query = the decoder's current hidden state; Keys and Values = the encoder hidden states.</span></li>
+</ol></div>
+
+<div class="section-head"><span class="bar"></span><h2>The Transformer: attention is all you need</h2><span class="tag">stage 4</span></div>
+
+<h3>Self-attention</h3>
+
+<div class="selfcheck">
+  <div class="q">In seq2seq attention, Q came from the decoder and K, V from the encoder. What changes in <em>self</em>-attention, and why is that the key to dropping recurrence?</div>
+  <details><summary></summary>
+  <div class="reveal">In <strong>self-attention</strong>, Q, K, and V all come from the <em>same</em> set of tokens (the input sequence itself). Each token asks "which other tokens should I look at to understand myself?" and updates its representation as a weighted blend of all tokens. Because every token can directly reach every other token in one step — no chain to walk — you no longer need recurrence to move information across the sequence. And it parallelizes: all positions are processed at once.</div>
+  </details>
+</div>
+
+<p><strong>Mechanism per token:</strong></p>
+<ol class="steps">
+  <li>From each token's embedding, compute three vectors via three weight matrices: \(Q = X W^Q\), \(K = X W^K\), \(V = X W^V\). <strong>All from the same input set</strong> — that is what makes it <em>self</em>-attention.</li>
+  <li>Compare each Query with all Keys → attention scores.</li>
+  <li>Softmax the scores → attention weights.</li>
+  <li>Take the weighted sum of Values → the token's new representation.</li>
+</ol>
+
+<div class="formula"><span class="lbl">self-attention in matrix form</span>
+\[ Q = X W^{Q},\quad K = X W^{K},\quad V = X W^{V}, \qquad Z = \mathrm{softmax}\!\left(\frac{Q K^{\top}}{\sqrt{d_k}}\right) V \]
+</div>
+
+<p>Stacked decoder blocks <strong>gradually refine</strong> each token's representation by letting it repeatedly look at the others.</p>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — the single most-tested contrast</div>
+  <p><strong>"Attention mixes information BETWEEN tokens; the feed-forward network processes each token INDIVIDUALLY."</strong> Self-attention is the only place where one token's information reaches another. After attention, every token is pushed through the <em>same</em> small feed-forward network independently — no cross-token interaction there. So a Transformer block alternates: <em>mix</em> (attention), then <em>think per-token</em> (FFNN), with residual (skip) connections and layer norm around each.</p>
+</div>
+
+<h3>Masking — why GPT can generate</h3>
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — masked self-attention</div>
+  <p>For generation, a token must only attend to <strong>previous</strong> tokens — if it could peek at future tokens during training, it would "cheat" and never learn to predict them. So the attention matrix is <strong>masked</strong>: future positions are blocked out (set to \(-\infty\) before softmax). The slides put it directly: <em>"This is why GPT can generate text."</em> A decoder-only Transformer with masked self-attention learns next-token prediction honestly.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 360 150" width="360" height="150" role="img" aria-label="Decoder block: mix then per-token">
+  <g font-family="-apple-system,sans-serif" font-size="11" fill="#4F4B43">
+    <rect x="20" y="55" width="120" height="40" rx="8" fill="#E7D8E3" stroke="#8A5C7C"/><text x="80" y="72" text-anchor="middle">Masked</text><text x="80" y="86" text-anchor="middle">Self-Attention</text>
+    <text x="80" y="118" text-anchor="middle" font-style="italic" fill="#8A5C7C">mixes BETWEEN tokens</text>
+    <line x1="140" y1="75" x2="200" y2="75" stroke="#CC785C" stroke-width="2" marker-end="url(#a4)"/>
+    <rect x="200" y="55" width="120" height="40" rx="8" fill="#DDE8DC" stroke="#3F6B4F"/><text x="260" y="79" text-anchor="middle">FFNN</text>
+    <text x="260" y="118" text-anchor="middle" font-style="italic" fill="#3F6B4F">each token alone</text>
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#CC785C"/></marker></defs>
+    <text x="180" y="30" text-anchor="middle" font-size="12">+ residual / skip connections + layer norm around each</text>
+  </g>
+</svg>
+<figcaption>One decoder block: mix across tokens (attention), then process each token independently (FFNN).</figcaption>
+</div>
+
+<h3>Multi-head attention and positional encoding</h3>
+<p><strong>Multi-head attention:</strong> instead of one set of \(Q/K/V\) matrices, use several (multiple "representation subspaces"). Each head can focus on a different relationship (syntax, coreference, …). Run them in parallel, then <strong>concatenate</strong> all heads \(Z_0 \dots Z_h\) and multiply by a learned matrix \(W^O\) to mix them back into one \(Z\) sent to the FFNN.</p>
+
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — why does self-attention need positional encoding at all?</div>
+  <p>Self-attention is a <em>set</em> operation — it sums over tokens with weights, and a sum doesn't care about order. "dog bites man" and "man bites dog" would look identical. So we <strong>add a positional-encoding vector to each token embedding</strong> (built from sinusoids of varying frequency), injecting "where in the sequence am I." Note it is <strong>added</strong>, not concatenated, and added <em>before</em> the attention layers. This is the explicit replacement for the order information that recurrence gave us for free.</p>
+</div>
+
+<h3>The output head</h3>
+<p>At the top, the same linear layer is applied to every position's final representation to produce vocabulary logits:</p>
+<div class="formula"><span class="lbl">output projection to vocabulary</span>
+\[ \text{logits} = X\, W_{\text{vocab}} \]
+</div>
+<p>During <strong>training</strong>, every position predicts its next token at once — full parallelism. During <strong>inference</strong>, you use only the <em>last</em> position's prediction, append the sampled token to the input, and run again — <strong>autoregressive</strong> generation.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">6</div><p class="qtext">Why must a Transformer add positional encodings to its input embeddings?</p></div>
+<ol class="opts" data-explain="Self-attention is permutation-invariant — it is a weighted sum over tokens, invariant to reordering. Without position info, 'dog bites man' and 'man bites dog' would be indistinguishable. Positional encodings (added, not concatenated) restore the word-order information recurrence used to provide implicitly.">
+  <li data-correct="1"><span class="otxt">Self-attention is permutation-invariant, so without position info word order would be lost.</span></li>
+  <li data-correct="0"><span class="otxt">To normalize the embedding magnitudes so softmax does not saturate.</span></li>
+  <li data-correct="0"><span class="otxt">To mask out future tokens so the model cannot cheat during generation.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">7</div><p class="qtext">In a Transformer block, which component lets one token's information influence another's representation?</p></div>
+<ol class="opts" data-explain="Self-attention is the ONLY component that mixes information between tokens. The feed-forward network is applied independently and identically to each token, with no cross-token interaction. This is the most commonly swapped true/false on the exam.">
+  <li data-correct="0"><span class="otxt">The position-wise feed-forward network, which combines all token vectors.</span></li>
+  <li data-correct="0"><span class="otxt">Layer normalization, which averages across the sequence.</span></li>
+  <li data-correct="1"><span class="otxt">Self-attention; the feed-forward network processes each token independently.</span></li>
+</ol></div>
+
+<div class="section-head"><span class="bar"></span><h2>GPT, RLHF, and the post-Transformer frontier</h2><span class="tag">stage 5</span></div>
+
+<h3>GPT: a big decoder-only Transformer</h3>
+<p><strong>GPT</strong> (Generative Pretrained Transformer) is a <strong>decoder-only</strong> Transformer with masked self-attention, scaled up and trained on <strong>text completion given a prompt</strong> (next-token prediction). Implementation tricks: <strong>Byte Pair Encoding (BPE)</strong> tokenization and sparse self-attention. Across generations the architecture stayed essentially the same; what scaled was data, plus <strong>tool calling, reasoning tokens, multi-modal input/output, better positional encoding, mixture of experts</strong>.</p>
+
+<div class="callout note">
+  <div class="ttl">◇ The LLM family tree (slide 74)</div>
+  <p>From the common root (word2vec / GloVe / fastText), three branches: <strong>encoder-only</strong> (BERT, RoBERTa, ELECTRA, DeBERTa — understanding/classification), <strong>encoder-decoder</strong> (T5, BART, UL2 — seq2seq tasks), and <strong>decoder-only</strong> (GPT, LLaMA, PaLM, Claude, BLOOM — generation). The decoder-only trunk is the dominant one today.</p>
+</div>
+
+<h3>RLHF — aligning to human preference</h3>
+<div class="callout why">
+  <div class="ttl">⊛ Drill the why — why can't we just write a loss for "be helpful"?</div>
+  <p>Desirable attributes (helpful, honest, not toxic) are intractable to express as a differentiable loss function. So models are still trained with a <strong>simple next-token-prediction loss</strong>, then patched. People define proxy metrics like <strong>BLEU</strong> and <strong>ROUGE</strong> to approximate human preference. <strong>RLHF</strong> goes further: collect <em>human feedback</em> on generated text and use it as the performance signal — even as a loss to optimize. This <strong>aligns</strong> a general-corpus model with complex human values. It was applied on top of GPT-3 (InstructGPT) and is part of ChatGPT.</p>
+</div>
+
+<h3>The Transformer bottleneck and what comes after</h3>
+
+<div class="selfcheck">
+  <div class="q">A Transformer recomputes attention over the whole sequence for every new token. Why is that costly, and how does an RNN avoid it?</div>
+  <details><summary></summary>
+  <div class="reveal">To generate token \(t\), self-attention compares the new token to <em>all</em> previous tokens; doing this for each of \(L\) generated tokens gives roughly \(L^2\) work — it grows quadratically and recomputes already-generated tokens. An <strong>RNN</strong> only needs the <em>previous hidden state plus the current input</em>, so generation scales <strong>linearly</strong> in length and (in theory) has unbounded context. The price RNNs pay: they tend to <strong>forget</strong> (one state) and are <strong>slow to train</strong> because of BPTT. This trade-off is exactly what SSMs try to win on both sides.</div>
+  </details>
+</div>
+
+<div class="formula"><span class="lbl">Transformer generation cost</span>
+\[ \text{cost to generate length } L \ \approx\ L^{2} \]
+</div>
+
+<table class="tbl">
+  <thead><tr><th></th><th>RNN</th><th>Transformer</th></tr></thead>
+  <tbody>
+    <tr><td>Per-token generation</td><td class="yes">previous state + current input</td><td class="no">recompute attention over whole sequence</td></tr>
+    <tr><td>Length scaling (generation)</td><td class="yes">linear</td><td class="no">\(\approx L^2\) (quadratic)</td></tr>
+    <tr><td>Context length</td><td>in theory unbounded</td><td>bounded; recompute bottleneck</td></tr>
+    <tr><td>Memory of distant past</td><td class="no">tends to forget (one state)</td><td class="yes">attends to all tokens directly</td></tr>
+    <tr><td>Training</td><td class="no">slow (BPTT)</td><td class="yes">parallel across positions</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Named non-Transformer alternatives:</strong></p>
+<ul class="clean">
+  <li><strong>State Space Models (SSM):</strong> a "state space" = the minimal set of variables fully describing a system. SSMs model the state and predict the next state from input — <strong>linear-time</strong> sequence modeling. Examples: <strong>Mamba</strong> (Gu &amp; Dao, 2023, selective state spaces) and <strong>xLSTM</strong> (Beck et al., 2024).</li>
+  <li><strong>Diffusion LLMs:</strong> start from corrupted/random tokens and <strong>denoise</strong> into coherent text. Non-autoregressive ⇒ parallel token prediction, but quality historically lags Transformers; sometimes used as a refinement layer on top.</li>
+</ul>
+
+<div class="callout note">
+  <div class="ttl">◇ Broader context — agents and tooling</div>
+  <p>An <strong>LLM agent</strong> "runs tools in a loop to achieve a goal" (Simon Willison). The wider ecosystem: <strong>Gensim</strong> (word2vec/GloVe/fastText, LDA), <strong>spaCy</strong>, <strong>NLTK</strong>, <strong>Hugging Face</strong>, <strong>vaderSentiment</strong> (social-media sentiment), and for local inference <strong>llama.cpp</strong> (GGUF models) and <strong>Ollama</strong>. The throughline: nearly everything modern is still a Transformer — but the field is actively probing past its \(L^2\) wall.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">8</div><p class="qtext">Why is RNN inference said to scale better than Transformer inference for very long generated sequences?</p></div>
+<ol class="opts" data-explain="An RNN needs only the previous hidden state and current input per step, so generation is linear in length. A Transformer recomputes attention over the entire sequence each step, costing roughly L² to generate length L. The RNN's weakness is elsewhere: it forgets and is slow to train (BPTT).">
+  <li data-correct="0"><span class="otxt">RNNs use multi-head attention, which is cheaper than single-head attention.</span></li>
+  <li data-correct="1"><span class="otxt">An RNN needs only the previous hidden state and current input per step (linear), while a Transformer recomputes attention over the whole sequence (\(\approx L^2\)).</span></li>
+  <li data-correct="0"><span class="otxt">RNNs never forget, so they need no positional encoding and skip most computation.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">9</div><p class="qtext">What is GPT's architecture and training objective, at the core?</p></div>
+<ol class="opts" data-explain="GPT is a decoder-only Transformer using masked self-attention (each token attends only to previous tokens), trained with a simple next-token-prediction (text-completion) loss. Masking is precisely what makes honest generation possible. It is not encoder-only (that is BERT) nor an encoder-decoder.">
+  <li data-correct="0"><span class="otxt">An encoder-only Transformer trained to fill in masked words anywhere in the sentence.</span></li>
+  <li data-correct="0"><span class="otxt">An encoder-decoder Transformer trained on translation pairs with RLHF as the base loss.</span></li>
+  <li data-correct="1"><span class="otxt">A decoder-only Transformer with masked self-attention, trained on next-token prediction (text completion).</span></li>
+</ol></div>
+
+<div class="section-head"><span class="bar"></span><h2>Can you teach it back?</h2><span class="tag">consolidate</span></div>
+<div class="card">
+  <p>The real test of understanding is teaching. Without looking back, narrate the whole chain to an imaginary student — each step should name the <em>flaw it fixes</em>:</p>
+  <ul class="check">
+    <li>Why is text "unstructured," and what does featurization buy you?</li>
+    <li>Walk TF and IDF formula by formula — which denominator is document length, and why does IDF reward rarity?</li>
+    <li>Why does BM25 saturate term frequency, and what do \(k_1\) and \(b\) control?</li>
+    <li>Why do dense embeddings beat sparse vectors, and why does \([\text{king}]-[\text{man}]+[\text{woman}]\approx[\text{queen}]\)?</li>
+    <li>Contrast CBOW and skip-gram by input, output, activation, and data needs — without swapping them.</li>
+    <li>After training word2vec, what do you keep, and why is it just a lookup table?</li>
+    <li>Why can fastText embed a typo but word2vec cannot?</li>
+    <li>What is an RNN's state, why does training need BPTT, and why do plain RNNs forget?</li>
+    <li>How does gating fix that, and what does an LSTM pass between steps that a GRU does not?</li>
+    <li>State the seq2seq bottleneck and how attention's Q/K/V removes it — and why divide by \(\sqrt{n}\)?</li>
+    <li>Why does self-attention let us drop recurrence, and why is masking "why GPT can generate"?</li>
+    <li>What is the Transformer's \(L^2\) bottleneck, and how do RNNs/SSMs sidestep it?</li>
+  </ul>
+  <p style="margin-bottom:0">If any answer comes out fuzzy, jump back to that section via the left rail and re-run its <em>Drill the why</em> box. Fuzzy answers are the map to your next study pass.</p>
+</div>
+
+<footer>
+  <span>Chapter 07 · Deep Learning for Text — Preparation Guide</span>
+  <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+</footer>
+
+</div>
+
+<script>
+/* Left contents rail — inline verbatim inside a <script> before </body>.
+   Auto-builds a fixed, full-height sidebar from the page's section headings
+   (h2 = level 1, h3 = level 2) plus any element carrying data-nav-label
+   (used for per-question anchors). Adds smooth scroll, scrollspy, and a
+   mobile slide-in toggle. No external dependencies. */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+</script>
+<script>
+/* Interactive quiz — inline verbatim inside a <script> before </body>.
+   Two modes, auto-detected per question:
+
+   • PER-OPTION mode (exam MCQs): every <li> carries its own data-explain.
+       - Click a WRONG option -> it turns red and shows WHY THAT option is wrong,
+         WITHOUT revealing the correct answer; the question stays open so you can try again.
+       - Click the CORRECT option -> it turns green, shows why it's right, and locks.
+   • LEGACY mode (crash-course / prep self-checks): one data-explain on the <ol>.
+       - First click locks the question, marks the correct answer, and reveals the reasoning.
+
+   A fixed scorebar tracks solved + first-try-correct counts. Re-typesets MathJax in feedback. */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        // legacy: lock + reveal correct
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>

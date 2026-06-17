@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 03 · Supervised Learning — Evaluation & Interpretability · Preparation</title>
+
+<!-- MathJax — inline verbatim in <head>. Renders LaTeX: inline \( … \), display \[ … \].
+     Use LaTeX for ALL math (greek \alpha\beta\sigma, subscripts x_{i}, superscripts e^{-z},
+     fractions \frac{a}{b}, sums \sum, etc.). Code/pre are skipped so pseudocode stays literal. -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   Inline this ENTIRE block verbatim inside each self-contained .html <style>.
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz  (used by exams + crash-course self-checks)
+   Markup:  <ol class="opts" data-explain="...">
+              <li data-correct="1"><span class="otxt">A</span></li> ... </ol>
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+/* per-option mode: a tried-wrong option locks but the question stays open */
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail (auto-built by sidebar.js) ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) for prep guides ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Chapter 03 · Preparation</span>
+    <h1>Supervised Learning — Evaluation &amp; Interpretability</h1>
+    <p class="subtitle">Understand it deeply — not just memorize. A guided, Socratic session that drills the <em>why</em> behind every metric, curve, and explanation technique.</p>
+    <div class="meta-row">
+      <span class="chip"><b>Theme</b> &nbsp;It's all about generalization</span>
+      <span class="chip"><b>Parts</b> &nbsp;Classification · Regression · CV · Interpretability</span>
+      <span class="chip"><b>Mode</b> &nbsp;Active recall + self-checks</span>
+    </div>
+  </div>
+</header>
+
+<main class="chapter-body">
+<div class="wrap">
+
+<div class="callout note">
+  <div class="ttl">How to use this guide</div>
+  <p>This is <strong>not a summary to skim</strong> — it is a session to <em>work through</em>. For every concept: (1) try to <strong>restate the problem yourself</strong> before revealing the model answer, (2) read the mechanics and drill the <strong>why</strong> boxes, (3) answer the interactive checks <strong>before</strong> clicking — commit to a guess first. A wrong click explains why <em>that</em> option fails without revealing the right answer, so you can reason again.</p>
+  <p>Where you feel shaky, read the <strong>ELI-intern</strong> tip boxes (layered plain-language explanations of the hardest ideas). The goal is to <strong>teach it back out loud</strong>; the final card lists what mastery looks like.</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:6px">Mastery checklist — you should be able to explain…</h3>
+  <ul class="check">
+    <li>Why train accuracy of 100% is <em>trivial</em> and meaningless, and why the test set must come <strong>first</strong> and be <em>stratified</em>.</li>
+    <li>Every confusion-matrix metric from its <strong>denominator</strong>: recall, precision, specificity, FPR, F1, balanced accuracy — and which depend on the threshold.</li>
+    <li>Why accuracy lies under class imbalance, and how <strong>cost matrices</strong>, the <strong>cost-sensitive threshold</strong> \(T_{CS}\), and <strong>resampling</strong> are three faces of the same bias.</li>
+    <li>ROC vs PR curve, what <strong>AUC means probabilistically</strong>, and <em>why PR wins under imbalance</em>.</li>
+    <li>CAP/AR (\(AR = 2\,AUC - 1\)), lift, KS, h-measure, Mahalanobis — what each measures and whether it is threshold-free.</li>
+    <li>Regression: \(r^2\), adjusted \(r^2\), AIC/BIC, RMSE/MAD, REC curve, and the extrapolation trap.</li>
+    <li>Cross-validation: why it's for <strong>tuning</strong> not final evaluation, why it's <strong>pessimistically biased</strong>, and why preprocessing must be fit per-fold.</li>
+    <li>Bias–variance trade-off, leakage, "too good to be true", and the features-greater-than-instances danger.</li>
+    <li>Multiclass (one-vs-all vs one-vs-one) and multilabel (binary relevance vs label powerset) transforms.</li>
+    <li>Interpretability: MDI vs permutation vs drop-column importance; PDP vs ICE; LIME; and Shapley/SHAP — including the key trap of what a Shapley value <em>is</em>.</li>
+  </ul>
+</div>
+
+<!-- ======================================================================= -->
+<h2>The central thesis: it's all about generalization</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: why can't we just measure how well a model fits the data it was trained on?</div>
+  <details><summary></summary>
+  <div class="reveal">Because fitting the training data is <em>trivially easy</em> and tells you nothing about the future. A fully-grown decision tree, a 1-nearest-neighbour model, or literally a database lookup all achieve 100% training accuracy by <em>memorizing</em>. The real question is whether the model works on <strong>unseen</strong> data it has never touched — that is generalization, and the only way to measure it is a held-out test set.</div>
+  </details>
+</div>
+
+<h3>The problem, and the competing branch</h3>
+<p><span class="kterm">Generalization</span> is how well a model performs on <strong>unseen</strong> data — future, noisy, robust conditions. The training set is also called the <strong>development set</strong>: the data you're allowed to do anything with. Measuring performance there gives only a <em>very</em> initial sanity check, because perfect fit is free.</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why is 100% train accuracy worthless?</div>
+  <p>Three ways to "win" the training set with zero learning: a tree grown until every leaf is pure, a \(k\)-NN with \(k=1\) (each point is its own neighbour), or a database that just stores and looks up. None of these <em>learned a pattern</em>; they memorized. So a high training score is consistent with both a great model and a useless one — it cannot distinguish them. Only out-of-sample evaluation can.</p>
+</div>
+
+<p>There is a competing branch — the <strong>statisticians' alternative</strong>: restrict yourself to simple, linear, parametric models and report <strong>goodness of fit</strong>. This <em>sidesteps</em> the generalization problem by capping complexity, but it is <strong>not a real predictive test</strong> — you've assumed away the hard part rather than measured it.</p>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern · the "single-parameter elephant"</div>
+  <p>Boué (2019) showed that <em>any</em> dataset — an elephant, a chicken, a turtle drawing — can be approximated by a continuous differentiable function with a <strong>single</strong> real parameter \(\alpha\):</p>
+  <div class="formula">\[ f_\alpha(x) = \sin^{2}\!\big( 2^{x\tau}\cdot \arcsin\sqrt{\alpha}\,\big) \]</div>
+  <p>The moral: <strong>fitting is easy and meaningless</strong>. If one parameter can trace an elephant, your model fitting the training data perfectly proves nothing. Only a strict, challenging held-out test does.</p>
+</div>
+
+<h3>The solution and its design decisions</h3>
+<ul class="clean">
+  <li><strong>Split first.</strong> Separate train and test <em>before</em> any preprocessing/featurization — otherwise statistics leak from test into train.</li>
+  <li><strong>Stratify.</strong> Keep the same class distribution in train and test, so the test set is representative.</li>
+  <li><strong>Prefer out-of-time</strong> when possible (more on this next).</li>
+  <li><strong>The goal is to catch failure cases.</strong> Make the test set <em>as challenging as you can</em> — the aim is not a flattering number, it's to find where the model breaks before reality does.</li>
+</ul>
+
+<div class="q"><div class="q-top"><div class="qnum">1</div><p class="qtext">A colleague preprocesses the full dataset (imputation, scaling, feature selection) and <em>then</em> splits into train and test. What is the core problem?</p></div>
+<ol class="opts" data-explain="Fitting any transformation on the full data lets information from the test rows influence the train pipeline (e.g. the scaler's mean, the selected features) — that is leakage, and it inflates the test score so it no longer measures generalization.">
+  <li data-correct="1"><span class="otxt">Leakage: the preprocessing learned from test rows too, so the test set is no longer truly unseen.</span></li>
+  <li data-correct="0"><span class="otxt">Nothing — preprocessing is deterministic, so order does not matter.</span></li>
+  <li data-correct="0"><span class="otxt">The train set becomes too small to fit a model.</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>Out-of-sample vs out-of-time validation</h2>
+
+<div class="vs">
+  <div class="col"><h4>Out-of-sample</h4><p>Train and test from the <strong>same time period</strong>, different instances. Test points are scattered <em>among</em> the train points.</p></div>
+  <div class="col"><h4>Out-of-time</h4><p>Test comes from a <strong>later period</strong> than train (train on the left/earlier, test on the right/later on the time axis).</p></div>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 175" role="img" aria-label="Out-of-sample vs out-of-time">
+  <rect x="10" y="22" width="250" height="108" rx="10" fill="#FBFAF6" stroke="#D6CAB2"/>
+  <text x="135" y="16" text-anchor="middle" font-size="13" fill="#7E776B" font-family="Georgia">Out of Sample</text>
+  <g fill="#22201C"><circle cx="40" cy="52" r="4"/><circle cx="90" cy="95" r="4"/><circle cx="150" cy="62" r="4"/><circle cx="210" cy="105" r="4"/><circle cx="70" cy="72" r="4"/><circle cx="190" cy="47" r="4"/></g>
+  <g fill="none" stroke="#A8472A" stroke-width="2"><circle cx="60" cy="100" r="5"/><circle cx="130" cy="100" r="5"/><circle cx="180" cy="80" r="5"/><circle cx="110" cy="47" r="5"/></g>
+  <rect x="300" y="22" width="250" height="108" rx="10" fill="#FBFAF6" stroke="#D6CAB2"/>
+  <text x="425" y="16" text-anchor="middle" font-size="13" fill="#7E776B" font-family="Georgia">Out of Time</text>
+  <line x1="425" y1="30" x2="425" y2="122" stroke="#D6CAB2" stroke-dasharray="4 4"/>
+  <g fill="#22201C"><circle cx="320" cy="52" r="4"/><circle cx="350" cy="95" r="4"/><circle cx="380" cy="62" r="4"/><circle cx="400" cy="105" r="4"/><circle cx="340" cy="72" r="4"/><circle cx="410" cy="47" r="4"/></g>
+  <g fill="none" stroke="#A8472A" stroke-width="2"><circle cx="450" cy="62" r="5"/><circle cx="490" cy="100" r="5"/><circle cx="520" cy="57" r="5"/><circle cx="470" cy="90" r="5"/></g>
+  <line x1="10" y1="152" x2="550" y2="152" stroke="#7E776B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#7E776B"/></marker></defs>
+  <text x="280" y="170" text-anchor="middle" font-size="12" fill="#7E776B">Time →</text>
+</svg>
+<figcaption>Black dots = train, red circles = test. Out-of-time pushes the test into the future.</figcaption>
+</div>
+
+<div class="callout note">
+  <div class="ttl">Why it matters</div>
+  <p>Out-of-time is appealing because <em>"time will always continue to progress as your model is being used"</em> — production data <strong>is</strong> future data. The honest trade-off: you can never foresee everything, you're limited to the data you have now. The duty is to be as thorough as possible, not to be omniscient.</p>
+</div>
+
+<!-- ======================================================================= -->
+<h2>The confusion matrix &amp; threshold-dependent metrics</h2>
+
+<h3>The 2×2 table and the threshold</h3>
+<p>Models output <strong>probabilities/scores</strong>; a <span class="kterm">threshold</span> (e.g. 0.50) turns them into labels: score \(\ge t \Rightarrow\) "yes". The <span class="kterm">confusion matrix</span> cross-tabulates true vs predicted. <strong>Every metric below depends on the threshold</strong>, because the matrix itself does.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 440 210" role="img" aria-label="Confusion matrix">
+  <text x="270" y="20" text-anchor="middle" font-size="13" fill="#7E776B" font-family="Georgia">Prediction</text>
+  <text x="180" y="60" text-anchor="middle" font-size="13" fill="#7E776B">no</text>
+  <text x="360" y="60" text-anchor="middle" font-size="13" fill="#7E776B">yes</text>
+  <text x="30" y="110" font-size="13" fill="#7E776B" font-family="Georgia" transform="rotate(-90 30 110)">Reference</text>
+  <text x="80" y="110" text-anchor="middle" font-size="13" fill="#7E776B">no</text>
+  <text x="80" y="170" text-anchor="middle" font-size="13" fill="#7E776B">yes</text>
+  <rect x="110" y="72" width="170" height="60" fill="#DDE8DC" stroke="#D6CAB2"/>
+  <rect x="280" y="72" width="150" height="60" fill="#F6E5DC" stroke="#D6CAB2"/>
+  <rect x="110" y="132" width="170" height="60" fill="#F6E5DC" stroke="#D6CAB2"/>
+  <rect x="280" y="132" width="150" height="60" fill="#DDE8DC" stroke="#D6CAB2"/>
+  <text x="195" y="107" text-anchor="middle" font-size="16" fill="#3F6B4F" font-weight="bold">3 (TN)</text>
+  <text x="355" y="107" text-anchor="middle" font-size="16" fill="#A8472A" font-weight="bold">2 (FP)</text>
+  <text x="195" y="167" text-anchor="middle" font-size="16" fill="#A8472A" font-weight="bold">2 (FN)</text>
+  <text x="355" y="167" text-anchor="middle" font-size="16" fill="#3F6B4F" font-weight="bold">7 (TP)</text>
+</svg>
+<figcaption>FP = Type I error · FN = Type II error · total = 14.</figcaption>
+</div>
+
+<p>Memorize each metric by its <strong>denominator</strong> — that is the whole game:</p>
+
+<table class="tbl">
+<thead><tr><th>Metric</th><th>Formula</th><th>Plain language</th></tr></thead>
+<tbody>
+<tr><td>Accuracy</td><td>\(\dfrac{TP+TN}{\text{total}}\)</td><td>fraction correct overall</td></tr>
+<tr><td>Recall = Sensitivity = TPR</td><td>\(\dfrac{TP}{TP+FN}\)</td><td>of the actual positives, how many did we catch?</td></tr>
+<tr><td>Precision = PPV</td><td>\(\dfrac{TP}{TP+FP}\)</td><td>of our positive predictions, how many were right?</td></tr>
+<tr><td>Specificity = TNR</td><td>\(\dfrac{TN}{TN+FP}\)</td><td>of the actual negatives, how many did we flag correctly?</td></tr>
+<tr><td>FPR = Fall-out</td><td>\(\dfrac{FP}{TN+FP} = 1-\text{Spec}\)</td><td>negatives wrongly called positive</td></tr>
+<tr><td>Balanced accuracy</td><td>\(\dfrac{\text{recall}+\text{specificity}}{2}\)</td><td>average per-class recall</td></tr>
+<tr><td>F1</td><td>\(\dfrac{2\,PR}{P+R}\)</td><td><strong>harmonic</strong> mean of precision &amp; recall</td></tr>
+</tbody>
+</table>
+
+<details class="fold"><summary>Worked numbers on the 3 / 2 / 2 / 7 matrix (click)</summary>
+<ul class="clean">
+  <li>Accuracy \(= (3+7)/14 = \mathbf{0.71}\)</li>
+  <li>Recall \(= 7/(7+2) = 7/9 = \mathbf{0.78}\)</li>
+  <li>Precision \(= 7/(7+2) = 7/9 = \mathbf{0.78}\) (here \(FP=FN=2\), so both equal \(7/9\))</li>
+  <li>Specificity \(= 3/(3+2) = \mathbf{0.60}\)</li>
+  <li>Balanced accuracy \(= (0.78+0.60)/2 = \mathbf{0.69}\)</li>
+  <li>F1 \(= 2(0.78\cdot0.78)/(0.78+0.78) = \mathbf{0.78}\)</li>
+</ul>
+</details>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why harmonic mean for F1?</div>
+  <p>The harmonic mean is <em>dominated by the smaller</em> of the two numbers. If precision is 0.95 but recall is 0.05, the <strong>arithmetic</strong> mean is a flattering 0.50, but the harmonic mean (F1 \(\approx 0.095\)) screams "this model is useless at one of the two jobs." F1 refuses to let a model hide a catastrophic weakness behind a strong other half.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">2</div><p class="qtext">A spam filter has recall \( = 0.99\) but precision \(= 0.30\). What does that mean operationally?</p></div>
+<ol class="opts" data-explain="Recall is TP/(TP+FN): catching 99% of spam. Precision is TP/(TP+FP): only 30% of emails it flags are actually spam, so 70% of its flags are real mail wrongly junked.">
+  <li data-correct="0"><span class="otxt">It misses 70% of spam emails.</span></li>
+  <li data-correct="0"><span class="otxt">30% of all emails are spam.</span></li>
+  <li data-correct="1"><span class="otxt">It catches almost all spam, but 70% of what it flags is actually legitimate mail.</span></li>
+</ol></div>
+
+<h3>Tuning the threshold</h3>
+<p>For each candidate threshold \(t\) you get a different matrix and different metrics. Sweep \(t\) and plot the metric vs cutoff. Accuracy-vs-cutoff is <strong>non-monotone</strong> (peaks mid-range, ~0.3 in the deck example). The precision/recall pair moves predictably:</p>
+<ul class="clean">
+  <li>As the threshold <strong>rises</strong>, you call fewer things positive ⇒ <strong>precision generally rises, recall generally falls</strong>.</li>
+  <li>At a very low threshold, recall starts at 1 (you catch everything) but precision is poor; at a high threshold, precision \(\to 1\) but recall collapses.</li>
+</ul>
+<p>This connects to <strong>well-calibrated classifiers</strong> — probabilities that actually mean what they say, so a threshold of 0.7 corresponds to a real 70% likelihood.</p>
+
+<!-- ======================================================================= -->
+<h2>Class imbalance: never trust accuracy alone</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem: in a fraud dataset where 1% of cases are fraud, why is a 99%-accurate model possibly useless?</div>
+  <details><summary></summary>
+  <div class="reveal">Because predicting <strong>"never fraud" for everyone</strong> scores 99% accuracy (it's right on all 99% of the legitimate cases) while catching <strong>zero</strong> fraud. Accuracy rewards the majority class, so under imbalance it is trivially gamed. <em>"Never believe reports that only mention accuracy."</em></div>
+  </details>
+</div>
+
+<p>Out of the box, an accuracy-optimizing model on a 1% problem predicts everything negative: \(TN=99,\ FN=1,\ FP=0,\ TP=0\) → 99% accuracy, 0 positives caught. The naïve fix — "just pick a stricter threshold" — doesn't reliably help. The real question is structural: <strong>how do I tell the model I'm willing to make some negative-side mistakes in order to catch the positives?</strong></p>
+
+<h3>The levers you can pull</h3>
+<p>Many traditional models <strong>inherently optimize accuracy</strong> on the train set, but you usually care about something else. Options to bend the model toward <em>your</em> metric:</p>
+<ul class="clean">
+  <li>Tune the <strong>threshold</strong> on your metric of interest</li>
+  <li>Adjust model parameters, or the <strong>target definition</strong></li>
+  <li>Sample/filter the dataset</li>
+  <li>Apply <strong>misclassification costs</strong> or <strong>instance weighting</strong> (easy hack: duplicate instances)</li>
+  <li>Adjust the loss function (if supported) — and above all, <strong>evaluate on what matters to you</strong></li>
+</ul>
+
+<!-- ======================================================================= -->
+<h2>Misclassification costs &amp; cost-sensitive learning</h2>
+
+<h3>The cost matrix and expected loss</h3>
+<p>A <span class="kterm">cost matrix</span> \(C(\text{predicted}, \text{actual})\) assigns a penalty to each error type. Example:</p>
+<div class="formula"><span class="lbl">cost matrix</span>\[ \begin{array}{c|cc} & \text{Actual }0 & \text{Actual }1 \\ \hline \text{Pred }0 & C(0,0)=0 & C(0,1)=5 \\ \text{Pred }1 & C(1,0)=1 & C(1,1)=0 \end{array} \]</div>
+<p>Read it as: <em>"missing a positive (predicting 0 when it's really 1) is 5× as bad as a false alarm."</em> Costs come from real observed averages (hard to get), expert judgement, or the <strong>inverse class distribution</strong>.</p>
+
+<p>The <span class="kterm">expected loss</span> of classifying \(x\) as class \(j\):</p>
+<div class="formula"><span class="lbl">expected loss</span>\[ l(x,j) = \sum_{k} p(k\mid x)\, C(j,k) \]</div>
+<p>For binary, with the example costs: \(l(x,0)=p(1\mid x)\,C(0,1)\) and \(l(x,1)=p(0\mid x)\,C(1,0)\). The <strong>decision rule: classify positive iff \(l(x,1) \lt l(x,0)\)</strong>.</p>
+
+<details class="fold"><summary>Worked example — \(p(1\mid x)=0.22,\ C(0,1)=5,\ C(1,0)=1\)</summary>
+<div class="formula">\[ l(x,0) = 0.78\cdot 0 + 0.22\cdot 5 = 1.10 \qquad l(x,1) = 0.78\cdot 1 + 0.22\cdot 0 = 0.78 \]</div>
+<p>\(0.78 \lt 1.10\) → <strong>classify as positive</strong>, even though \(p=0.22\) is well below 0.5. The high cost of missing a positive pulls the decision over.</p>
+</details>
+
+<h3>The cost-sensitive threshold \(T_{CS}\)</h3>
+<p>Set \(l(x,1)=l(x,0)\) and solve for the boundary probability:</p>
+<div class="formula"><span class="lbl">cost-sensitive threshold</span>\[ T_{CS} = \frac{C(1,0)-C(0,0)}{\big(C(1,0)-C(0,0)\big) + \big(C(0,1)-C(1,1)\big)} \]</div>
+<ul class="clean">
+  <li>Symmetric unit costs \((C(1,0)=C(0,1)=1,\ C(0,0)=C(1,1)=0)\): \(T_{CS} = \tfrac{1}{1+1} = \mathbf{0.5}\) — the default.</li>
+  <li>\(C(0,1)=5,\ C(1,0)=1\): \(T_{CS} = \tfrac{1}{1+5} = \mathbf{0.1667}\). Since \(0.1667 \le 0.22\), classify positive — <em>same decision</em> as the expected-loss calculation.</li>
+</ul>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why does a higher cost of missing positives <em>lower</em> the threshold?</div>
+  <p>If false negatives are expensive, you want to be <em>quicker</em> to call something positive — so you lower the bar a score must clear. Cost on the positive side and the decision threshold move in <strong>opposite</strong> directions: expensive misses ⇒ low threshold ⇒ more positives flagged. \(T_{CS}\) is just the algebra of "where do the two expected losses tie?"</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">3</div><p class="qtext">With cost matrix \(C(0,1)=10,\ C(1,0)=1\) (others 0), what is \(T_{CS}\)?</p></div>
+<ol class="opts" data-explain="T_CS = C(1,0) / (C(1,0) + C(0,1)) = 1/(1+10) = 1/11 ≈ 0.091. A bigger penalty for missing positives pushes the threshold below 0.5.">
+  <li data-correct="0"><span class="otxt">\(0.5\)</span></li>
+  <li data-correct="1"><span class="otxt">\(\approx 0.091\)</span></li>
+  <li data-correct="0"><span class="otxt">\(\approx 0.91\)</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>Resampling for imbalance: sampling ⇔ cost-sensitivity</h2>
+
+<div class="callout warn">
+  <div class="ttl">The key equivalence (exam favourite)</div>
+  <p>"Sampling the dataset so the minority class equals the majority class boils down to biasing the classifier in the same way as using a cost matrix built from the <strong>inverse class imbalance</strong>." <strong>Sampling ⇔ cost-sensitivity</strong> — two routes to the same bias.</p>
+</div>
+
+<p>The cost-sensitive class distribution implied by \(T_{CS}\):</p>
+<div class="formula">\[ n_1' = n_1\cdot\frac{1-T_{CS}}{T_{CS}}, \qquad n_0' = n_0\cdot\frac{T_{CS}}{1-T_{CS}} \]</div>
+<p>Inverse-cost example for 99% / 1% imbalance: \(C(0,1)=99,\ C(1,0)=1 \Rightarrow T_{CS}=\tfrac{1}{100}=0.01\), so \(n_1' = 1\cdot\tfrac{0.99}{0.01}=99\) — rebalanced to 99 vs 99.</p>
+
+<h3>The three resampling methods</h3>
+<table class="tbl">
+<thead><tr><th>Method</th><th>Mechanism</th><th>Pro</th><th>Con</th></tr></thead>
+<tbody>
+<tr><td>Oversampling</td><td>duplicate minority rows</td><td>no data lost</td><td>can overfit duplicates</td></tr>
+<tr><td>Undersampling</td><td>drop majority rows</td><td>faster, smaller</td><td>discards data</td></tr>
+<tr><td>SMOTE</td><td>synthetic minority points between an instance &amp; its \(k\) nearest neighbours</td><td>richer than copies</td><td>needs some positives; can't invent future cases</td></tr>
+</tbody>
+</table>
+
+<p><span class="kterm">SMOTE</span> (Chawla et al., 2002): for each minority point, find \(k\) nearest neighbours, then generate synthetic points <strong>on the line between</strong> the instance and a neighbour. Variants: Borderline-SMOTE, ADASYN, Safe-level, MWMOTE (see <code>imblearn</code>). Oversampling <em>above</em> 1:1 = using even more extreme costs.</p>
+
+<div class="callout warn">
+  <div class="ttl">Critical caveats — these are exam traps</div>
+  <ul class="clean">
+    <li><strong>Resample ONLY the training set. The test set is never touched.</strong></li>
+    <li>After resampling, <strong>test accuracy usually DROPS</strong> below the "always predict majority" baseline — because the model now flags some positives, creating false positives. That's the price of extracting true positives (precision/recall trade-off). Trap: "resampling improves test accuracy" is generally <em>false</em>.</li>
+    <li>SMOTE is <strong>not magic</strong> — you still need real positives; it cannot create hidden/future positive cases.</li>
+    <li>Contrary to popular belief, resampling is <strong>often NOT worth it</strong> with tree-based ensembles or deep learning. Better there: tweak the loss function, conformal techniques. (To SMOTE or not to SMOTE? Elor 2022; Carriero 2025; Hassanat 2022.)</li>
+  </ul>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">4</div><p class="qtext">You SMOTE the training data and test accuracy comes out <em>lower</em> than your old "predict-majority" baseline. What's the most likely interpretation?</p></div>
+<ol class="opts" data-explain="Flagging real positives means accepting some false positives, which lowers raw accuracy versus the trivial majority predictor — but you now actually catch positives. This is the expected precision/recall trade-off, not a bug.">
+  <li data-correct="0"><span class="otxt">You accidentally resampled the test set too.</span></li>
+  <li data-correct="0"><span class="otxt">SMOTE failed and should be reverted.</span></li>
+  <li data-correct="1"><span class="otxt">Expected: catching positives introduces false positives, so raw accuracy falls — but the model is now actually useful.</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>ROC curve &amp; AUC</h2>
+
+<h3>What the curve plots</h3>
+<p>The <span class="kterm">ROC curve</span> (Receiver Operating Characteristic, from 1941 radar operators) plots <strong>sensitivity (TPR)</strong> on \(y\) vs <strong>\(1-\)specificity (FPR)</strong> on \(x\), for <em>every</em> cut-off. The <strong>perfect model</strong> sits in the upper-left corner (TPR 1, FPR 0). The diagonal is the random baseline.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 300 245" role="img" aria-label="ROC curve">
+  <line x1="40" y1="200" x2="260" y2="200" stroke="#7E776B"/>
+  <line x1="40" y1="200" x2="40" y2="20" stroke="#7E776B"/>
+  <line x1="40" y1="200" x2="260" y2="20" stroke="#D6CAB2" stroke-dasharray="5 4"/>
+  <path d="M40,200 C70,90 120,40 260,20" fill="none" stroke="#A8472A" stroke-width="2.5"/>
+  <text x="150" y="226" text-anchor="middle" font-size="12" fill="#7E776B">1 − Specificity (FPR)</text>
+  <text x="16" y="115" text-anchor="middle" font-size="12" fill="#7E776B" transform="rotate(-90 16 115)">Sensitivity (TPR)</text>
+  <text x="72" y="128" font-size="10.5" fill="#3F6B4F">steepness ≈ precision</text>
+  <text x="148" y="36" font-size="10.5" fill="#3F6B4F">height ≈ recall</text>
+</svg>
+<figcaption>Curve hugs the upper-left when good. Diagonal = coin flip (AUC 0.5).</figcaption>
+</div>
+
+<h3>AUC and its probabilistic meaning</h3>
+<div class="callout note">
+  <div class="ttl">The one interpretation to memorize (Hanley &amp; McNeil, 1983)</div>
+  <p><strong>AUC = the probability that a randomly chosen positive instance gets a higher score than a randomly chosen negative instance.</strong> A coin-flip model gives AUC 0.5 (worst); a perfect ranker gives 1.0. AUC is <strong>threshold-independent</strong> — it summarizes <em>all</em> operating points at once.</p>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why is AUC threshold-independent but accuracy isn't?</div>
+  <p>AUC only cares about the <em>ranking</em> of scores (does each positive outrank each negative?), not where you draw the line. Accuracy needs a specific threshold to turn scores into labels, so it's one point on the ROC curve; AUC integrates over the whole curve. That's why you can report AUC before committing to a cutoff.</p>
+</div>
+
+<details class="fold"><summary>ROC sweep table on the 14-row example (click)</summary>
+<p>At threshold 0.1: \(tp=9,\ fp=5,\ tn=0,\ fn=0\) → recall 1, precision 0.643, TPR 1, FPR 1 (top-right corner). At threshold 0.78: \(tp=5,\ fp=0,\ tn=5,\ fn=4\) → recall 0.556, precision 1, TPR 0.556, FPR 0 (left edge). Each threshold is one point on the curve.</p>
+</details>
+
+<!-- ======================================================================= -->
+<h2>PR curve vs ROC: which, and why</h2>
+
+<table class="tbl">
+<thead><tr><th>Aspect</th><th>ROC curve</th><th>PR curve</th></tr></thead>
+<tbody>
+<tr><td>Y-axis</td><td>Recall / TPR</td><td>Precision</td></tr>
+<tr><td>X-axis</td><td>\(1-\)Specificity (FPR)</td><td>Recall</td></tr>
+<tr><td>Uses TNs?</td><td class="yes">Yes (FPR involves TN)</td><td class="no">No (precision ignores TN)</td></tr>
+<tr><td>Preferred when</td><td>balanced data</td><td><strong>imbalanced data</strong></td></tr>
+<tr><td>Under imbalance</td><td>FPR tiny → over-optimistic</td><td>unaffected by TN dominance</td></tr>
+</tbody>
+</table>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why does PR beat ROC under imbalance?</div>
+  <p>With 99% negatives, the confusion matrix is <strong>flooded with true negatives</strong>. FPR \(= FP/(TN+FP)\) has that huge \(TN\) in the denominator, so even many false positives produce a tiny FPR — the ROC curve looks deceptively great. <strong>Precision \(= TP/(TP+FP)\) has no \(TN\) in it</strong>, so it stays honest about how polluted your positive predictions are. PR reflects the pain you'd actually feel.</p>
+</div>
+
+<p>AUC can also mislead when <strong>ROC curves cross</strong>: one classifier can have 5% higher overall AUC yet be worse in the <em>region you care about</em> (e.g. FPR \(\le 0.001\)). Visual inspection of the curve <strong>shape</strong> is required — a single AUC number hides it.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">5</div><p class="qtext">On a 1-in-10,000 fraud problem, your model shows AUC 0.97 but stakeholders complain the alerts are mostly false alarms. What's going on?</p></div>
+<ol class="opts" data-explain="True negatives dominate, shrinking FPR and inflating ROC/AUC; precision (which ignores TN) is what reflects the false-alarm pain. Switch to a PR curve / AUC-PR to see the real picture.">
+  <li data-correct="1"><span class="otxt">ROC/AUC is over-optimistic because TNs shrink FPR; the PR curve would reveal the low precision they're feeling.</span></li>
+  <li data-correct="0"><span class="otxt">AUC 0.97 is impossible under imbalance, so the evaluation is buggy.</span></li>
+  <li data-correct="0"><span class="otxt">Precision and AUC always agree, so the stakeholders are mistaken.</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>CAP, lift, and the threshold-free family</h2>
+
+<h3>CAP / Lorenz / Power curve &amp; Accuracy Ratio</h3>
+<p>Sort the population <strong>high → low score</strong>; plot the <strong>cumulative % of positives captured</strong> against the % of population reached. The <span class="kterm">Accuracy Ratio</span>:</p>
+<div class="formula"><span class="lbl">accuracy ratio</span>\[ AR = \frac{A}{A+B} \qquad\text{and}\qquad AR = 2\,AUC - 1 \]</div>
+<p>where \(A\) = area between actual and random CAP, \(B\) = area between ideal and actual CAP. \(AR = 2\,AUC-1\) is the <strong>Gini coefficient</strong>. (CAP = Lorenz = Power curve = Captured Event Plot.)</p>
+
+<h3>Lift</h3>
+<p><span class="kterm">Lift</span> = how much better your model concentrates positives in the top \(n\%\) than random. If your top 100 contain 60 positives and a random top 100 contain 10, <strong>lift = 60/10 = 6</strong>. <strong>Lift of 1 = random sorting.</strong> Closely related: <strong>Recall@n / Precision@n</strong> for the top-ranked observations — crucial when you deliver a shortlist (recommender systems).</p>
+
+<h3>Separation measures: KS, Mahalanobis, divergence, h-measure</h3>
+<dl class="defs">
+  <dt>KS distance</dt>
+  <dd>The <strong>max vertical gap</strong> between the two cumulative score distributions: \(KS = \max_s \big| P(s\mid y{=}1) - P(s\mid y{=}0)\big|\).</dd>
+  <dt>Mahalanobis distance \(M\)</dt>
+  <dd>\(M = \dfrac{\lvert \mu_p - \mu_n\rvert}{\sigma}\) — distance between mean scores normalized by the (pooled) spread. <strong>Better than Euclidean</strong> because it accounts for the standard deviation of the scores.</dd>
+  <dt>Divergence \(D\)</dt>
+  <dd>\(D = \dfrac{(\mu_p - \mu_n)^2}{\tfrac{1}{2}(\sigma_p^2 + \sigma_n^2)}\).</dd>
+  <dt>h-measure (Hand, 2009)</dt>
+  <dd>A <strong>cost-coherent alternative to AUC</strong>. AUC's flaw: it is <em>incoherent in misclassification costs</em> — it implicitly uses <strong>different cost distributions for different classifiers</strong>, i.e. like grading different models with different rulers, and it can mislead when ROC curves cross.</dd>
+</dl>
+
+<div class="callout note">
+  <div class="ttl">Threshold-free vs threshold-dependent — the clean split</div>
+  <p><strong>Depend on the threshold:</strong> accuracy, precision, recall, F1, balanced accuracy.<br>
+  <strong>Threshold-independent:</strong> AUC, PR-AUC, CAP/AR, h-measure, KS, Mahalanobis, divergence. This is a classic true/false trap.</p>
+</div>
+
+<h3>Automation: one threshold vs two</h3>
+<p>Plot the score distributions of True (peaks high) and False (peaks low). One threshold set <strong>high (~0.8)</strong> → precision focus; at <strong>0.5</strong> → accuracy/balanced middle ground; <strong>low (~0.25)</strong> → recall focus. With <strong>two thresholds</strong> \(t_1, t_2\): accept-immediately / manual-inspection / reject-immediately bands; the middle goes to humans.</p>
+<div class="formula"><span class="lbl">degree of automation</span>\[ \text{automation} = 1 - \operatorname{dist}(t_1, t_2) \]</div>
+<p>As the gap shrinks (more automation), fewer cases go to manual review → <strong>% correct decreases</strong>. You trade accuracy for autonomy.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">6</div><p class="qtext">Which statement about \(AR\) (Accuracy Ratio) and AUC is correct?</p></div>
+<ol class="opts" data-explain="AR = 2·AUC − 1 (the Gini coefficient). So AUC 0.5 (random) maps to AR 0, and AUC 1 maps to AR 1.">
+  <li data-correct="0"><span class="otxt">\(AR = AUC^2\)</span></li>
+  <li data-correct="0"><span class="otxt">\(AR = AUC - 0.5\)</span></li>
+  <li data-correct="1"><span class="otxt">\(AR = 2\,AUC - 1\), which equals the Gini coefficient.</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>Regression performance</h2>
+
+<h3>\(r^2\) and adjusted \(r^2\)</h3>
+<p><span class="kterm">\(r^2\)</span> = the proportion of variation in \(y\) explained by the model:</p>
+<div class="formula"><span class="lbl">coefficient of determination</span>\[ r^2 = 1 - \frac{SSE}{S_{yy}}, \quad S_{yy} = \sum_i (y_i - \bar y)^2,\quad SSE = \sum_i (y_i - \hat y_i)^2 \]</div>
+<p>Problem: <strong>plain \(r^2\) only ever goes up</strong> as you add features, even useless ones. The fix is <span class="kterm">adjusted \(r^2\)</span>, which penalizes the number of predictors \(k\):</p>
+<div class="formula"><span class="lbl">adjusted \(r^2\)</span>\[ r^2_a = 1 - (1 - r^2)\cdot\frac{n-1}{n-k} \]</div>
+<p>It <strong>increases only if a new term helps more than chance would predict, and decreases otherwise</strong>. Most software reports this even when it's labelled "\(r^2\)".</p>
+
+<div class="callout warn">
+  <div class="ttl">Trap</div>
+  <p>"Plain \(r^2\) <em>decreases</em> when you add useless features" → <strong>FALSE</strong>. Plain \(r^2\) keeps rising; only <em>adjusted</em> \(r^2\) can fall.</p>
+</div>
+
+<h3>AIC, BIC, and error measures</h3>
+<dl class="defs">
+  <dt>AIC (Akaike)</dt>
+  <dd>\(AIC = \dfrac{SSE}{n}\cdot\dfrac{n+k}{n-k}\) — a <strong>relative</strong> trade-off between goodness of fit and complexity (information lost when the model represents the true process).</dd>
+  <dt>BIC (Schwarz criterion)</dt>
+  <dd>Closely related to AIC; penalizes complexity too. Lower is better for both.</dd>
+</dl>
+<div class="formula"><span class="lbl">error measures</span>\[ MSE = \frac{1}{n}\sum_i (y_i-\hat y_i)^2,\quad MAD = \frac{1}{n}\sum_i \lvert y_i-\hat y_i\rvert,\quad RMSE = \sqrt{MSE} \]</div>
+<p>RMSE equals the standard deviation of errors for an unbiased model. MAD uses <em>absolute</em> errors (robust to outliers); MSE/RMSE use <em>squared</em> errors (penalize big misses harder).</p>
+
+<h3>REC curve &amp; the extrapolation trap</h3>
+<p>The <span class="kterm">REC curve</span> is the regression analogue of ROC: plot <strong>error tolerance</strong> on \(x\) vs <strong>% of points predicted within that tolerance</strong> on \(y\) (cumulative accuracy). The curve estimates the <strong>CDF of the error</strong>. The \(x\)-axis error can be squared error, absolute deviation, etc.</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — predicting the future ≠ extrapolating from training data</div>
+  <p>The Olympic 100m example: fit lines to men's and women's winning times and they cross far in the future, implying women will eventually "outrun causality." That's nonsense <strong>extrapolation</strong> — pushing a model far outside the range of its training data. Training on 1900–2000 and forecasting 2200 is a fundamentally different (and unjustified) problem from interpolating within the observed range. Use the appropriate technique; this applies to <em>all</em> model types.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">7</div><p class="qtext">You add 5 noise features to a linear regression. Plain \(r^2\) rises from 0.61 to 0.64; adjusted \(r^2\) drops from 0.60 to 0.58. What does this tell you?</p></div>
+<ol class="opts" data-explain="Plain r² always rises with more features. Adjusted r² penalizes added predictors, so a drop signals the new features didn't earn their place — they're noise. Trust adjusted r² here.">
+  <li data-correct="0"><span class="otxt">The noise features genuinely improved the model, since \(r^2\) rose.</span></li>
+  <li data-correct="1"><span class="otxt">The features are not pulling their weight: plain \(r^2\) always rises, but the adjusted-\(r^2\) drop flags them as noise.</span></li>
+  <li data-correct="0"><span class="otxt">Something is broken — adjusted \(r^2\) can never be lower than plain \(r^2\).</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>Cross-validation &amp; tuning</h2>
+
+<h3>The train / validation / test pipeline</h3>
+<p>Basic pipeline: data → train + test; build on train, do the <strong>final evaluation once on test</strong>. Add a <strong>validation</strong> set when the model-building loop needs feedback (e.g. early-stopping trees). The general loop tunes parameters against validation, then builds a final model and touches the test set <em>once</em>. But a single validation split risks <strong>lucky hits</strong> — that's what CV fixes.</p>
+
+<h3>k-fold cross-validation</h3>
+<p>Split the <strong>training</strong> data into \(n\) folds. Train on \(n-1\), validate on the held-out fold, rotate so each fold is held out once. You get one evaluation per fold (e.g. 0.75, 0.71, 0.84).</p>
+
+<div class="diagram">
+<svg viewBox="0 0 460 160" role="img" aria-label="k-fold cross-validation">
+  <text x="230" y="16" text-anchor="middle" font-size="13" fill="#7E776B" font-family="Georgia">3-fold CV</text>
+  <g font-size="11" fill="#fff" text-anchor="middle">
+    <rect x="40" y="30" width="100" height="26" fill="#A8472A"/><text x="90" y="48">valid</text>
+    <rect x="140" y="30" width="100" height="26" fill="#5C8A6B"/><text x="190" y="48">train</text>
+    <rect x="240" y="30" width="100" height="26" fill="#5C8A6B"/><text x="290" y="48">train</text>
+    <text x="395" y="48" fill="#7E776B">→ 0.75</text>
+    <rect x="40" y="64" width="100" height="26" fill="#5C8A6B"/><text x="90" y="82">train</text>
+    <rect x="140" y="64" width="100" height="26" fill="#A8472A"/><text x="190" y="82">valid</text>
+    <rect x="240" y="64" width="100" height="26" fill="#5C8A6B"/><text x="290" y="82">train</text>
+    <text x="395" y="82" fill="#7E776B">→ 0.71</text>
+    <rect x="40" y="98" width="100" height="26" fill="#5C8A6B"/><text x="90" y="116">train</text>
+    <rect x="140" y="98" width="100" height="26" fill="#5C8A6B"/><text x="190" y="116">train</text>
+    <rect x="240" y="98" width="100" height="26" fill="#A8472A"/><text x="290" y="116">valid</text>
+    <text x="395" y="116" fill="#7E776B">→ 0.84</text>
+  </g>
+  <text x="230" y="148" text-anchor="middle" font-size="12" fill="#A8472A" font-weight="bold">average = 0.77</text>
+</svg>
+<figcaption>Each fold serves as validation once; average across folds to compare configurations.</figcaption>
+</div>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — compare configurations by the AVERAGE, not the best fold</div>
+  <p>Example: \(\lambda{=}0.01\) gives folds 0.90 / 0.70 / 0.70 (avg <strong>0.77</strong>); \(\lambda{=}0.02\) gives 0.80 / 0.81 / 0.79 (avg <strong>0.80</strong>). Pick \(\lambda{=}0.02\). If you chose by the <em>best</em> fold, \(\lambda{=}0.01\)'s lucky 0.90 would win — but that 0.90 is exactly the kind of fluke CV exists to neutralize. The average is the robust signal; the best fold is noise.</p>
+</div>
+
+<p>To produce the final model: either select the model from the best fold, or — more commonly — <strong>retrain once on the full training data</strong> using the winning configuration.</p>
+
+<h3>Variants</h3>
+<ul class="clean">
+  <li><strong>Nested / repeated CV</strong> — CV inside CV (outer loop evaluates, inner loop tunes).</li>
+  <li><strong>LOOCV</strong> — leave-one-out; each fold holds out a single instance (extreme \(k=n\)).</li>
+  <li><strong>Time-series CV</strong> — expanding training window, test point just after train, slide forward. You <em>cannot shuffle time</em>.</li>
+</ul>
+
+<h3>Bias, variance, and properties of CV</h3>
+<div class="callout warn">
+  <div class="ttl">CV is for tuning; the test set is for true evaluation</div>
+  <p>Don't conflate them. And: <strong>CV gives a pessimistically biased estimate</strong> — each fold trains on less than the full data, and most models improve with more training data, so folds slightly underperform the final full-data model. (Trap: "CV is optimistically biased" → FALSE.) <strong>LOOCV is approximately unbiased</strong> because each fold differs from the full set by only one point. Also: <strong>fit preprocessing per-fold</strong>, on the train folds only, to avoid leakage.</p>
+</div>
+
+<p>The <span class="kterm">bias–variance trade-off</span> (the U-curve):</p>
+<div class="formula"><span class="lbl">total error</span>\[ \text{Error} = \text{Bias}^2 + \text{Variance} + \text{irreducible} \]</div>
+
+<div class="diagram">
+<svg viewBox="0 0 320 205" role="img" aria-label="Bias-variance U-curve">
+  <line x1="40" y1="170" x2="300" y2="170" stroke="#7E776B"/>
+  <line x1="40" y1="170" x2="40" y2="20" stroke="#7E776B"/>
+  <path d="M50,30 C110,90 150,140 290,160" fill="none" stroke="#5B7C99" stroke-width="2"/>
+  <path d="M50,165 C140,150 200,90 290,25" fill="none" stroke="#C99A2E" stroke-width="2"/>
+  <path d="M50,75 C120,135 160,135 290,70" fill="none" stroke="#A8472A" stroke-width="2.5"/>
+  <line x1="165" y1="170" x2="165" y2="120" stroke="#7E776B" stroke-dasharray="3 3"/>
+  <text x="165" y="186" text-anchor="middle" font-size="10" fill="#7E776B">optimum complexity</text>
+  <text x="118" y="40" font-size="10" fill="#5B7C99">Bias²</text>
+  <text x="248" y="40" font-size="10" fill="#8A6A1E">Variance</text>
+  <text x="200" y="118" font-size="10" fill="#A8472A">Total</text>
+  <text x="170" y="200" text-anchor="middle" font-size="11" fill="#7E776B">Model complexity →</text>
+</svg>
+<figcaption>Complexity ↑ ⇒ bias² ↓, variance ↑; total error is minimized in the middle.</figcaption>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">8</div><p class="qtext">Why does k-fold CV tend to <em>underestimate</em> the final model's performance?</p></div>
+<ol class="opts" data-explain="Each fold trains on only n−1 folds (less data than the final full-data model), and most models improve with more training data — so per-fold scores are slightly pessimistic. LOOCV minimizes this because each fold differs from the full set by just one point.">
+  <li data-correct="0"><span class="otxt">Because it leaks test information, inflating then deflating the score.</span></li>
+  <li data-correct="1"><span class="otxt">Each fold trains on less than the full data, and models usually improve with more data, so fold scores are pessimistically biased.</span></li>
+  <li data-correct="0"><span class="otxt">Because averaging always lowers the maximum achievable score.</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>Multiclass &amp; multilabel evaluation</h2>
+
+<h3>Multiclass</h3>
+<p>The confusion matrix generalizes to \(k\times k\). ROC is harder — multiple "positive" classes give <strong>multiple one-vs-rest ROC curves</strong>, combined via <strong>micro-average</strong> (pool all decisions) or <strong>macro-average</strong> (average per-class). If your technique is binary-only, transform:</p>
+
+<table class="tbl">
+<thead><tr><th></th><th>One-vs-all (one-vs-rest)</th><th>One-vs-one</th></tr></thead>
+<tbody>
+<tr><td># classifiers (\(k\) classes)</td><td><strong>\(k\)</strong></td><td><strong>\(k(k-1)/2\)</strong></td></tr>
+<tr><td>Decision rule</td><td>highest posterior probability</td><td>majority voting</td></tr>
+<tr><td>Contrast</td><td>class vs all others</td><td>each pair</td></tr>
+</tbody>
+</table>
+<p>Example one-vs-all: A-vs-notA \(p{=}0.92\), B \(0.18\), C \(0.12\) → predict A. Example one-vs-one: A-vs-B→A, A-vs-C→A, B-vs-C→C → A wins the vote.</p>
+
+<h3>Multilabel</h3>
+<p>An instance can carry <strong>multiple labels at once</strong>. Metrics adapt: Jaccard index, Hamming loss, multilabel precision/recall. Transforms when unsupported:</p>
+<div class="vs">
+  <div class="col"><h4>Binary relevance</h4><p>One <strong>independent</strong> binary classifier per label (label yes/no). Predict every label whose classifier fires. <strong>Not the same as one-vs-one/one-vs-all.</strong> Simple, but ignores label relationships.</p></div>
+  <div class="col"><h4>Label powerset</h4><p>Turn it into a multiclass problem over the <strong>powerset</strong> of labels: e.g. \([1\,0\,1]\) = Dog &amp; Duck present, Cat absent. Simple, but <strong>explodes the number of classes</strong>.</p></div>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">9</div><p class="qtext">For a 5-class problem, how many classifiers does <strong>one-vs-one</strong> build?</p></div>
+<ol class="opts" data-explain="One-vs-one builds k(k−1)/2 = 5·4/2 = 10 pairwise classifiers, decided by majority vote. One-vs-all would build only k = 5.">
+  <li data-correct="0"><span class="otxt">5</span></li>
+  <li data-correct="0"><span class="otxt">25</span></li>
+  <li data-correct="1"><span class="otxt">10</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>Validation is hard: leakage &amp; over-reuse</h2>
+
+<div class="callout warn">
+  <div class="ttl">"If scores are too good to be true, they most likely are" → target LEAKAGE</div>
+  <p>Feature engineering and transformations <strong>must be learned on the training set only</strong>. And beware <strong>hidden overtraining from over-reuse</strong>: even if you save the test set for the very end, running too many "just one more small tuning" loops on the same train/validation split secretly fits the model to that split — and the final test result suddenly disappoints.</p>
+</div>
+
+<p>A test set is the <strong>only guarantee of generalization</strong> — not using one is out of the question. If data is genuinely scarce, two risky fallbacks:</p>
+<ul class="clean">
+  <li><strong>Use CV directly as evaluation</strong> — but limit the number of model types tried, and do feature selection.</li>
+  <li><strong>Fit only simple linear parametric models</strong> and report AIC/BIC/\(r^2\) as "degree of fit" — but <strong>you have NOT performed a real test</strong>. The apparent "lack of fit" comes only from the limited model class.</li>
+</ul>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — more features than instances = trivial perfect fit</div>
+  <p>With \(p \gt n\), the system is under-determined: you can fit <em>any</em> target perfectly, in multiple ways (think solving fewer equations than unknowns). So a great \(r^2\) proves nothing — it's the elephant-fitting problem again. This is the danger zone, and it's why a held-out test (not goodness-of-fit) is the real arbiter.</p>
+</div>
+
+<h3>Unsupervised &amp; monitoring</h3>
+<p>Unsupervised evaluation is <strong>more subjective</strong> (what is a "good" clustering?). But if you use an unsupervised method to <strong>generate features</strong>, test-set discipline returns — the feature generator must be fit on train only.</p>
+<p>At deployment, <strong>monitor for drift</strong> and set warnings that trigger retraining. <strong>Concept drift</strong> = changes in the statistical properties of data/target that erode model fidelity. Sculley's framing: ML is the <em>"high-interest credit card of technical debt"</em> — deploy it only when you must. Tools: Evidently AI, NannyML, MLflow, ZenML, Kubeflow.</p>
+
+<!-- ======================================================================= -->
+<h2>Interpretability: white box vs black box</h2>
+
+<p><span class="kterm">White-box</span> models (linear/logistic regression, decision trees, rules, RuleFit, Bayesian) are interpretable by construction — the easiest path. <span class="kterm">Black-box</span> models (tree ensembles, deep learning) need techniques to "open up", answering four questions: explain the <em>model as a whole</em>, <em>which features matter</em>, <em>how features drive predictions</em>, or <em>why a single instance</em> was predicted.</p>
+
+<div class="callout note">
+  <div class="ttl">The interpretability–performance trade-off</div>
+  <p>High interpretability / lower accuracy at the top-left (linear/logistic regression, Bayesian rule lists, decision trees, k-NN); low interpretability / high accuracy at the bottom-right (random forests, SVM, XGBoost, deep learning). The interpretability techniques below buy back some understanding of the bottom-right models. Most are <strong>model-agnostic</strong> (a few, like MDI and tree inspection, are model-specific).</p>
+</div>
+
+<!-- ======================================================================= -->
+<h2>Feature importance: MDI vs permutation vs drop-column</h2>
+
+<table class="tbl">
+<thead><tr><th>Method</th><th>Retrain?</th><th>Agnostic?</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>MDI (mean decrease in impurity)</td><td class="no">No</td><td class="no">No (trees only)</td><td><strong>Biased</strong>; favours high-cardinality features; untrustworthy under overfit</td></tr>
+<tr><td>Permutation</td><td class="yes">No</td><td class="yes">Yes</td><td>captures interactions; correlated features share importance</td></tr>
+<tr><td>Drop-column</td><td class="no">Yes (slow)</td><td class="yes">Yes</td><td>precise but expensive (retrain per feature)</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+  <div class="ttl">MDI's failure — a random column can outrank real features</div>
+  <p>MDI strongly favours <strong>high-cardinality</strong> (typically numerical) features over binary/low-category ones, because more split points = more chances to reduce impurity on the <em>training</em> set. In the deck, a column of pure random numbers ranks as more important than <code>bedrooms</code>. When a model overfits, MDI rewards features that aren't predictive on unseen data. Treat MDI with suspicion.</p>
+</div>
+
+<h3>Permutation importance</h3>
+<ol class="steps">
+  <li>Start with a trained model, a dataset, and a metric (e.g. AUC).</li>
+  <li><strong>Shuffle (permute) the values of one feature</strong>, breaking its link to the target.</li>
+  <li>Predict again with the same trained model.</li>
+  <li><strong>Importance = baseline performance − permuted performance.</strong></li>
+</ol>
+<p>It <strong>captures interactions</strong> (shuffling breaks them), but tells you <em>which</em> features matter, <strong>not how much or in which direction</strong>. Pitfalls: permuting one feature breaks interactions (permute correlated/interacting features <em>together</em> to study them); <strong>correlated features share importance</strong>, which can mislead.</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — train set or test set for permutation importance?</div>
+  <p><strong>Both have a use.</strong> On the <strong>test set</strong>: aligned with evaluation — training-set importance might tell you a feature matters when the model was merely overfitting it. On the <strong>train set</strong>: learn how the model <em>actually relied</em> on each feature internally. Different questions, different answers.</p>
+</div>
+
+<!-- ======================================================================= -->
+<h2>PDP &amp; ICE: how features drive predictions</h2>
+
+<h3>Partial Dependence Plots</h3>
+<p>Each point on a <span class="kterm">PDP</span> is the <strong>average prediction across all observations</strong> for a fixed value of the feature under study — showing how that feature impacts the outcome. Two equivalent constructions:</p>
+<ul class="clean">
+  <li><strong>Option 1:</strong> keep the target feature as-is, <strong>impute median/mode for all others</strong>, predict, plot over the feature's values (or a grid).</li>
+  <li><strong>Option 2:</strong> for each feature value, generate \(N\) synthetic rows by drawing the other features from randomly sampled instances, predict, and <strong>average</strong>.</li>
+</ul>
+<p>2D PDPs (two features) give contour/surface plots; higher dimensions are infeasible.</p>
+
+<div class="callout warn">
+  <div class="ttl">PDP's ceteris-paribus trap — absence of evidence ≠ evidence of absence</div>
+  <p>With \(y \sim x_0 x_1 + x_2 + \text{noise}\), the PDPs for \(x_0, x_1, x_2\) all look like flat increasing lines — the <strong>interaction \(x_0 x_1\) does NOT show up</strong>, because everything else is held fixed (averaged out). A flat PDP doesn't prove a feature is irrelevant.</p>
+</div>
+
+<div class="callout tip">
+  <div class="ttl">ELI-intern · why look at the PDP <em>and</em> the raw data?</div>
+  <p>Looking only at raw data (bin the feature, plot % yes) can <strong>imply false correlations</strong> that vanish once interactions are accounted for. Example: the data shows "sales drop for customers aged 30–40," but the PDP says "sales stay constant with age." The disagreement is itself the insight: <strong>age alone doesn't explain sales — there's an interaction</strong> with another feature. So inspect <em>both</em>: the PDP isolates the model's ceteris-paribus view; the data shows the messy reality. Each catches what the other misses.</p>
+</div>
+
+<h3>ICE plots</h3>
+<p><span class="kterm">ICE</span> = PDP's idea, but <strong>one line per original instance</strong> instead of a single average. For each instance, vary the feature across a grid → one line each. This reveals <strong>heterogeneity that PDP's average hides</strong> (e.g. the feature helps half the customers and hurts the other half, averaging to "flat"). Lines are often <strong>centered</strong> (start at 0); the average ICE line equals the PDP.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">10</div><p class="qtext">A PDP for <code>age</code> is perfectly flat, yet the feature is clearly used by the model. What's the most careful conclusion?</p></div>
+<ol class="opts" data-explain="PDP averages over all other features (ceteris paribus), so an interaction (or opposing per-instance effects) can average to flat. An ICE plot would reveal heterogeneity. A flat PDP is not proof of irrelevance.">
+  <li data-correct="0"><span class="otxt"><code>age</code> is provably irrelevant and can be dropped.</span></li>
+  <li data-correct="1"><span class="otxt">The averaging may be hiding interactions or opposing per-instance effects; check an ICE plot before concluding.</span></li>
+  <li data-correct="0"><span class="otxt">The PDP must be miscomputed, since used features always have sloped PDPs.</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>LIME: local surrogate explanations</h2>
+
+<div class="selfcheck">
+  <div class="q">Restate the problem LIME solves: PDP/importance explain a feature or the whole model — what's left unexplained?</div>
+  <details><summary></summary>
+  <div class="reveal">Why <strong>one specific instance</strong> got its prediction. A doctor doesn't want "age matters on average" — she wants "<em>this patient</em> was flagged high-risk because of these specific values." LIME builds a simple, interpretable model that is only accurate <strong>locally, around that one instance</strong>, to explain that individual decision.</div>
+  </details>
+</div>
+
+<p><span class="kterm">LIME</span> (Ribeiro et al., 2016) builds a <strong>local surrogate</strong> for an individual prediction. Model-agnostic; works on tabular, text, and image data. Given a black box \(b\) and instance \(x_i\) with \(b(x_i)=p(y{=}1\mid x_i)=0.78\):</p>
+<ol class="steps">
+  <li><strong>Perturb:</strong> create a dataset of perturbed samples around \(x_i\); get the black box's predictions.</li>
+  <li><strong>Weigh</strong> each perturbed point by its <strong>proximity</strong> to \(x_i\) (exponential kernel, or \(k\) nearest neighbours).</li>
+  <li><strong>Fit a simple, interpretable model</strong> on the weighted dataset.</li>
+  <li>The simple model = a <strong>local decision boundary</strong> approximating the black box near \(x_i\).</li>
+</ol>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — why LASSO regression as the local model?</div>
+  <p><strong>Regression</strong> because the black box outputs a continuous probability (0.78), so the surrogate predicts a number, not a class. <strong>LASSO</strong> because its \(L_1\) penalty drives coefficients to zero, keeping the explanation <strong>sparse</strong> — "your loan was denied because of these 3 features" beats a list of 40. Sparsity <em>is</em> interpretability.</p>
+</div>
+
+<p><strong>Non-tabular:</strong> Text — perturb by <strong>randomly removing words</strong> (easy with bag-of-words). Images — perturbing single pixels is meaningless, so perturb <strong>superpixels</strong> (groups of similar connected pixels, found via k-means) by "blanking" them.</p>
+
+<div class="callout warn">
+  <div class="ttl">LIME's pitfalls — why it's less used now</div>
+  <ul class="clean">
+    <li>Defining the <strong>neighborhood / kernel bandwidth</strong> is hard and changes results.</li>
+    <li>Choosing the <strong>simple model</strong> (and tuning its regularization) is <strong>somewhat arbitrary</strong> — the main reason LIME fell out of fashion. Its advantage remains: easy to understand, works across tabular/text/images.</li>
+  </ul>
+</div>
+
+<!-- ======================================================================= -->
+<h2>Shapley values &amp; SHAP</h2>
+
+<h3>The game-theory idea</h3>
+<p>From cooperative game theory (Lloyd Shapley). The <span class="kterm">Shapley value</span> is the <strong>fair payout for each player</strong> in a cooperative game; in ML it measures a <strong>feature's contribution to a prediction</strong>. The trick is <strong>marginal contribution averaged over all orderings</strong>.</p>
+
+<details class="fold"><summary>The marginal-contribution intuition (click)</summary>
+<p>Players A, B, C; \(v\) = value of a coalition. \(v(\{A\})=6\); add B → \(v(\{A,B\})=10\), so B contributes +4; add C → \(v(\{A,B,C\})=12\), so C contributes +2. But add C <em>before</em> B: \(v(\{A,C\})=10\), so C contributes +4, then B +2. The contribution <strong>depends on order</strong> — so to be fair, <strong>average each player's marginal contribution over all orderings</strong>.</p>
+</details>
+
+<p>The exact Shapley value for feature \(j\):</p>
+<div class="formula"><span class="lbl">Shapley value</span>\[ \varphi_j = \sum_{S \subseteq \{x_1,\dots,x_p\}\setminus\{x_j\}} \frac{|S|!\,(p-|S|-1)!}{p!}\Big[v(S\cup\{x_j\}) - v(S)\Big] \]</div>
+<p>Sum over all subsets \(S\) of the <em>other</em> features; the combinatorial weight averages over orderings; the bracket is "value with \(j\) minus without \(j\)". In ML, \(v(X_S)\) = the model's prediction using only the included features, minus the average prediction.</p>
+
+<h3>Monte-Carlo approximation</h3>
+<p>Too many subsets to compute exactly, so estimate with \(M\) samples:</p>
+<div class="formula"><span class="lbl">SHAP estimate</span>\[ \hat\varphi_j = \frac{1}{M}\sum_{m=1}^{M}\Big( \hat f(x^m_{+j}) - \hat f(x^m_{-j}) \Big) \]</div>
+<p>Each sample: draw a random instance \(z\); build \(x^m_{+j}\) (keeps \(x\)'s value for feature \(j\)) and \(x^m_{-j}\) (uses \(z\)'s value), with the <em>other</em> features randomly split between \(x\) and \(z\); take the difference in predictions.</p>
+
+<div class="callout why">
+  <div class="ttl">Drill the why — the additivity property &amp; the killer trap</div>
+  <p>Shapley values <strong>sum to the output minus the base rate</strong>. Example: base 0.1 + (age 65: +0.4) + (sex F: −0.3) + (bp 180: +0.1) + (bmi 40: +0.1) = <strong>0.4</strong> = the model's output. Beautiful, additive, complete.</p>
+  <p><strong>The crucial trap:</strong> a Shapley value is the contribution of a feature <em>to this instance's output</em> — it is <strong>NOT</strong> "how much the output would change if you removed the feature." Mixing these up is the single most common SHAP misconception.</p>
+</div>
+
+<h3>SHAP plots</h3>
+<ul class="clean">
+  <li><strong>Force plot</strong> (one instance): features push the output above/below the base value — red pushes higher, blue lower.</li>
+  <li><strong>Beeswarm / summary plot</strong>: features × SHAP value × feature value (color) across all instances — global importance <em>and</em> direction.</li>
+  <li><strong>SHAP dependence plot</strong>: a feature's SHAP value vs its value across instances (≈ a PDP); add a second feature as color to see <strong>interactions</strong>.</li>
+</ul>
+<p>SHAP is the <strong>most commonly used instance-explainability technique in industry</strong>. It combines the best of importance + partial dependence + instance-level explanation.</p>
+
+<div class="q"><div class="q-top"><div class="qnum">11</div><p class="qtext">A SHAP force plot shows feature <code>income</code> has value \(+0.12\) for a given customer. What does this mean?</p></div>
+<ol class="opts" data-explain="A Shapley value is the feature's contribution to THIS instance's output relative to the base rate — it pushed this prediction up by 0.12. It is NOT 'the output would drop 0.12 if income were removed.' That conflation is the classic trap.">
+  <li data-correct="0"><span class="otxt">Removing <code>income</code> from the model would lower this prediction by exactly 0.12.</span></li>
+  <li data-correct="1"><span class="otxt">For this customer, <code>income</code>'s value contributed \(+0.12\) toward the prediction, measured from the base rate.</span></li>
+  <li data-correct="0"><span class="otxt"><code>income</code> is the 12%-most-important feature globally.</span></li>
+</ol></div>
+
+<div class="q"><div class="q-top"><div class="qnum">12</div><p class="qtext">Which interpretability technique is <strong>model-specific</strong> (not agnostic) and known to be biased toward high-cardinality features?</p></div>
+<ol class="opts" data-explain="MDI (mean decrease in impurity) is computed inside tree ensembles (model-specific) and favours high-cardinality features with many split points; it's untrustworthy under overfitting. Permutation and drop-column are model-agnostic.">
+  <li data-correct="0"><span class="otxt">Permutation importance</span></li>
+  <li data-correct="1"><span class="otxt">MDI (mean decrease in impurity)</span></li>
+  <li data-correct="0"><span class="otxt">Drop-column importance</span></li>
+</ol></div>
+
+<!-- ======================================================================= -->
+<h2>Quick reference: the comparison tables</h2>
+
+<h3>PDP vs ICE vs LIME vs Shapley</h3>
+<table class="tbl">
+<thead><tr><th>Technique</th><th>Scope</th><th>Key idea</th></tr></thead>
+<tbody>
+<tr><td>PDP</td><td>feature, global</td><td>average prediction over data as feature varies</td></tr>
+<tr><td>ICE</td><td>feature, per-instance</td><td>one line per instance (heterogeneity)</td></tr>
+<tr><td>LIME</td><td>single instance, local</td><td>local sparse surrogate (LASSO/tree) on perturbed neighbours</td></tr>
+<tr><td>Shapley / SHAP</td><td>single instance (+ aggregated)</td><td>fair game-theoretic contribution; sums to output − base</td></tr>
+</tbody>
+</table>
+
+<h3>Accuracy vs AUC</h3>
+<div class="vs">
+  <div class="col"><h4>Accuracy</h4><ul class="clean"><li>Threshold-dependent</li><li>Misleading under imbalance (99% by predicting majority)</li><li>Single operating point</li></ul></div>
+  <div class="col"><h4>AUC</h4><ul class="clean"><li>Threshold-independent</li><li>P(random positive scores above random negative)</li><li>Aggregates all operating points; coin flip = 0.5</li></ul></div>
+</div>
+
+<!-- ======================================================================= -->
+<h2>Can you teach it back?</h2>
+<div class="card">
+  <p>Close the guide and explain each of these <strong>out loud</strong>, as if to a classmate. If you stumble, that's exactly the section to reread.</p>
+  <ul class="check">
+    <li>Why is 100% train accuracy free, and why must the split come first and be stratified?</li>
+    <li>Derive recall, precision, specificity, FPR from a confusion matrix — by their denominators. Which depend on the threshold?</li>
+    <li>Explain why accuracy lies under imbalance, and how cost matrices, \(T_{CS}\), and resampling are the same bias from three angles.</li>
+    <li>State the probabilistic meaning of AUC, and explain <em>why</em> PR beats ROC under imbalance (where does the \(TN\) go?).</li>
+    <li>Give \(AR = 2\,AUC - 1\), define lift (and lift of 1), and list which measures are threshold-free.</li>
+    <li>Explain plain vs adjusted \(r^2\), and why "predicting the future ≠ extrapolating."</li>
+    <li>Why is CV for tuning, why is it pessimistically biased, and why must preprocessing be fit per-fold?</li>
+    <li>Count classifiers for one-vs-all vs one-vs-one; distinguish binary relevance from label powerset.</li>
+    <li>Contrast MDI / permutation / drop-column importance; PDP vs ICE; the LIME pipeline; and what a Shapley value <em>is</em> (and isn't).</li>
+  </ul>
+</div>
+
+<div class="callout tip">
+  <div class="ttl">Final ELI5 — the whole chapter in one breath</div>
+  <p>Anybody can memorize the answer key (the training data). The only honest test is a <strong>fresh exam</strong> (held-out test set) — and you should make that exam <em>hard</em>. Then pick the right <strong>ruler</strong> for the job (accuracy lies when one answer is rare; use precision/recall/AUC/PR appropriately), tune carefully without peeking at the final exam (cross-validation), and finally <strong>ask the model to explain its reasoning</strong> (importance, PDP/ICE, LIME, SHAP). Generalize, measure honestly, and understand <em>why</em>.</p>
+</div>
+
+<footer>
+  <span>Chapter 03 · Supervised Learning — Evaluation &amp; Interpretability</span>
+  <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+</footer>
+
+</div>
+</main>
+
+<script>
+/* Left contents rail — inline verbatim inside a <script> before </body>.
+   Auto-builds a fixed, full-height sidebar from the page's section headings
+   (h2 = level 1, h3 = level 2) plus any element carrying data-nav-label
+   (used for per-question anchors). Adds smooth scroll, scrollspy, and a
+   mobile slide-in toggle. No external dependencies. */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+</script>
+
+<script>
+/* Interactive quiz — inline verbatim inside a <script> before </body>.
+   Two modes, auto-detected per question:
+
+   • PER-OPTION mode (exam MCQs): every <li> carries its own data-explain.
+       - Click a WRONG option -> it turns red and shows WHY THAT option is wrong,
+         WITHOUT revealing the correct answer; the question stays open so you can try again.
+       - Click the CORRECT option -> it turns green, shows why it's right, and locks.
+   • LEGACY mode (crash-course / prep self-checks): one data-explain on the <ol>.
+       - First click locks the question, marks the correct answer, and reveals the reasoning.
+
+   A fixed scorebar tracks solved + first-try-correct counts. Re-typesets MathJax in feedback. */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        // legacy: lock + reveal correct
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+</script>
+
+</body>
+</html>

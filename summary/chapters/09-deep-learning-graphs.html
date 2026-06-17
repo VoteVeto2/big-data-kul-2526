@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 09 — Deep Learning for Graphs · Crash Course</title>
+<!-- MathJax -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Chapter 09 · Crash Course</span>
+    <h1>Deep Learning for Graphs</h1>
+    <p class="subtitle">Graph construction, centrality, community mining, network-based inference, shallow embeddings, and GNNs (GCN / GraphSAGE / GAT) — plus validation traps and graph databases.</p>
+    <div class="meta-row">
+      <span class="timer">⏱️ ~18 min</span>
+      <span class="chip"><b>Centrality</b> degree · closeness · betweenness · PageRank</span>
+      <span class="chip"><b>GNNs</b> message passing</span>
+      <span class="chip"><b>Trap</b> transductive leakage</span>
+      <span class="chip"><b>DBs</b> Neo4j · Cypher</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<main class="chapter-body" id="ch09">
+
+<!-- ===================================================================== -->
+<h2>Big picture &amp; why graphs are hard</h2>
+
+<p>This is the third Deep-Learning lecture (after CNNs and NLP/word2vec). It reuses <strong>word2vec/skip-gram</strong> (DeepWalk, node2vec), <strong>CNN convolutions</strong> (message passing = convolution on irregular domains), and <strong>PageRank</strong>.</p>
+
+<dl class="defs">
+  <dt>Graph</dt>
+  <dd><span class="kterm">Nodes</span> (vertices / actors: people, pages, cards) connected by <span class="kterm">edges</span> (links / interactions: friendship, transaction, "like").</dd>
+</dl>
+
+<div class="callout why">
+  <div class="ttl">◆ Why it's tricky</div>
+  <p>Graph data is (semi-)structured but has <strong>no direct feature-vector representation</strong>. The <strong>same use case can be turned into many valid networks</strong>, and the construction choice influences <em>all</em> downstream findings. Step one — deciding <em>how</em> and <em>why</em> to build the graph — is itself the hardest part.</p>
+</div>
+
+<p>Recurring example: credit-card↔merchant networks where <strong>fraudsters cluster</strong> (stolen cards used at the same stores).</p>
+
+<!-- ===================================================================== -->
+<h2>Graph construction</h2>
+
+<h3>Design choices that change everything</h3>
+<ul class="clean">
+  <li><strong>Nodes:</strong> homogeneous (one entity type) vs. heterogeneous (e.g. products + customers); may carry features and a single <em>node weight</em> (intensity of presence).</li>
+  <li><strong>Edges:</strong> one type vs. many; <em>weights are very common</em> (vs. binary presence); directed / undirected / self / reciprocal / duplicated. An edge joining <strong>more than two nodes</strong> = a <span class="kterm">hypergraph</span>.</li>
+  <li><strong>Centerpoint:</strong> labels usually live on <em>nodes</em>. If the focus is on edges, re-encode an edge as a node = a <span class="kterm">line graph</span>.</li>
+</ul>
+
+<div class="callout tip">
+  <div class="ttl">✓ Start-simple recipe (Oskarsdottir 2018)</div>
+  <p><strong>Undirected, unweighted, binary, single node type</strong>, plus extra edge info (e.g. <em>pseudo-edges</em>) for a densely connected graph. Empirically: using <strong>all edges</strong> beats only-reciprocated edges (higher AUC &amp; lift@10%), and <strong>undirected networks performed best</strong>.</p>
+</div>
+
+<h3>Bipartite → unipartite projection</h3>
+<p>A bipartite graph (authors↔papers) can be <strong>projected</strong> to a unipartite one (author↔author). Projection edge weights can be <strong>binary, common-neighbours count, or Jaccard</strong> — e.g. \( w_{A,B} = \{1, 2, 0.66\} \) for {binary, common neighbours, Jaccard}.</p>
+
+<h3>Recency-weighted summary graph (temporal)</h3>
+<div class="formula"><span class="lbl">recency edge weight</span>\[ f(h) = e^{-\alpha h} \]</div>
+<p>\(h\) = age of the interaction; \(\alpha\) controls decay. <strong>Larger \(\alpha\) → faster decay</strong> (recent interactions dominate). At \(h=0\), \(w=1\).</p>
+
+<h3>Adjacency vs. incidence matrix</h3>
+<div class="vs">
+  <div class="col"><h4>Adjacency matrix</h4><p><strong>node × node.</strong> Entry = 1 if an edge connects the two nodes.</p></div>
+  <div class="col"><h4>Incidence matrix</h4><p><strong>node × edge.</strong> Entry = 1 if the node is an endpoint of that edge.</p></div>
+</div>
+<div class="callout exam"><div class="ttl">⚠ Exam watch-out</div><p>Do <strong>not</strong> swap them. Adjacency = node×node; incidence = node×edge.</p></div>
+
+<!-- ===================================================================== -->
+<h2>Centrality (which nodes are important?)</h2>
+<p>Centrality finds the most important nodes (influencers, hubs, gatekeepers, super-spreaders). Their values can also be used as <strong>features</strong> downstream.</p>
+
+<h3>The four measures</h3>
+<table class="tbl">
+  <thead><tr><th>Measure</th><th>Captures</th><th>Definition</th><th>"Who is it?"</th></tr></thead>
+  <tbody>
+    <tr><td><b>Degree</b></td><td>Local connectivity</td><td># of edges (normalized = ÷ max degree); in- vs. out-degree</td><td>Active hub / connector / deal-maker</td></tr>
+    <tr><td><b>Closeness</b></td><td>Geographic</td><td>reciprocal of farness — inverse mean geodesic distance to all</td><td>Quick reach, high visibility</td></tr>
+    <tr><td><b>Betweenness</b></td><td>Transit</td><td># times on shortest paths (<em>also for edges!</em>)</td><td>Gatekeeper, controls flow</td></tr>
+    <tr><td><b>Eigenvector / PageRank</b></td><td>Authority / influence</td><td>weighted by neighbours' scores</td><td>Connected to important nodes</td></tr>
+  </tbody>
+</table>
+
+<div class="formula"><span class="lbl">closeness centrality</span>\[ C(x) = \frac{N-1}{\sum_{y \neq x} \lvert \mathrm{geod}(x,y) \rvert} \]</div>
+
+<dl class="defs">
+  <dt>Geodesic</dt><dd>shortest path between two nodes (computationally intensive for large graphs).</dd>
+  <dt>Graph-theoretic center</dt><dd>node(s) with the <strong>lowest maximum distance</strong> to all others: \( \arg\min_{n} \max_{m} \lvert \mathrm{geod}(n,m) \rvert \).</dd>
+</dl>
+
+<div class="callout note"><div class="ttl">▸ Degree subtlety</div><p>A high-degree node is <strong>not necessarily the most "connected"</strong> entity — its many links may all point to <em>low-level</em> entities.</p></div>
+
+<h3>Eigenvector / PageRank</h3>
+<p>Connections to <strong>high-scoring</strong> nodes contribute more than equal connections to low-scoring ones. <strong>PageRank is a variant of eigenvector centrality for directed graphs.</strong> Computed by iterating a stochastic matrix \(M\) against a score vector until convergence — but real implementations use a <strong>"random walkers"</strong> approach to handle scale, loops, disconnected graphs and dangling links.</p>
+<div class="formula"><span class="lbl">power iteration (slide 28)</span>\[ \left[\tfrac{1}{3},\tfrac{1}{3},\tfrac{1}{3}\right] \to \left[\tfrac{1}{3},\tfrac{1}{2},\tfrac{1}{6}\right] \to \left[\tfrac{5}{12},\tfrac{1}{3},\tfrac{1}{4}\right] \to \cdots \to \left[\tfrac{2}{5},\tfrac{2}{5},\tfrac{1}{5}\right] \]</div>
+
+<div class="callout exam"><div class="ttl">⚠ Kite-network trap (Krackhardt 1988)</div><p><strong>No single node wins on all measures.</strong> Diane wins degree &amp; PageRank; Fernando/Garth win closeness; <strong>Heather wins betweenness</strong> (the bridge to the Ike–Jane tail). Different measures crown different "kings".</p></div>
+
+<!-- ===================================================================== -->
+<h2>Community mining</h2>
+<dl class="defs">
+  <dt>Community</dt>
+  <dd>a subset of vertices with <strong>dense linkage inside</strong> and <strong>sparse density outside</strong> — tightly connected to each other, loosely to the rest.</dd>
+</dl>
+
+<div class="diagram">
+<svg viewBox="0 0 460 150" role="img" aria-label="Two dense communities joined by one bridge edge">
+  <g stroke="#D6CAB2" stroke-width="1.5">
+    <line x1="55" y1="40" x2="100" y2="35"/><line x1="55" y1="40" x2="70" y2="90"/><line x1="100" y1="35" x2="70" y2="90"/><line x1="100" y1="35" x2="110" y2="95"/><line x1="70" y1="90" x2="110" y2="95"/>
+    <line x1="350" y1="40" x2="400" y2="35"/><line x1="350" y1="40" x2="370" y2="90"/><line x1="400" y1="35" x2="370" y2="90"/><line x1="400" y1="35" x2="405" y2="95"/><line x1="370" y1="90" x2="405" y2="95"/>
+  </g>
+  <line x1="110" y1="95" x2="350" y2="40" stroke="#A8472A" stroke-width="2.5" stroke-dasharray="5 4"/>
+  <text x="230" y="58" text-anchor="middle" font-size="11" fill="#A8472A" font-family="Georgia,serif">highest betweenness → cut first</text>
+  <g fill="#5C8A6B">
+    <circle cx="55" cy="40" r="9"/><circle cx="100" cy="35" r="9"/><circle cx="70" cy="90" r="9"/><circle cx="110" cy="95" r="9"/>
+  </g>
+  <g fill="#5B7C99">
+    <circle cx="350" cy="40" r="9"/><circle cx="400" cy="35" r="9"/><circle cx="370" cy="90" r="9"/><circle cx="405" cy="95" r="9"/>
+  </g>
+</svg>
+<figcaption>Girvan–Newman removes the highest-betweenness <strong>edge</strong> (the bridge) first.</figcaption>
+</div>
+
+<table class="tbl">
+  <thead><tr><th>Approach</th><th>Direction</th><th>Core idea</th><th>Cost</th></tr></thead>
+  <tbody>
+    <tr><td>Girvan–Newman</td><td>Divisive (top-down)</td><td>iteratively remove highest-betweenness <strong>edge</strong>, recalculate, repeat</td><td>Expensive</td></tr>
+    <tr><td>Min-cut family</td><td>Partition</td><td>minimize cut weight; <em>ratio</em>/<em>max</em> variants balance sizes</td><td>Expensive</td></tr>
+    <tr><td><b>Louvain</b></td><td>Greedy / agglomerative</td><td>greedily optimize <strong>modularity</strong>, then collapse to supernodes</td><td>Efficient</td></tr>
+    <tr><td>Clique / k-core</td><td>Bottom-up</td><td>grow complete (or k-core) cliques; allows overlap</td><td>Clique = very expensive</td></tr>
+  </tbody>
+</table>
+
+<dl class="defs">
+  <dt>Modularity</dt><dd>quality of a division = <strong>relative density of edges inside communities vs. outside</strong>. Louvain maximizes it.</dd>
+  <dt>Clique vs. maximal clique</dt><dd>clique = every node connected to every other; <strong>maximal</strong> = not contained in any larger clique.</dd>
+  <dt>k-core</dt><dd>maximal subset where each vertex connects to <strong>at least \(k\) others in the subset</strong> (a clique relaxation).</dd>
+</dl>
+
+<div class="formula"><span class="lbl">min-cut family</span>\[ \text{min cut} = \sum w_e^{c}, \qquad \text{min ratio cut} = \Big(\sum w_e^{c}\Big)\!\left(\tfrac{1}{\lvert A\rvert}+\tfrac{1}{\lvert B\rvert}\right) \]</div>
+
+<div class="callout exam"><div class="ttl">⚠ Exam watch-out</div><p>Girvan–Newman removes the highest-betweenness <strong>edge</strong> (not node) and is <strong>divisive</strong>. Louvain is <strong>greedy/agglomerative</strong> (each node its own community first) and optimizes <strong>modularity</strong>.</p></div>
+
+<!-- ===================================================================== -->
+<h2>Self-check #1</h2>
+<div class="q"><div class="q-top"><div class="qnum">1</div>
+<p class="qtext">Which statement about <strong>betweenness centrality</strong> and Girvan–Newman is correct?</p></div>
+<ol class="opts" data-explain="Betweenness counts how often a node lies on shortest paths and can equally be computed for edges; Girvan–Newman is divisive and repeatedly removes the highest-betweenness edge. Degree-based removal and node-only definitions are the distractors.">
+  <li data-correct="0"><span class="otxt">Betweenness is only defined for nodes; Girvan–Newman removes the highest-degree node.</span></li>
+  <li data-correct="1"><span class="otxt">Betweenness can also be computed for edges; Girvan–Newman divisively removes the highest-betweenness edge.</span></li>
+  <li data-correct="0"><span class="otxt">Betweenness measures the inverse distance to all nodes; Louvain uses it to merge supernodes.</span></li>
+</ol></div>
+
+<!-- ===================================================================== -->
+<h2>Network-based inference (predictions)</h2>
+
+<div class="callout why"><div class="ttl">◆ The setup</div><p>Labels live on nodes; we want to infer them for unknown nodes (fraud, churn, age). Comparable to <strong>semi-supervised</strong> learning with a few known positives — hard because nodes <strong>influence each other</strong>.</p></div>
+
+<dl class="defs">
+  <dt>Markov property (graphs)</dt><dd>a node's outcome depends <strong>only on its first-order (1-hop) neighbours</strong>. Valid in many settings; tied to homophily.</dd>
+  <dt>Homophily</dt><dd>"birds of a feather flock together" / "guilt by association" — edges among same-class nodes are more common than between classes (fraudsters cluster; a customer linked to a recent churner is likelier to churn).</dd>
+</dl>
+
+<h3>Relational Neighbor Classifier</h3>
+<p>Class probability = fraction of neighbours with that class (simple, "but boring"; uses the Markov property). With neighbours \(\{NF,F,F,NF,NF\}\), \(Z=5\):</p>
+<div class="formula"><span class="lbl">relational neighbour</span>\[ P(F\mid ?) = \tfrac{2}{5}, \qquad P(NF\mid ?) = \tfrac{3}{5} \]</div>
+
+<h3>Personalized PageRank</h3>
+<p>Models how information spreads. Uses <strong>"lazy random walks"</strong> (can rest at a vertex). Plain PageRank teleports <strong>uniformly</strong>; <strong>personalized</strong> PageRank teleports with a <strong>non-uniform</strong> distribution biased toward a class of interest (\(Y=1\)). The propagated scores become predictions — or features.</p>
+
+<div class="callout exam"><div class="ttl">⚠ Exam watch-out</div><p>Personalized PageRank <strong>uses label information</strong> (biased teleport) → it <strong>leaks more</strong> than label-agnostic centrality metrics. Plain PageRank teleports <em>uniformly</em>.</p></div>
+
+<h3>Relational logistic regression (Lu &amp; Getoor 2003)</h3>
+<p>Combines <strong>local attributes</strong> (age, income, RFM) with <strong>network attributes</strong> from neighbours in <em>one</em> logistic model:</p>
+<ul class="clean">
+  <li><strong>mode-link</strong> = most frequent neighbour class</li>
+  <li><strong>count-link</strong> = frequency of each neighbour class</li>
+  <li><strong>binary-link</strong> = binary presence indicators per class</li>
+</ul>
+<p>For neighbours \(\{NF,F,F,NF,NF\}\): mode = NF, freq(NF)=3, freq(F)=2, binary(NF)=1, binary(F)=1.</p>
+
+<div class="callout tip"><div class="ttl">✓ Predictions-as-features</div><p>Relational-learner outputs (PPR scores), centrality metrics, community labels, and egonet/domain features can all be stacked into a normal classifier. <em>Featurization summary:</em> keep the network simple, use egonet domain features + Personalized PageRank as a "global network" feature.</p></div>
+
+<!-- ===================================================================== -->
+<h2>Validation: data leakage is the central trap</h2>
+
+<div class="callout warn"><div class="ttl">▲ The core problem</div><p>The rule "all feature engineering happens <strong>after</strong> the train/test split" is <strong>violated</strong> when features come from the <strong>whole graph</strong> → <strong>data leakage</strong>. Neighbours of test nodes may be in train (and vice versa); labels and structure also change over time.</p></div>
+
+<div class="vs">
+  <div class="col"><h4>Transductive</h4><p>Test on the <strong>same graph</strong> the model saw, with some nodes' labels <strong>masked</strong> during training. Easy — but masked nodes <strong>still message-pass</strong> their info to scored nodes → <strong>leakage</strong> (widely used in papers anyway).</p></div>
+  <div class="col"><h4>Inductive</h4><p>Test on a <strong>separate graph</strong> not seen in training. Requires GNN ops independent of #nodes/edges. But splitting one graph means <strong>cutting edges removes information</strong>; temporal splits with overlapping windows <strong>still leak</strong>.</p></div>
+</div>
+
+<p><strong>Mitigations:</strong> make the time gap large, test at multiple points, <strong>randomly censor positive labels</strong> during feature generation, and prefer features that leak less (most centrality metrics use no labels; PPR uses labels). <em>Key reference: Guo &amp; vanden Broucke (2024), "A Critique on Transductive Evaluation for GNN Node Classification."</em></p>
+
+<!-- ===================================================================== -->
+<h2>Shallow embeddings: DeepWalk &amp; node2vec</h2>
+
+<dl class="defs">
+  <dt>Random walk</dt><dd>start at a vertex; each step move to a neighbour. <strong>Unweighted</strong> → uniform among neighbours; <strong>weighted</strong> → proportional to edge weight.</dd>
+</dl>
+
+<h3>DeepWalk (Perozzi et al. 2014)</h3>
+<p><strong>Unsupervised</strong> node embeddings: generate <strong>random walks</strong>, then train a <strong>skip-gram model</strong> (word2vec) where <em>walks = sentences, nodes = words</em>. Preserves structural properties in a low-dimensional space.</p>
+<div class="formula"><span class="lbl">skip-gram objective</span>\[ J(\Phi) = -\log \Pr\big(u_k \mid \Phi(v_j)\big), \qquad \Phi \leftarrow \Phi - \alpha \tfrac{\partial J}{\partial \Phi} \]</div>
+
+<h3>node2vec (Grover &amp; Leskovec 2016)</h3>
+<p>Same idea + the <strong>biased 2nd-order random walk</strong> with parameters \(p\) (return) and \(q\) (in-out):</p>
+<div class="formula"><span class="lbl">node2vec search bias</span>\[ \alpha_{pq}(t,x) = \begin{cases} 1/p & d_{tx}=0 \;(\text{return}) \\ 1 & d_{tx}=1 \\ 1/q & d_{tx}=2 \end{cases} \]</div>
+<p>Steering the walk gives BFS-like (<strong>structural</strong>) vs. DFS-like (<strong>community</strong>) representations.</p>
+
+<div class="callout exam"><div class="ttl">⚠ Drawbacks (shallow embeddings)</div><ul class="clean" style="margin:4px 0 0;">
+  <li><strong>No parameter sharing</strong> between nodes → params grow <strong>linearly with #nodes</strong>.</li>
+  <li>Hard to include node/edge features.</li>
+  <li><strong>Not inductive</strong> — cannot handle dynamic graphs / new nodes.</li>
+</ul></div>
+
+<!-- ===================================================================== -->
+<h2>Self-check #2</h2>
+<div class="q"><div class="q-top"><div class="qnum">2</div>
+<p class="qtext">What is the <strong>key innovation</strong> of node2vec over DeepWalk?</p></div>
+<ol class="opts" data-explain="node2vec keeps the random-walk + word2vec pipeline but adds a biased 2nd-order walk with return parameter p and in-out parameter q. It is still unsupervised, still shallow (no parameter sharing), and not inductive.">
+  <li data-correct="0"><span class="otxt">It replaces skip-gram with a full message-passing GNN.</span></li>
+  <li data-correct="0"><span class="otxt">It makes the embedding inductive so it generalizes to new nodes.</span></li>
+  <li data-correct="1"><span class="otxt">It adds a biased 2nd-order random walk controlled by \( p \) (return) and \( q \) (in-out).</span></li>
+</ol></div>
+
+<!-- ===================================================================== -->
+<h2>Graph Neural Networks</h2>
+
+<div class="callout why"><div class="ttl">◆ Goal</div><p>One general structure that learns node/edge/graph representations, <strong>generalizes to unseen elements</strong>, and uses <strong>both features and structure</strong>. Graphs carry four kinds of info: <strong>node, edge, global features, and connectivity</strong>.</p></div>
+
+<h3>Feeding a graph in</h3>
+<p>Features → a feature matrix (easy). <strong>Connectivity is harder:</strong> the adjacency matrix is <em>sparse</em>, and a DNN is <strong>not permutation invariant</strong> — many adjacency matrices encode the same graph but different orderings give different outputs. <strong>Adjacency lists</strong> (edge \(e_k\) stored as a tuple \((i,j)\)) are the memory-efficient, order-robust alternative.</p>
+
+<h3>Two problems → pooling &amp; message passing</h3>
+<dl class="defs">
+  <dt>Problem 1 — task/object mismatch → Pooling</dt><dd>info in edges but predictions on nodes? <strong>Gather</strong> the relevant embeddings, then <strong>aggregate</strong> (sum/mean). Graph-level pooling resembles <strong>global average pooling at the end of a CNN</strong>.</dd>
+  <dt>Problem 2 — not using connectivity → Message passing</dt><dd>a plain GNN (just an MLP per node) <strong>ignores connectivity during learning</strong>. Message passing makes embeddings <em>connectivity-aware</em>: gather neighbour messages → aggregate → update.</dd>
+</dl>
+
+<div class="formula"><span class="lbl">message passing — generic</span>\[ x_i^{k} = \gamma^{k}\Big( x_i^{k-1},\; \underset{j \in N(i)}{\mathrm{AGG}}\; \varphi^{k}\big(x_i^{k-1}, x_j^{k-1}, e_{j,i}\big) \Big) \]</div>
+<ul class="clean">
+  <li>\(\varphi\) = gather / <strong>message</strong> function</li>
+  <li>\(\mathrm{AGG}\) = permutation-invariant <strong>aggregator</strong> (sum/mean)</li>
+  <li>\(\gamma\) = <strong>update</strong> function (usually an MLP)</li>
+</ul>
+<div class="formula"><span class="lbl">simplified — "looks like a convolution"</span>\[ x_i^{k} = \gamma^{k}\Big( \sum_{j \in N(i)\cup\{i\}} x_j^{k-1}\, W_{j,i} \Big) \]</div>
+
+<div class="diagram">
+<svg viewBox="0 0 440 160" role="img" aria-label="Message passing: neighbours send messages to centre node">
+  <g stroke="#D6CAB2" stroke-width="1.5">
+    <line x1="220" y1="80" x2="90" y2="35"/><line x1="220" y1="80" x2="90" y2="125"/><line x1="220" y1="80" x2="360" y2="40"/><line x1="220" y1="80" x2="360" y2="120"/>
+  </g>
+  <g stroke="#A8472A" stroke-width="2" marker-end="url(#ar)">
+    <line x1="100" y1="40" x2="200" y2="74"/><line x1="100" y1="120" x2="200" y2="86"/><line x1="350" y1="45" x2="242" y2="74"/><line x1="350" y1="115" x2="242" y2="86"/>
+  </g>
+  <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#A8472A"/></marker></defs>
+  <g fill="#5B7C99"><circle cx="90" cy="35" r="13"/><circle cx="90" cy="125" r="13"/><circle cx="360" cy="40" r="13"/><circle cx="360" cy="120" r="13"/></g>
+  <circle cx="220" cy="80" r="17" fill="#CC785C"/>
+  <text x="220" y="84" text-anchor="middle" font-size="12" fill="#fff" font-family="Georgia,serif">i</text>
+  <text x="220" y="148" text-anchor="middle" font-size="11" fill="#7E776B">gather → aggregate → update</text>
+</svg>
+<figcaption>Message passing ≡ convolution on irregular domains; a CNN is its special case on a grid graph.</figcaption>
+</div>
+
+<div class="callout note"><div class="ttl">▸ Message passing = convolution</div><p>An image is a regular grid graph (pixels = nodes, neighbours = adjacent pixels); its adjacency matrix is banded; a CNN convolution <strong>is</strong> message passing on that grid. The simplified form's weakness is \(W_{j,i}\) (one weight per node pair) → we want a gather function \(\varphi\) with <strong>weight sharing</strong>.</p></div>
+
+<h3>Spatial vs. spectral layers</h3>
+<table class="tbl">
+  <thead><tr><th></th><th>Spatial</th><th>Spectral</th></tr></thead>
+  <tbody>
+    <tr><td>Basis</td><td>neighbourhood structure</td><td>spectral graph theory</td></tr>
+    <tr><td>Convolution</td><td>message passing between neighbours</td><td>polynomial filter on the Laplacian (spectral domain)</td></tr>
+    <tr><td>Information</td><td>localized around a node</td><td>global</td></tr>
+    <tr><td>Cost / clarity</td><td class="yes">flexible, scalable, intuitive</td><td class="no">expensive, less intuitive</td></tr>
+  </tbody>
+</table>
+<p><strong>Message passing is the generic approach</strong> (message → aggregate → update); <strong>spectral methods are a special case</strong> that does <em>not</em> aggregate over neighbours and avoids stacking many layers. "Localized" is not really a drawback — <strong>stacking GNN layers widens the receptive field</strong> (like CNN depth).</p>
+
+<h3>GCN (Kipf &amp; Welling 2016)</h3>
+<div class="formula"><span class="lbl">GCN — one-operation matrix form</span>\[ X' = \hat{D}^{-1/2}\,\hat{A}\,\hat{D}^{-1/2}\,X\,\Theta, \qquad \hat{A} = A + I \]</div>
+<p>\(\hat{A} = A+I\) adds <strong>self-loops</strong>; \(\hat{D}\) is the diagonal degree matrix \(\hat{D}_{ii} = \sum_j \hat{A}_{ij}\); \(\Theta\) = learnable kernel. Symmetric normalization on both sides.</p>
+
+<h3>GraphSAGE (Hamilton et al. 2017) — inductive</h3>
+<p>An <strong>inductive</strong> framework that generates embeddings by <strong>sampling and aggregating</strong> a node's local neighbourhood:</p>
+<div class="formula"><span class="lbl">GraphSAGE layer</span>\[ h_v^{k} = \sigma\!\Big( W^{k}\cdot \mathrm{CONCAT}\big(h_v^{k-1},\; \mathrm{AGG}_k\{h_u^{k-1} : u \in N(v)\}\big)\Big),\quad h_v^{k} \leftarrow \frac{h_v^{k}}{\lVert h_v^{k}\rVert_2} \]</div>
+<p>Key traits: <strong>samples</strong> neighbours, <strong>CONCAT</strong>s self + neighbour embeddings, then <strong>L2-normalizes</strong>. (In PyG, the unit and the NeighborLoader are split.)</p>
+
+<h3>GAT (Veličković et al. 2017) — attention</h3>
+<p>Adds the <strong>attention mechanism into the propagation step</strong>: each node attends to its neighbours via <strong>self-attention</strong>. Coefficients \(\alpha_{ij}\) = softmax of a LeakyReLU score; supports <strong>multi-head</strong> attention (heads concatenated or averaged).</p>
+
+<h3>Learning tasks &amp; pipeline</h3>
+<ul class="clean">
+  <li><strong>Node-level:</strong> classify/regress/cluster nodes (e.g. detect fake accounts).</li>
+  <li><strong>Edge-level:</strong> predict an edge label or its existence = <strong>link prediction</strong> (will a user like a product?).</li>
+  <li><strong>Graph-level:</strong> classify a whole graph (e.g. molecule toxicity from structure).</li>
+</ul>
+<p>General GNN block: optional <strong>Sampling</strong> → <strong>Conv/Recurrent</strong> → optional <strong>Pooling</strong> operator, with optional skip connections; trained supervised / semi- / unsupervised.</p>
+
+<!-- ===================================================================== -->
+<h2>Shallow embeddings vs. GNNs</h2>
+<table class="tbl">
+  <thead><tr><th></th><th>DeepWalk / node2vec</th><th>GNNs</th></tr></thead>
+  <tbody>
+    <tr><td>Learning</td><td>unsupervised; random walk + skip-gram</td><td>sup/semi/unsup; message passing</td></tr>
+    <tr><td>Parameter sharing</td><td class="no">none (linear in #nodes)</td><td class="yes">yes (weight sharing)</td></tr>
+    <tr><td>Node/edge features</td><td class="no">hard</td><td class="yes">yes</td></tr>
+    <tr><td>Inductive (new nodes)</td><td class="no">no (transductive only)</td><td class="yes">yes (e.g. GraphSAGE)</td></tr>
+  </tbody>
+</table>
+
+<!-- ===================================================================== -->
+<h2>Self-check #3</h2>
+<div class="q"><div class="q-top"><div class="qnum">3</div>
+<p class="qtext">Why is the raw <strong>adjacency matrix</strong> a poor input for a standard DNN?</p></div>
+<ol class="opts" data-explain="A DNN is not permutation invariant: many distinct adjacency matrices encode the same graph (just relabelled nodes), so different orderings yield different outputs — plus the matrix is very sparse. Adjacency lists fix this. It is not because the matrix is dense or too small.">
+  <li data-correct="1"><span class="otxt">It is sparse, and a DNN is not permutation invariant — different node orderings give different results.</span></li>
+  <li data-correct="0"><span class="otxt">It is always too dense to fit in memory for any real graph.</span></li>
+  <li data-correct="0"><span class="otxt">It cannot store edge weights, only binary connectivity.</span></li>
+</ol></div>
+
+<!-- ===================================================================== -->
+<h2>Inductive vs. transductive (GNN)</h2>
+<table class="tbl">
+  <thead><tr><th></th><th>Inductive</th><th>Transductive</th></tr></thead>
+  <tbody>
+    <tr><td>Test graph</td><td>separate, unseen</td><td>same graph (labels masked)</td></tr>
+    <tr><td>Splitting problem</td><td>cutting edges removes info</td><td>masked nodes still message-pass → leakage</td></tr>
+    <tr><td>Leakage</td><td class="yes">less (temporal split helps; overlap still leaks)</td><td class="no">yes — but widely used in papers</td></tr>
+  </tbody>
+</table>
+
+<!-- ===================================================================== -->
+<h2>Graph databases &amp; Cypher</h2>
+
+<div class="callout why"><div class="ttl">◆ The twist</div><p>A graph DB is a <strong>NoSQL</strong> database, but <strong>contrary to other NoSQL it increases relational modeling instead of dropping relations</strong>. It's a <em>hyper-relational</em> DB where JOIN tables become semantically meaningful relationships you <strong>navigate (traversal)</strong> and query by <strong>pattern matching</strong>. (Neo4j, Memgraph, FlockDB.)</p></div>
+
+<h3>ACID vs. BASE</h3>
+<div class="vs">
+  <div class="col"><h4>ACID — Relational</h4><p><strong>A</strong>tomicity, <strong>C</strong>onsistency, <strong>I</strong>solation, <strong>D</strong>urability. Schema-driven, SQL, strong consistency.</p></div>
+  <div class="col"><h4>BASE — NoSQL</h4><p><strong>B</strong>asically <strong>A</strong>vailable, <strong>S</strong>oft state, <strong>E</strong>ventual consistency. Schema-free, horizontally scalable.</p></div>
+</div>
+<p><strong>Eventual consistency:</strong> replicas converge <em>at some point</em> after a transaction — continuous consistency is <strong>not guaranteed</strong>. ("NoSQL" was first used in <strong>1998</strong> for a relational DB that simply forewent SQL — unrelated to the modern "not only SQL" movement.)</p>
+
+<h3>Cypher (Neo4j's query language)</h3>
+<p>Declarative, SQL-like, but geared to <strong>patterns</strong> via <code>MATCH</code>. Nodes = <code>()</code>, type-filter with <code>:</code> as <code>(b:Book)</code>; edges = <code>--</code> (undirected) or <code>--&gt;</code> (directed); relationship type in <strong>square brackets</strong> <code>-[:WRITTEN_BY]-</code>; transitive paths via <code>*</code> with <code>min..max</code>.</p>
+
+<div class="vs">
+  <div class="col"><h4>SQL — 3 tables + join</h4>
+<pre><code><span class="tok-k">SELECT</span> title <span class="tok-k">FROM</span> books, authors, books_authors
+<span class="tok-k">WHERE</span> author.id = books_authors.author_id
+  <span class="tok-k">AND</span> books.id = books_authors.book_id
+  <span class="tok-k">AND</span> author.name = <span class="tok-s">"Seppe"</span></code></pre></div>
+  <div class="col"><h4>Cypher — nodes + relationship</h4>
+<pre><code><span class="tok-k">MATCH</span> (b:Book)&lt;-[:WRITTEN_BY]-(a:Author)
+<span class="tok-k">WHERE</span> a.name = <span class="tok-s">"Seppe"</span>
+<span class="tok-k">RETURN</span> b.title</code></pre></div>
+</div>
+<p>Recursive/transitive hierarchy queries (<code>-[:PARENT*0..]-</code>) are <strong>easy in Cypher</strong> but <strong>hard in SQL</strong> even with recursive extensions.</p>
+
+<div class="callout exam"><div class="ttl">⚠ Exam watch-out</div><p><strong>Neo4j is optimized for OLTP</strong> and was <em>not originally</em> built for graph compute/analytics — that came later via the <strong>Neo4j GDS library</strong> (and Memgraph's MAGE). <strong>GraphX</strong> extends the Spark <strong>RDD</strong> as a <em>directed multigraph</em>; <strong>GraphFrames</strong> is DataFrame-based and "never really took off."</p></div>
+
+<!-- ===================================================================== -->
+<h2>Self-check #4</h2>
+<div class="q"><div class="q-top"><div class="qnum">4</div>
+<p class="qtext">How do graph databases differ from <strong>other</strong> NoSQL categories regarding relations?</p></div>
+<ol class="opts" data-explain="Most NoSQL types do away with relations for scalability; graph DBs do the opposite — they increase relational modeling, replacing JOIN tables with navigable, semantically meaningful relationships. They are still NoSQL (BASE), not relational/ACID.">
+  <li data-correct="0"><span class="otxt">They abandon relations entirely, like all NoSQL stores, favouring put/get access.</span></li>
+  <li data-correct="0"><span class="otxt">They are actually relational databases (ACID), not NoSQL at all.</span></li>
+  <li data-correct="1"><span class="otxt">They go the opposite way — increasing relational modeling, replacing JOIN tables with navigable relationships.</span></li>
+</ol></div>
+
+<!-- ===================================================================== -->
+<h2>One-minute recap</h2>
+<div class="card">
+<ul class="check">
+  <li><strong>Construction matters:</strong> same use case → many graphs; start simple (undirected, unweighted, binary, single type). Hypergraph = edges on &gt;2 nodes. Adjacency = node×node, incidence = node×edge.</li>
+  <li><strong>Centrality:</strong> degree (hub), closeness \((N-1)/\sum \mathrm{geod}\), betweenness (gatekeeper, <em>also for edges</em>), eigenvector/PageRank (directed). No node wins all (kite).</li>
+  <li><strong>Communities:</strong> Girvan–Newman = divisive, removes highest-betweenness <em>edge</em>; Louvain = greedy, maximizes <em>modularity</em>; k-core = each vertex ≥ \(k\) links inside.</li>
+  <li><strong>Inference:</strong> Markov = 1-hop neighbours; homophily = guilt by association; Personalized PageRank biases the teleport with labels (so it <em>leaks</em>).</li>
+  <li><strong>Embeddings:</strong> DeepWalk = walks + skip-gram (unsupervised); node2vec adds biased walk (\(p,q\)). Shallow = no parameter sharing, not inductive.</li>
+  <li><strong>GNN:</strong> message passing (φ message → AGG → γ update) = convolution on irregular graphs; stacking widens receptive field; spectral is a special case. GCN \(\hat A=A+I\); GraphSAGE = inductive sample+CONCAT+L2; GAT = attention.</li>
+  <li><strong>Validation:</strong> whole-graph features leak; transductive masks labels but nodes still message-pass → leakage.</li>
+  <li><strong>DBs:</strong> graph DB = NoSQL that <em>adds</em> relations; ACID vs. BASE; Cypher <code>MATCH</code> patterns; Neo4j = OLTP.</li>
+</ul>
+</div>
+
+<footer>
+  <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+  <span>Chapter 09 — Deep Learning for Graphs · Crash Course</span>
+</footer>
+
+</main>
+</div>
+
+<script>
+/* Left contents rail */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+</script>
+
+<script>
+/* Interactive quiz */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+</script>
+
+</body>
+</html>

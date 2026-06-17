@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam · Advanced Analytics in a Big Data World · June 2025</title>
+<style>
+  :root{
+    --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9;
+    --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+    --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+    --line:#E3DAC9; --line-strong:#D6CAB2;
+    --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 22px 90px;}
+  h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em;}
+
+  /* ---- Hero ---- */
+  header.hero{
+    background:
+      radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+      linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+    border-bottom:1px solid var(--line-strong);
+  }
+  .hero-inner{max-width:860px; margin:0 auto; padding:54px 22px 40px;}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+    padding:6px 13px; border-radius:999px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+  header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px; color:var(--ink);}
+  .subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:60ch;}
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+  .chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+    border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+    font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+  .chip b{color:var(--ink); font-weight:600;}
+
+  /* ---- Section ---- */
+  .section-head{display:flex; align-items:baseline; gap:14px; margin:52px 0 8px;}
+  .section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+  .section-head h2{font-size:24px; margin:0; flex:1;}
+  .section-head .weight{font-size:13px; font-weight:600; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+  .section-note{color:var(--muted); font-size:15px; margin:2px 0 26px;}
+
+  /* ---- Question card ---- */
+  .q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+  .q-top{display:flex; gap:14px; align-items:flex-start;}
+  .qnum{flex:none; width:40px; height:40px; border-radius:11px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+    font-family:Georgia,serif; font-weight:700; font-size:15px;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+  .qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+  .qtext code{font-size:.92em;}
+  ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+  ol.opts li{counter-increment:opt; display:flex; gap:12px; align-items:flex-start;
+    padding:10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:11px;
+    background:var(--surface-2); transition:border-color .15s, background .15s;}
+  ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+  ol.opts li::before{content:counter(opt,upper-alpha);
+    flex:none; width:25px; height:25px; border-radius:7px; background:#fff;
+    border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;}
+  ol.opts li .otxt{flex:1; padding-top:1px;}
+  code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+    padding:.1em .4em; border-radius:5px; font-size:.9em; color:#5A4632;}
+
+  /* ---- Open question ---- */
+  .open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+    border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+  .open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+  .open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+  .open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+    border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+    display:flex; align-items:center; justify-content:center; font-size:14px;}
+  .open .ptext{flex:1; padding-top:3px; font-size:17px;}
+  .open em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+
+  footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+    color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  .nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+  .nav-note a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+
+  @media print{
+    body{background:#fff; font-size:12pt;}
+    .q,.open,.chip{box-shadow:none;}
+    header.hero{background:#fff;}
+    .q,.open{break-inside:avoid;}
+  }
+
+  /* --- interactive quiz --- */
+  ol.opts li{position:relative; cursor:pointer; padding-right:40px; user-select:none;
+    transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+  ol.opts li:active{transform:scale(.996);}
+  ol.opts.answered li{cursor:default;}
+  ol.opts.answered li:hover{background:var(--surface-2);}
+  ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+  ol.opts li.correct:hover{background:#E7F0E8;}
+  ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+  ol.opts li.wrong:hover{background:#F6E5DC;}
+  ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+    transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+  ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+  ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+  .feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:11px;
+    transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+  .feedback.show{max-height:340px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+  .feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+  .feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+  .feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+  .feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+  .feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+  .feedback .ans b{color:var(--ink);}
+  .feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+    cursor:pointer; padding:0; text-decoration:underline;}
+  .feedback .reset:hover{color:var(--clay-deep);}
+  .scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+    border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+    color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+  .scorebar b{color:var(--clay-deep);}
+  .scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+    border-radius:999px; padding:4px 11px; font-size:12px;}
+  .scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+  @media print{ .scorebar{display:none;} ol.opts li{cursor:default; padding-right:14px;} }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>KU Leuven · Examination</span>
+    <h1>Advanced Analytics in a Big&nbsp;Data World</h1>
+    <p class="subtitle">Final examination — June 2025 (HIRB). Fifteen multiple-choice questions followed by one open question.</p>
+    <div class="meta-row">
+      <span class="chip">📝 <b>15</b> multiple choice</span>
+      <span class="chip">✍️ <b>1</b> open question</span>
+      <span class="chip">⚖️ MC <b>60%</b> · Open <b>40%</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="section-head">
+    <span class="bar"></span>
+    <h2>Multiple-choice questions</h2>
+    <span class="weight">60% · 15 questions</span>
+  </div>
+  <p class="section-note">Each question carries equal weight. Select the single best answer.</p>
+
+  <!-- Q1 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">1</div>
+      <p class="qtext">Which metric is independent of the chosen threshold for classification?</p></div>
+    <ol class="opts" data-explain="AUC is computed across all thresholds (the probability a random positive outranks a random negative), so it needs no cutoff. The others are read off a confusion matrix at a chosen threshold.">
+      <li data-correct="1"><span class="otxt">AUC</span></li>
+      <li data-correct="0"><span class="otxt">Accuracy</span></li>
+      <li data-correct="0"><span class="otxt">Precision</span></li>
+      <li data-correct="0"><span class="otxt">Balanced accuracy</span></li>
+    </ol>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">2</div>
+      <p class="qtext">Which of these four statements is correct / incorrect?</p></div>
+    <ol class="opts" data-explain="All four are accurate statements about Spark — DStream = sequence of RDDs, DataFrame = untyped Dataset of Row, DAG execution, in-memory compute. As transcribed, none is false.">
+      <li data-correct="1"><span class="otxt">DStream as a continuous RDD.</span></li>
+      <li data-correct="1"><span class="otxt">DataFrame vs. Dataset.</span></li>
+      <li data-correct="1"><span class="otxt">The Spark implementation that replaces map-reduce is through creating a directed acyclic graph.</span></li>
+      <li data-correct="1"><span class="otxt">The Spark implementation that replaces map-reduce is much more efficient in computations on RDDs because it does more compute in memory.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">3</div>
+      <p class="qtext">Which of these statements is incorrect?</p></div>
+    <ol class="opts" data-explain="Both other statements are true (split before preprocessing avoids leakage; random forests are robust to outliers), so none-are-incorrect is the answer.">
+      <li data-correct="0"><span class="otxt">Train-test split needs to be done even before preprocessing.</span></li>
+      <li data-correct="0"><span class="otxt">Random forest is robust to outliers.</span></li>
+      <li data-correct="1"><span class="otxt">None of the above answers are incorrect.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">4</div>
+      <p class="qtext">Which of these statements is correct / incorrect?</p></div>
+    <ol class="opts" data-explain="WoE is not inherently monotonic with the target — that must be enforced by binning, so A is the false statement. B and C are true.">
+      <li data-correct="1"><span class="otxt">Weights of evidence encode a monotonic relationship with the target variable.</span></li>
+      <li data-correct="0"><span class="otxt">Weights of evidence encoding is possible for a binary classification target.</span></li>
+      <li data-correct="0"><span class="otxt">Weights of evidence encoding vs. the information value of those variables.</span></li>
+      <li data-correct="0"><span class="otxt">None of the above answers are correct / incorrect.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">5</div>
+      <p class="qtext">Which statement about regularization terms is correct?</p></div>
+    <ol class="opts" data-explain="L2 = Ridge penalises the squared coefficients; L1 = Lasso penalises the absolute values. Only B pairs the right name with the right penalty.">
+      <li data-correct="0"><span class="otxt">L1 regularization (Ridge) adds a penalty proportional to the square of the coefficients.</span></li>
+      <li data-correct="1"><span class="otxt">L2 regularization (Ridge) adds a penalty proportional to the square of the coefficients.</span></li>
+      <li data-correct="0"><span class="otxt">L1 regularization (Lasso) adds a penalty proportional to the square of the coefficients.</span></li>
+      <li data-correct="0"><span class="otxt">L2 regularization (Lasso) adds a penalty proportional to the square of the coefficients.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">6</div>
+      <p class="qtext">Which of these statements is correct / incorrect?</p></div>
+    <ol class="opts" data-explain="A 2-D PDP can show interactions, so C is false. A (AUROC vs AUREC) and D (ICE is like a univariate PDP) are true; permutation importance does break correlations.">
+      <li data-correct="0"><span class="otxt">AU(RO)C vs. AUREC for regression tasks.</span></li>
+      <li data-correct="0"><span class="otxt">Permutation feature importance breaks / doesn't break the correlation between variables.</span></li>
+      <li data-correct="1"><span class="otxt">Partial dependence plots are unable to model interactions between variables.</span></li>
+      <li data-correct="0"><span class="otxt">An individual conditional expectation (ICE) plot is similar to a univariate partial dependence plot.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">7</div>
+      <p class="qtext">Which statement regarding the bias–variance trade-off is correct?</p></div>
+    <ol class="opts" data-explain="Bagging averages high-variance trees, cutting variance (bias unchanged); boosting cuts bias. So C is correct and D is its mirror-image error.">
+      <li data-correct="0"><span class="otxt">Bagging increases variance but not necessarily bias.</span></li>
+      <li data-correct="0"><span class="otxt">Boosting increases variance but not necessarily bias.</span></li>
+      <li data-correct="1"><span class="otxt">Bagging decreases variance but not necessarily bias.</span></li>
+      <li data-correct="0"><span class="otxt">Boosting decreases variance but not necessarily bias.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">8</div>
+      <p class="qtext">Which of these deep learning techniques doesn't help to prevent overfitting?</p></div>
+    <ol class="opts" data-explain="A smaller batch size is not a deliberate overfitting control — dropout, batch normalization and L1/L2 regularization all are.">
+      <li data-correct="0"><span class="otxt">Batch normalization</span></li>
+      <li data-correct="0"><span class="otxt">Dropout</span></li>
+      <li data-correct="1"><span class="otxt">Smaller batch size</span></li>
+      <li data-correct="0"><span class="otxt">Regularization</span></li>
+    </ol>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">9</div>
+      <p class="qtext">Which statement about clustering and dimensionality reduction is correct / incorrect?</p></div>
+    <ol class="opts" data-explain="A, B and C are all true (divisive vs agglomerative; DBSCAN noise points; t-SNE perplexity), so None-of-the-above (D) is the false statement.">
+      <li data-correct="0"><span class="otxt">Divisive vs. agglomerative clustering.</span></li>
+      <li data-correct="0"><span class="otxt">DBSCAN marks points as outliers that lie alone in low-density regions.</span></li>
+      <li data-correct="0"><span class="otxt">t-SNE uses the perplexity metric to define the neighborhood of a point.</span></li>
+      <li data-correct="1"><span class="otxt">None of the above are correct / incorrect.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">10</div>
+      <p class="qtext">Which statement about the difference between t-SNE and UMAP is correct / incorrect?</p></div>
+    <ol class="opts" data-explain="UMAP has hyperparameters (n_neighbors, min_dist), so C is false. B (better global structure) and D (both optimised by gradient descent) are true.">
+      <li data-correct="0"><span class="otxt">UMAP is better than t-SNE because it generally performs better in mappings if the dimensionality is more than 3.</span></li>
+      <li data-correct="0"><span class="otxt">UMAP is better than t-SNE because it obtains nicer properties in terms of interpretation in the reduced representation of the data.</span></li>
+      <li data-correct="1"><span class="otxt">While t-SNE has a hyperparameter (the perplexity parameter), UMAP doesn't.</span></li>
+      <li data-correct="0"><span class="otxt">Both t-SNE and UMAP dimensionality reductions can, for example, be achieved through stochastic gradient descent.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">11</div>
+      <p class="qtext">Which of these is the map-reduce pseudo-code to get the list <code>[4, 9, 25]</code>?</p></div>
+    <ol class="opts" data-explain="map applies x times x elementwise to give [4, 9, 25]; reduce folds the list into a single value, and map(2*x) would give [4, 6, 10].">
+      <li data-correct="1"><span class="otxt"><span class="mono">[2,3,5].map( lambda x: x*x )</span></span></li>
+      <li data-correct="0"><span class="otxt"><span class="mono">[2,3,5].reduce( lambda x: 2*x )</span></span></li>
+      <li data-correct="0"><span class="otxt"><span class="mono">[2,3,5].map( lambda x: 2*x )</span></span></li>
+      <li data-correct="0"><span class="otxt"><span class="mono">[2,3,5].reduce( lambda x: x*x )</span></span></li>
+    </ol>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">12</div>
+      <p class="qtext">Which of these statements about text mining is incorrect?</p></div>
+    <ol class="opts" data-explain="TF-IDF rewards words frequent in one document but rare across the corpus (the IDF term penalises corpus-common words), so A is the incorrect statement.">
+      <li data-correct="1"><span class="otxt">TF-IDF gives a high score to words that are frequent terms in a single document and frequent words in the entire corpus.</span></li>
+      <li data-correct="0"><span class="otxt">Bag of words encodes the frequency, or uses a binary encoding, for every single word in a document and therefore scales poorly with document size.</span></li>
+      <li data-correct="0"><span class="otxt">CBOW uses the context words as an input and then trains to output a specific word against this context.</span></li>
+      <li data-correct="0"><span class="otxt">Word embeddings can be used for topic modeling.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">13</div>
+      <p class="qtext">Which of these statements about the weaknesses of decision trees is correct / incorrect?</p></div>
+    <ol class="opts" data-explain="Trees do handle continuous variables (split thresholds) and missing values (surrogate splits), so B and C are false. The genuine weaknesses are A (overfitting) and D (instability).">
+      <li data-correct="1"><span class="otxt">Decision trees have a high tendency to overfit.</span></li>
+      <li data-correct="0"><span class="otxt">Decision trees cannot deal with continuous variables.</span></li>
+      <li data-correct="0"><span class="otxt">Decision trees cannot deal with missing values.</span></li>
+      <li data-correct="1"><span class="otxt">Decision trees are highly sensitive to changes in the training data.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q14 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">14</div>
+      <p class="qtext">Which of these statements about working with class imbalance is correct / incorrect?</p></div>
+    <ol class="opts" data-explain="Random undersampling drops majority points at random, not by similarity, so A is the incorrect statement. B, C and D are all true.">
+      <li data-correct="1"><span class="otxt">Undersampling removes highly similar majority class observations.</span></li>
+      <li data-correct="0"><span class="otxt">Oversampling adds duplicates of minority class observations.</span></li>
+      <li data-correct="0"><span class="otxt">Doing under/oversampling will result in a biased prediction distribution.</span></li>
+      <li data-correct="0"><span class="otxt">Never under/oversample the test set.</span></li>
+    </ol>
+  </div>
+
+  <!-- Q15 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">15</div>
+      <p class="qtext">For a convolutional neural network that takes in a 3-layered 10×10 image — one layer for each of the red / blue / green coloured versions of the image — and that then applies 4 kernels of 3×3 size with a stride of 1 and no padding, what will the dimensions of the hidden layer be?</p></div>
+    <ol class="opts" data-explain="Spatial size = (10 - 3)/1 + 1 = 8; output depth = number of kernels = 4 (each kernel spans all 3 channels), giving 8x8x4.">
+      <li data-correct="0"><span class="otxt">8×8×3</span></li>
+      <li data-correct="1"><span class="otxt">8×8×4</span></li>
+      <li data-correct="0"><span class="otxt">10×10×4</span></li>
+      <li data-correct="0"><span class="otxt">None of the above</span></li>
+    </ol>
+  </div>
+
+  <div class="section-head">
+    <span class="bar"></span>
+    <h2>Open question</h2>
+    <span class="weight">40%</span>
+  </div>
+  <p class="section-note">Answer both parts. A clear drawing is expected for part (a).</p>
+
+  <div class="open">
+    <div class="part">
+      <div class="plabel">a</div>
+      <div class="ptext">Explain the architecture of a <em>variational</em> auto-encoder and provide a drawing of the architecture.</div>
+    </div>
+    <div class="part">
+      <div class="plabel">b</div>
+      <div class="ptext">What is the advantage of a variational auto-encoder compared to a normal auto-encoder?</div>
+    </div>
+  </div>
+
+  <p class="nav-note">→ Worked solutions: <a href="Solutions-Big-Data-June2025.html">Solutions-Big-Data-June2025.html</a></p>
+
+  <footer>
+    <span>Advanced Analytics in a Big Data World (HIRB) · KU Leuven</span>
+    <span>Examination — June 2025</span>
+  </footer>
+</div>
+<script>
+(function(){
+  var L="ABCDEFGH";
+  var lists=[].slice.call(document.querySelectorAll("ol.opts"));
+  var total=lists.length, answered=0, correct=0, state={};
+  var bar=document.createElement("div"); bar.className="scorebar";
+  bar.innerHTML='<span><b class="sc">0</b> correct · <b class="an">0</b>/'+total+' answered</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent=correct; bar.querySelector(".an").textContent=answered; }
+  lists.forEach(function(ol,qi){
+    var items=[].slice.call(ol.querySelectorAll("li"));
+    var explain=ol.getAttribute("data-explain")||"";
+    var ci=[]; items.forEach(function(li,i){ if(li.getAttribute("data-correct")==="1") ci.push(i); });
+    var fb=document.createElement("div"); fb.className="feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    function reset(){
+      if(state[qi]){ answered--; if(state[qi].ok) correct--; state[qi]=null; refresh(); }
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct","wrong"); });
+      fb.className="feedback";
+    }
+    function choose(li){
+      if(ol.classList.contains("answered")) return;
+      ol.classList.add("answered");
+      var ok = li.getAttribute("data-correct")==="1";
+      ci.forEach(function(k){ items[k].classList.add("correct"); });
+      if(!ok) li.classList.add("wrong");
+      var letters=ci.map(function(k){return L[k];}).join(" / ");
+      var note = ok ? "" : ("Correct answer: <b>"+letters+"</b>. ");
+      fb.classList.add(ok?"ok":"no");
+      fb.innerHTML='<div class="verdict">'+(ok?"✓ Correct!":"✗ Not quite.")+'</div>'+
+                   '<div class="ans">'+note+explain+'</div>'+
+                   '<button class="reset" type="button">↺ try again</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); });
+      state[qi]={ok:ok}; answered++; if(ok) correct++; refresh();
+    }
+    items.forEach(function(li){
+      li.setAttribute("role","button"); li.setAttribute("tabindex","0");
+      li.addEventListener("click", function(){ choose(li); });
+      li.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); choose(li); }});
+    });
+  });
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct","wrong"); });
+      var fb=ol.nextElementSibling; if(fb&&fb.classList.contains("feedback")) fb.className="feedback";
+    });
+    answered=0; correct=0; state={}; refresh();
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>

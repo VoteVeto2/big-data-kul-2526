@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 07 — Deep Learning for Text · Crash Course</title>
+<style>
+/* ============================================================================
+   Anthropic Warm — shared design system
+   Advanced Analytics in a Big Data World · KU Leuven
+   Inline this ENTIRE block verbatim inside each self-contained .html <style>.
+   ========================================================================== */
+:root{
+  --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9; --surface-3:#F1EADB;
+  --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+  --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+  --sage:#5C8A6B; --sage-soft:#DDE8DC; --sage-deep:#3F6B4F;
+  --gold:#C99A2E; --gold-soft:#F0E4C4; --gold-deep:#8A6A1E;
+  --sky:#5B7C99; --sky-soft:#D9E2EA; --sky-deep:#3C5870;
+  --plum:#8A5C7C; --plum-soft:#E7D8E3;
+  --line:#E3DAC9; --line-strong:#D6CAB2;
+  --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+  --shadow-lg:0 2px 6px rgba(40,30,20,.06), 0 18px 44px rgba(70,45,20,.10);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px; margin:0 auto; padding:0 22px 100px;}
+.wrap.wide{max-width:1040px;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+a:hover{border-bottom-color:var(--clay);}
+p{margin:.7em 0;}
+strong,b{font-weight:650; color:var(--ink);}
+em{color:var(--clay-deep); font-style:italic;}
+hr{border:none; border-top:1px solid var(--line-strong); margin:34px 0;}
+
+/* ---- Hero ---- */
+header.hero{
+  background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+  border-bottom:1px solid var(--line-strong);
+}
+.hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+.wrap.wide ~ * .hero-inner, .hero-inner.wide{max-width:1040px;}
+.eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft);
+  padding:6px 13px; border-radius:999px;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px;}
+.subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+  font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+.chip b{color:var(--ink); font-weight:650;}
+
+/* ---- Section heads ---- */
+.section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 10px;}
+.section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+.section-head h2{font-size:24px; margin:0; flex:1;}
+.section-head .tag{font-size:13px; font-weight:600; color:var(--clay-deep);
+  background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+.section-note{color:var(--muted); font-size:15px; margin:2px 0 22px;}
+h3{font-size:19.5px; margin:30px 0 6px;}
+h4{font-size:16.5px; margin:22px 0 4px; color:var(--ink-soft);}
+
+/* ---- Cards & callouts ---- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 24px; margin:16px 0; box-shadow:var(--shadow);}
+.grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-2{display:grid; gap:16px; grid-template-columns:1fr 1fr;}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+.callout{border-radius:var(--radius); padding:15px 18px 15px 17px; margin:16px 0;
+  border:1px solid var(--line); border-left:4px solid var(--clay); background:var(--surface);
+  box-shadow:var(--shadow);}
+.callout .ttl{font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+.callout p:first-of-type{margin-top:0;} .callout p:last-child{margin-bottom:0;}
+.callout.tip{border-left-color:var(--sage); background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 70%);}
+.callout.tip .ttl{color:var(--sage-deep);}
+.callout.exam{border-left-color:var(--gold); background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 75%);}
+.callout.exam .ttl{color:var(--gold-deep);}
+.callout.warn{border-left-color:var(--clay-deep); background:linear-gradient(180deg,#F6E5DC,#FBFAF6 70%);}
+.callout.warn .ttl{color:var(--clay-deep);}
+.callout.note{border-left-color:var(--sky); background:linear-gradient(180deg,var(--sky-soft),#FBFAF6 70%);}
+.callout.note .ttl{color:var(--sky-deep);}
+.callout.why{border-left-color:var(--plum); background:linear-gradient(180deg,var(--plum-soft),#FBFAF6 72%);}
+.callout.why .ttl{color:var(--plum);}
+
+/* ---- Key term / definition ---- */
+.kterm{display:inline-block; font-weight:650; color:var(--clay-deep);
+  border-bottom:2px solid var(--clay-soft);}
+dl.defs{margin:14px 0;}
+dl.defs dt{font-weight:700; color:var(--ink); margin-top:12px; font-family:Georgia,serif;}
+dl.defs dd{margin:2px 0 0; color:var(--ink-soft);}
+
+/* ---- Formula ---- */
+.formula{background:var(--surface-3); border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+  padding:13px 18px; margin:14px 0; font-family:Georgia,"Times New Roman",serif; font-size:18px;
+  text-align:center; color:var(--ink); overflow-x:auto;}
+.formula .lbl{display:block; font-family:-apple-system,system-ui,sans-serif; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
+.sub{font-size:.72em; vertical-align:sub;} .sup{font-size:.72em; vertical-align:super;}
+
+/* ---- Code ---- */
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+  padding:.1em .4em; border-radius:5px; font-size:.88em; color:#5A4632;}
+pre{background:#2B2722; color:#EDE6D6; border-radius:var(--radius-sm); padding:15px 18px; margin:14px 0;
+  overflow-x:auto; font-size:13.5px; line-height:1.55; box-shadow:var(--shadow);}
+pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+.tok-k{color:#E0967A;} .tok-s{color:#B6C99A;} .tok-c{color:#8C8275; font-style:italic;} .tok-n{color:#D9B26A;}
+
+/* ---- Lists ---- */
+ul.clean{list-style:none; padding-left:0; margin:12px 0;}
+ul.clean li{position:relative; padding-left:26px; margin:9px 0;}
+ul.clean li::before{content:""; position:absolute; left:6px; top:.62em; width:7px; height:7px;
+  border-radius:50%; background:var(--clay); box-shadow:0 0 0 3px rgba(204,120,92,.16);}
+ul.check{list-style:none; padding-left:0;}
+ul.check li{position:relative; padding-left:30px; margin:10px 0;}
+ul.check li::before{content:"\2713"; position:absolute; left:4px; top:0; color:var(--sage-deep); font-weight:800;}
+ol.steps{counter-reset:st; list-style:none; padding-left:0;}
+ol.steps li{counter-increment:st; position:relative; padding-left:42px; margin:12px 0;}
+ol.steps li::before{content:counter(st); position:absolute; left:0; top:-2px; width:28px; height:28px;
+  border-radius:9px; background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+
+/* ---- Tables ---- */
+.tbl{width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; font-size:15px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow);}
+.tbl th,.tbl td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+.tbl thead th{background:var(--surface-3); font-family:Georgia,serif; font-size:14px; color:var(--ink); font-weight:700;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover{background:var(--surface-2);}
+.tbl td.yes{color:var(--sage-deep); font-weight:650;} .tbl td.no{color:var(--clay-deep); font-weight:650;}
+
+/* ---- Pills / badges ---- */
+.pill{display:inline-block; font-size:12px; font-weight:650; padding:3px 10px; border-radius:999px;
+  background:rgba(204,120,92,.12); color:var(--clay-deep); border:1px solid var(--clay-soft);}
+.pill.sage{background:var(--sage-soft); color:var(--sage-deep); border-color:#C5D8C4;}
+.pill.gold{background:var(--gold-soft); color:var(--gold-deep); border-color:#E3D29A;}
+.pill.sky{background:var(--sky-soft); color:var(--sky-deep); border-color:#BFD0DD;}
+
+/* ---- Two-up compare ---- */
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0;}
+@media(max-width:640px){.vs{grid-template-columns:1fr;}}
+.vs .col{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 17px; box-shadow:var(--shadow);}
+.vs .col h4{margin-top:0;}
+
+/* ---- Diagram frame ---- */
+.diagram{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
+  margin:18px 0; box-shadow:var(--shadow); text-align:center;}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-size:13px; color:var(--muted); margin-top:10px;}
+
+/* ---- Collapsible ---- */
+details.fold{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:0 18px; margin:12px 0; box-shadow:var(--shadow);}
+details.fold>summary{cursor:pointer; padding:14px 0; font-weight:650; color:var(--ink); list-style:none;
+  display:flex; align-items:center; gap:10px;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"\25B8"; color:var(--clay); transition:transform .2s; font-size:13px;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold>summary~*{margin-bottom:14px;}
+
+/* ---- TOC ---- */
+.toc{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px;
+  margin:24px 0; box-shadow:var(--shadow);}
+.toc h4{margin:0 0 8px; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px;}
+@media(max-width:640px){.toc ol{columns:1;}}
+.toc li{margin:5px 0;} .toc a{border:none;} .toc a:hover{border-bottom:1px solid var(--clay-soft);}
+
+/* ---- Footer ---- */
+footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+  color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+.nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+
+/* ---- Timer badge (crash-course) ---- */
+.timer{display:inline-flex; align-items:center; gap:8px; background:var(--gold-soft); color:var(--gold-deep);
+  border:1px solid #E3D29A; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:650;}
+
+/* ---- Exam question cards ---- */
+.q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 24px 10px; margin:16px 0; box-shadow:var(--shadow); position:relative;}
+.q-top{display:flex; gap:14px; align-items:flex-start;}
+.qnum{flex:none; width:40px; height:40px; border-radius:11px;
+  background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff;
+  font-family:Georgia,serif; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(168,71,42,.25);}
+.qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+.qtext code{font-size:.92em;}
+.qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--muted); margin:2px 0 0;}
+.open{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--clay);
+  border-radius:var(--radius); padding:22px 26px; margin:16px 0; box-shadow:var(--shadow);}
+.open .otop{display:flex; gap:14px; align-items:flex-start; margin-bottom:6px;}
+.open .part{display:flex; gap:13px; padding:10px 0; align-items:flex-start;}
+.open .part:not(:last-child){border-bottom:1px dashed var(--line-strong);}
+.open .plabel{flex:none; width:30px; height:30px; border-radius:9px; background:var(--surface-2);
+  border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:14px;}
+.open .ptext{flex:1; padding-top:3px; font-size:17px;}
+.open .ptext em{color:var(--clay-deep); font-style:italic; font-weight:600;}
+.soln{background:linear-gradient(180deg,var(--sage-soft),#FBFAF6 75%); border:1px solid #C5D8C4;
+  border-left:4px solid var(--sage); border-radius:var(--radius-sm); padding:14px 18px; margin:8px 0 4px;}
+.soln .slabel{font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:5px;}
+
+/* ============================================================================
+   Interactive quiz  (used by exams + crash-course self-checks)
+   Markup:  <ol class="opts" data-explain="...">
+              <li data-correct="1"><span class="otxt">A</span></li> ... </ol>
+   ========================================================================== */
+ol.opts{list-style:none; margin:14px 0 12px; padding:0; counter-reset:opt;}
+ol.opts li{counter-increment:opt; position:relative; display:flex; gap:12px; align-items:flex-start;
+  padding:10px 40px 10px 14px; margin:7px 0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface-2); cursor:pointer; user-select:none;
+  transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+ol.opts li:active{transform:scale(.996);}
+ol.opts li::before{content:counter(opt,upper-alpha); flex:none; width:25px; height:25px; border-radius:7px;
+  background:#fff; border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;}
+ol.opts li .otxt{flex:1; padding-top:1px;}
+ol.opts.answered li{cursor:default;} ol.opts.answered li:hover{background:var(--surface-2);}
+ol.opts li.correct{background:#E7F0E8; border-color:#BCD6BE; box-shadow:0 0 0 1px #BCD6BE inset;}
+ol.opts li.correct:hover{background:#E7F0E8;}
+ol.opts li.wrong{background:#F6E5DC; border-color:#E6C3B0; box-shadow:0 0 0 1px #E6C3B0 inset;}
+ol.opts li.wrong:hover{background:#F6E5DC;}
+ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%;
+  transform:translateY(-50%); font-weight:800; font-size:16px; line-height:1;}
+ol.opts li.correct::after{content:"\2713"; color:#46785A;}
+ol.opts li.wrong::after{content:"\2717"; color:#B0573A;}
+.feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:var(--radius-sm);
+  transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+.feedback.show{max-height:420px; opacity:1; padding:13px 16px; margin:8px 0 12px;}
+.feedback.ok{background:#E7F0E8; border-color:#BCD6BE;}
+.feedback.no{background:#F6E5DC; border-color:#E6C3B0;}
+.feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+.feedback.ok .verdict{color:#46785A;} .feedback.no .verdict{color:#B0573A;}
+.feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+.feedback .ans b{color:var(--ink);}
+.feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;}
+.feedback .reset:hover{color:var(--clay-deep);}
+.scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+  border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px; font-size:13.5px;
+  color:var(--ink-soft); display:flex; gap:12px; align-items:center; box-shadow:0 6px 22px rgba(70,45,20,.16);}
+.scorebar b{color:var(--clay-deep);}
+.scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+  border-radius:999px; padding:4px 11px; font-size:12px;}
+.scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+/* per-option mode: a tried-wrong option locks but the question stays open */
+ol.opts li.wrong{cursor:default;}
+.feedback .opt-tag{display:inline-block; font-weight:700; margin-right:6px; color:inherit;}
+.feedback .hint{margin-top:7px; font-size:13px; color:var(--muted); font-style:italic;}
+
+/* ---- Left sidebar contents rail (auto-built by sidebar.js) ---- */
+.sidenav{position:fixed; top:0; left:0; width:264px; height:100vh; overflow-y:auto; z-index:55;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-right:1px solid var(--line-strong); padding:22px 13px 48px;
+  scrollbar-width:thin; scrollbar-color:var(--line-strong) transparent;}
+.sidenav::-webkit-scrollbar{width:8px;} .sidenav::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+.sidenav .sn-head{font-family:Georgia,serif; font-weight:700; font-size:13.5px; color:var(--clay-deep);
+  padding:0 10px 11px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:9px; position:sticky; top:-22px; background:var(--surface);
+  padding-top:6px; letter-spacing:.04em; text-transform:uppercase;}
+.sidenav .sn-head .dot{width:8px;height:8px;border-radius:50%;background:var(--clay); flex:none;}
+.sidenav nav{display:flex; flex-direction:column; gap:1px;}
+.sidenav a{display:block; padding:6px 11px; border-radius:8px; color:var(--ink-soft); font-size:13px;
+  border:none; line-height:1.35; text-decoration:none; transition:background .12s,color .12s;}
+.sidenav a.lvl1{font-weight:650; color:var(--ink); margin-top:7px; font-family:Georgia,serif;}
+.sidenav a.lvl2{padding-left:22px; font-size:12.5px; color:var(--ink-soft);}
+.sidenav a.lvl3{padding-left:34px; font-size:12px; color:var(--muted);}
+.sidenav a:hover{background:#fff; color:var(--clay-deep);}
+.sidenav a.active{background:var(--clay-soft); color:var(--clay-deep); font-weight:650;}
+body.has-sidebar{padding-left:264px;}
+.sn-toggle{display:none; position:fixed; top:13px; left:13px; z-index:62; width:42px; height:42px;
+  border-radius:11px; border:1px solid var(--line-strong); background:var(--surface); cursor:pointer;
+  align-items:center; justify-content:center; box-shadow:var(--shadow);}
+.sn-toggle span{display:block; width:18px; height:2px; background:var(--clay-deep); border-radius:2px; position:relative;}
+.sn-toggle span::before,.sn-toggle span::after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--clay-deep); border-radius:2px;}
+.sn-toggle span::before{top:-6px;} .sn-toggle span::after{top:6px;}
+.sn-backdrop{display:none;}
+@media(max-width:980px){
+  body.has-sidebar{padding-left:0;}
+  .sidenav{transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 44px rgba(40,30,20,.28);}
+  .sidenav.open{transform:none;}
+  .sn-toggle{display:flex;}
+  .sn-backdrop.show{display:block; position:fixed; inset:0; background:rgba(30,22,14,.34); z-index:54;}
+}
+@media print{ .sidenav,.sn-toggle,.sn-backdrop{display:none!important;} body.has-sidebar{padding-left:0;} }
+
+/* ---- Self-check (reveal answer) for prep guides ---- */
+.selfcheck{background:linear-gradient(180deg,var(--gold-soft),#FBFAF6 80%); border:1px solid #E3D29A;
+  border-left:4px solid var(--gold); border-radius:var(--radius); padding:16px 20px; margin:18px 0; box-shadow:var(--shadow);}
+.selfcheck .q{font-weight:650; color:var(--ink);}
+.selfcheck details{margin-top:10px;}
+.selfcheck summary{cursor:pointer; color:var(--gold-deep); font-weight:650; font-size:14px; list-style:none;}
+.selfcheck summary::-webkit-details-marker{display:none;}
+.selfcheck summary::before{content:"\1F441  reveal"; }
+.selfcheck details[open] summary::before{content:"\1F441  answer"; }
+.selfcheck .reveal{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); color:var(--ink-soft);}
+
+/* ---- Print ---- */
+@media print{
+  body{background:#fff; font-size:11.5pt;} .wrap{padding-bottom:20px;}
+  .card,.callout,.chip,.tbl,.diagram,.toc,details.fold,.selfcheck,pre{box-shadow:none;}
+  header.hero{background:#fff;} .scorebar{display:none;}
+  ol.opts li{cursor:default; padding-right:14px;}
+  .card,.callout,.q,.open,.diagram,.vs .col{break-inside:avoid;}
+  details.fold,.selfcheck details{open:open;}
+  a{color:var(--ink);}
+}
+</style>
+<!-- MathJax — inline verbatim in <head>. Renders LaTeX: inline \( … \), display \[ … \]. -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+    svg: { fontCache: 'global', scale: 0.96 },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Chapter 07 · Crash Course</span>
+    <h1>Deep Learning for Text</h1>
+    <p class="subtitle">From bag-of-words and TF-IDF to word embeddings, RNNs, attention, and the decoder-only Transformer behind GPT — the exam-likely 20%.</p>
+    <div class="meta-row">
+      <span class="timer">⏱️ ~18 min</span>
+      <span class="chip"><b>Featurization</b> · TF-IDF · BM25</span>
+      <span class="chip"><b>Embeddings</b> · word2vec · GloVe · fastText</span>
+      <span class="chip"><b>Recurrency</b> · RNN · LSTM · GRU · seq2seq</span>
+      <span class="chip"><b>Transformers</b> · self-attention · GPT · RLHF</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<main class="chapter-body" id="ch07">
+
+<h2>Big picture: before vs. after deep learning</h2>
+<p>Just like computer vision, text splits into a <strong>"before and after deep learning" era = manual vs. automated feature engineering</strong>. The cross-cutting theme is <span class="kterm">representation learning</span>: find a dense, low-dimensional, real-valued vector (an <strong>embedding</strong>) per item so that <strong>distances capture similarity</strong> — and <em>learn</em> it from data instead of hand-crafting it.</p>
+
+<div class="callout why">
+  <div class="ttl">Why text is hard</div>
+  <p>Text is everywhere but <strong>unstructured / semi-structured</strong>: no natural feature-vector, has linguistic structure (word relationships, importance, negations), is <strong>dirty</strong> (spelling, abbreviations, homographs), and is meant for human-to-human communication. The deck's one-liner: <em>"the main task of ML and especially deep learning is learning compressed, dense representations that fit the downstream task."</em></p>
+</div>
+
+<dl class="defs">
+  <dt>Corpus / corpora</dt><dd>A collection of documents. Each document is built from <strong>tokens / terms</strong> (words, punctuation, abbreviations, smileys).</dd>
+  <dt>Featurize</dt><dd>Turn a free-form sequence of words into a numeric feature vector — already an instance of representation learning.</dd>
+</dl>
+
+<h2>Classical text featurization</h2>
+
+<h3>Bag of words (BoW)</h3>
+<p>Treat each document as an <strong>unordered</strong> collection of tokens. One feature per vocabulary word; value = <strong>1 (present) / 0 (absent)</strong>. Ignores grammar, order, structure. Cheap, but causes an <strong>explosion of features</strong>.</p>
+<div class="card">
+<p>Vocabulary = {this, is, an, a, example, second}:</p>
+<ul class="clean">
+  <li>"This is an example" → <code>1 1 1 0 1 0</code></li>
+  <li>"This is a second example" → <code>1 1 0 1 1 1</code></li>
+</ul>
+</div>
+
+<h3>Cleaning: normalization, stemming, lemmatization, stop-words</h3>
+<dl class="defs">
+  <dt>Normalization</dt><dd>Lowercase every term so case does not split the vocabulary.</dd>
+  <dt>Stemming</dt><dd><strong>Suffix-stripping</strong> to keep the root (plurals → singular). <strong>Porter's algorithm</strong> = basically suffix removal.</dd>
+  <dt>Lemmatization</dt><dd>More complex: maps to a real dictionary root handling irregulars (better → good, flies → fly). May need <strong>PoS tagging</strong> for context.</dd>
+  <dt>Stop-word removal</dt><dd>Drop very common words ("the", "and", "of", "on").</dd>
+</dl>
+
+<h3>Term frequency &amp; the document-term matrix</h3>
+<p>BoW with <strong>counts</strong> instead of binary presence → the <span class="kterm">document-term matrix</span>. Raw counts are best normalized (e.g. divide by document length). Words should be <strong>not too common, not too rare</strong> → impose an <strong>upper and lower limit</strong> on how many documents a word may appear in.</p>
+
+<h3>TF-IDF</h3>
+<div class="callout why">
+  <div class="ttl">Why</div>
+  <p>Pure term frequency over-weights common words. TF-IDF balances <strong>local importance (TF)</strong> against <strong>global rarity (IDF)</strong> — terms should be neither too rare nor too common.</p>
+</div>
+
+<div class="formula"><span class="lbl">Term frequency — divide by document length</span>
+\[ \mathrm{TF}(t_i, d) = \frac{f(t_i, d)}{\lvert d \rvert} \]
+</div>
+<div class="formula"><span class="lbl">Inverse document frequency — note the leading 1+</span>
+\[ \mathrm{IDF}(t_i) = 1 + \log\!\left( \frac{\lvert c \rvert}{\lvert \{ d \in c : t_i \in d \} \rvert} \right) \]
+</div>
+<div class="formula"><span class="lbl">TF-IDF weight per term per document</span>
+\[ \mathrm{TFIDF}(t_i, d) = \mathrm{TF}(t_i, d) \times \mathrm{IDF}(t_i) \qquad d = [\,w_1, w_2, \ldots, w_m\,] \]
+</div>
+
+<div class="callout exam">
+  <div class="ttl">⚠ Exam watch-out — the TF denominator</div>
+  <p>TF divides by the <strong>document length \(\lvert d \rvert\)</strong>, NOT by the number of documents. The <strong>number of documents \(\lvert c \rvert\)</strong> lives in the IDF numerator. IDF is <em>inverse</em>: large for rare terms, decaying toward 1 as a term appears in more documents.</p>
+</div>
+
+<details class="fold"><summary>Jazz worked example (slide 12)</summary>
+<p>15 jazz biographies from Wikipedia → ~2,000 features after stemming &amp; stop-word removal. Query <em>"Famous jazz saxophonist born in Kansas who played bebop and latin"</em> → cosine similarity ranks <strong>Charlie Parker (0.135)</strong> top, then Count Basie (0.119), Dizzy Gillespie (0.086), John Coltrane (0.079). The term "latin" carries the highest per-term TF-IDF (~0.52).</p>
+</details>
+
+<h3>BM25 (Okapi "Best Matching")</h3>
+<p>A ranking function for <strong>document relevance to a search query</strong>. Two improvements over TF-IDF: it <strong>saturates term frequency</strong> (repeating a word 100× is not 100× more important — nonlinear) and <strong>normalizes document length better</strong>.</p>
+<div class="formula"><span class="lbl">BM25 per-term weight (params k₁, b)</span>
+\[ w_{t_i,d} = \mathrm{IDF}(t_i)\cdot \frac{ f(t_i,d)\,(k_1+1) }{ f(t_i,d) + k_1\!\left(1 - b + b\,\dfrac{\lvert d \rvert}{\text{avgdl}}\right) } \]
+</div>
+<p>Typical \(k_1 \in [1.2, 2.0]\), \(b = 0.75\); <strong>avgdl</strong> = average document length. Key claim: <em>"works better than TF-IDF in many cases, and sometimes even beats embedding models."</em></p>
+
+<h3>N-grams &amp; handling high dimensionality</h3>
+<p><span class="kterm">N-grams</span> use sequences of adjacent words as terms (adjacent pair = <strong>bi-gram</strong>), capturing word <strong>order</strong> that BoW ignores — but they <strong>greatly increase the feature set</strong>. To tame the high-dimensional sparse matrices: feature selection; fast scalable <strong>linear Naive Bayes / SVM</strong>; clustering via <strong>NMF</strong>; the <strong>hashing trick</strong> (collapse to \(n\) hashed features); and reduction with <strong>t-SNE / UMAP</strong>.</p>
+
+<h3>Classical NLP</h3>
+<p>Learn a language from data with ML/statistics — better at context ("This camera sucks" vs. "This vacuum really sucks"), <strong>negations</strong>, <strong>sarcasm</strong>. Best-known tasks: <strong>PoS tagging</strong>, <strong>NER</strong> (PERSON/ORG/GPE… with a salience score), and topic modeling via <strong>LDA</strong> / <strong>LSA</strong>. Status: <em>mostly replaced by deep learning today.</em></p>
+
+<div class="q"><div class="q-top"><div class="qnum">1</div><p class="qtext">In \( \mathrm{TFIDF}(t_i,d)=\mathrm{TF}\times\mathrm{IDF} \), which statement is correct?</p></div>
+<ol class="opts" data-explain="TF normalizes by the document length \( \lvert d \rvert \); the corpus size \( \lvert c \rvert \) appears in IDF's numerator. IDF is inverse — high for rare terms, near 1 for common ones — so it down-weights, not up-weights, common terms.">
+  <li data-correct="0"><span class="otxt">TF divides the raw count by the number of documents in the corpus.</span></li>
+  <li data-correct="1"><span class="otxt">TF divides by document length \( \lvert d \rvert \); IDF \( = 1+\log(\lvert c\rvert/\mathrm{df}) \) is large for rare terms.</span></li>
+  <li data-correct="0"><span class="otxt">IDF gives the largest weight to words that appear in every document.</span></li>
+</ol></div>
+
+<h2>Word embeddings</h2>
+<dl class="defs">
+  <dt>Word embedding</dt><dd>A <strong>dense vector of real values per word</strong>, with dimension <strong>much smaller than the vocabulary</strong>. Each word is a point in "embedding space"; <strong>cosine</strong> or Euclidean distance defines relatedness.</dd>
+</dl>
+<div class="callout why">
+  <div class="ttl">Why dense beats sparse</div>
+  <p>BoW / n-grams / TF-IDF are <strong>very sparse and high-dimensional</strong> (like dummy-encoding high-cardinality categoricals) — hard for ML, and worse for sequences. We want <strong>dense, low-dimensional continuous vectors learned from data</strong> where distance equals similarity.</p>
+</div>
+
+<div class="formula"><span class="lbl">The canonical analogy</span>
+\[ [\text{king}] - [\text{man}] + [\text{woman}] \approx [\text{queen}] \]
+</div>
+<p>Embeddings capture Male–Female, verb-tense, and Country–Capital relations as roughly <strong>parallel offset vectors</strong>, enabling similarity and analogy tasks. They are learned via a <strong>self-supervision task</strong> that uses <strong>context</strong>.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 420 200" role="img" aria-label="Parallel offset vectors for analogies">
+  <line x1="30" y1="170" x2="400" y2="170" stroke="#D6CAB2" stroke-width="1.5"/>
+  <line x1="30" y1="170" x2="30" y2="25" stroke="#D6CAB2" stroke-width="1.5"/>
+  <circle cx="90" cy="140" r="5" fill="#5B7C99"/><text x="68" y="158" font-size="12" fill="#4F4B43">man</text>
+  <circle cx="160" cy="85" r="5" fill="#8A5C7C"/><text x="140" y="77" font-size="12" fill="#4F4B43">woman</text>
+  <line x1="90" y1="140" x2="160" y2="85" stroke="#A8472A" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+  <circle cx="255" cy="135" r="5" fill="#5B7C99"/><text x="234" y="153" font-size="12" fill="#4F4B43">king</text>
+  <circle cx="325" cy="80" r="5" fill="#8A5C7C"/><text x="305" y="72" font-size="12" fill="#4F4B43">queen</text>
+  <line x1="255" y1="135" x2="325" y2="80" stroke="#A8472A" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+  <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#A8472A"/></marker></defs>
+</svg>
+<figcaption>The same offset vector connects man→woman and king→queen.</figcaption>
+</div>
+
+<h3>word2vec: CBOW vs. skip-gram</h3>
+<p><span class="kterm">word2vec</span> (Google, Mikolov et al., <strong>2013</strong>) is a neural model that learns one vector per word from context. It works at the <strong>term level, not the document level</strong>. A word is <strong>defined by its context</strong>. Two methods:</p>
+
+<div class="vs">
+  <div class="col">
+    <h4>CBOW (Continuous Bag-of-Words)</h4>
+    <ul class="clean">
+      <li>Input = <strong>context words</strong>; predict the <strong>focus word</strong> ("word against context").</li>
+      <li>Hidden activation = <strong>weighted average</strong>; final layer = <strong>softmax</strong>.</li>
+      <li><strong>Context order does NOT matter</strong> (assumes input independence).</li>
+      <li>Averaging gives <strong>smoothing → less training data needed</strong>.</li>
+    </ul>
+  </div>
+  <div class="col">
+    <h4>Skip-gram (CSG)</h4>
+    <ul class="clean">
+      <li>Input = <strong>focus word</strong>; predict the <strong>context</strong> ("context against word").</li>
+      <li>Hidden = <strong>pass-through (no activation)</strong>.</li>
+      <li><strong>Easier to implement.</strong></li>
+      <li><strong>Better-quality vectors but needs MORE data.</strong></li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout note">
+  <div class="ttl">After training</div>
+  <p>Throw the network away and <strong>keep only the hidden-layer weights \(W\)</strong>; the <strong>hidden-layer size = word-vector dimensionality</strong>. Comparable to an auto-encoder: dimensionality reduction with context. Good implementations use <strong>subsampling</strong> (skip frequent words) and <strong>negative sampling</strong> (don't update all weights). Visualize 1000-D vectors via a second PCA / t-SNE step.</p>
+</div>
+
+<details class="fold"><summary>CBOW averaged-activation example (slide 31)</summary>
+<p>V=10, N=4, C=3. The three one-hot contexts select weight rows <code>[0,0,1,0]</code>, <code>[1,0,0,-1]</code>, <code>[1,1,0,0]</code>. Column means → averaged activation:</p>
+<div class="formula">\[ \tfrac{1}{3}\big([0,0,1,0]+[1,0,0,-1]+[1,1,0,0]\big) = [0.66,\ 0.33,\ 0.33,\ -0.33] \]</div>
+</details>
+
+<h3>GloVe &amp; fastText</h3>
+<table class="tbl">
+  <thead><tr><th>Model</th><th>Origin</th><th>Core idea</th><th>Out-of-vocabulary words?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>word2vec</strong></td><td>Google, 2013</td><td>Predict word from local context windows</td><td class="no">No</td></tr>
+    <tr><td><strong>GloVe</strong></td><td>Pennington et al.</td><td>Skip-gram + matrix factorization → <strong>exploits global co-occurrence statistics</strong></td><td class="no">No</td></tr>
+    <tr><td><strong>fastText</strong></td><td>Facebook</td><td>Hashtable of word / <strong>character</strong> n-grams</td><td class="yes">Yes — subword vectors</td></tr>
+  </tbody>
+</table>
+<div class="callout exam">
+  <div class="ttl">⚠ Exam watch-out</div>
+  <p><strong>GloVe</strong> argues word2vec is suboptimal because it <em>does not fully exploit global co-occurrence statistics</em> — GloVe fixes that. <strong>fastText</strong> can vectorize <em>any word, even made-up or misspelled ones</em>, because its vectors are built from <strong>character substrings</strong>. word2vec and GloVe cannot. fastText is still used in industry.</p>
+</div>
+
+<h3>Beyond words: doc2vec, entity embeddings, generalization</h3>
+<ul class="clean">
+  <li><strong>doc2vec / par2vec</strong>: adds a <strong>paragraph-id vector</strong> alongside word vectors → an embedding for a whole document.</li>
+  <li><strong>Entity / categorical embeddings</strong>: embed high-cardinality categoricals to reduce dimensionality and overfitting. Jeremy Howard's size heuristic: <strong>\( 1.6 \cdot \lvert\text{cats}\rvert^{0.56} \)</strong> (one-hot day-of-week needs 6 dims; embeddings shrink this).</li>
+  <li><strong>Generalization</strong>: an embedding is just <em>a layer mapping a categorical input to a vector of trainable weights</em>. t-SNE, UMAP, PCA, and auto-encoders are all ways to build representations. node2vec extends this to graph nodes; WEAT reveals embedding bias.</li>
+</ul>
+
+<div class="q"><div class="q-top"><div class="qnum">2</div><p class="qtext">Which model can produce a vector for a misspelled or made-up word it never saw in training?</p></div>
+<ol class="opts" data-explain="fastText builds word vectors from character n-gram (subword) vectors, so any string — even out-of-vocabulary — gets a vector. word2vec and GloVe only store whole-word vectors and fail on unseen words.">
+  <li data-correct="0"><span class="otxt">word2vec (skip-gram)</span></li>
+  <li data-correct="0"><span class="otxt">GloVe</span></li>
+  <li data-correct="1"><span class="otxt">fastText</span></li>
+</ol></div>
+
+<h2>Recurrent neural networks (RNN)</h2>
+<dl class="defs">
+  <dt>RNN</dt><dd>Inputs are fed in <strong>sequentially</strong>; the net keeps a <strong>state</strong> = a compact summary of everything from the past needed to solve the task. "Recurrent" = it performs the <strong>same task for every element</strong>, with output dependent on previous computations.</dd>
+</dl>
+<p>An RNN cell with a self-loop equals an <strong>unrolled chain</strong> A→A→A→… across time — a deep network with <strong>weight sharing between time steps</strong>. Training is <span class="kterm">Backpropagation Through Time (BPTT)</span>: backprop on the time-unfolded graph because the state depends on the <em>same</em> weight at every past step.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 460 150" role="img" aria-label="RNN unrolled across time">
+  <g fill="#EAD2C5" stroke="#A8472A" stroke-width="2">
+    <rect x="40" y="60" width="50" height="40" rx="8"/>
+    <rect x="150" y="60" width="50" height="40" rx="8"/>
+    <rect x="260" y="60" width="50" height="40" rx="8"/>
+    <rect x="370" y="60" width="50" height="40" rx="8"/>
+  </g>
+  <g font-size="13" fill="#22201C" text-anchor="middle"><text x="65" y="85">A</text><text x="175" y="85">A</text><text x="285" y="85">A</text><text x="395" y="85">A</text></g>
+  <g stroke="#7E776B" stroke-width="1.6" marker-end="url(#ar2)">
+    <line x1="90" y1="80" x2="148" y2="80"/><line x1="200" y1="80" x2="258" y2="80"/><line x1="310" y1="80" x2="368" y2="80"/>
+    <line x1="65" y1="120" x2="65" y2="102"/><line x1="175" y1="120" x2="175" y2="102"/><line x1="285" y1="120" x2="285" y2="102"/><line x1="395" y1="120" x2="395" y2="102"/>
+    <line x1="65" y1="58" x2="65" y2="40"/><line x1="175" y1="58" x2="175" y2="40"/><line x1="285" y1="58" x2="285" y2="40"/><line x1="395" y1="58" x2="395" y2="40"/>
+  </g>
+  <g font-size="11" fill="#4F4B43" text-anchor="middle">
+    <text x="65" y="135">x₁</text><text x="175" y="135">x₂</text><text x="285" y="135">x₃</text><text x="395" y="135">xₜ</text>
+    <text x="65" y="34">h₁</text><text x="175" y="34">h₂</text><text x="285" y="34">h₃</text><text x="395" y="34">hₜ</text>
+  </g>
+  <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7E776B"/></marker></defs>
+</svg>
+<figcaption>Same cell A, same weights, repeated across time — trained with BPTT.</figcaption>
+</div>
+
+<div class="formula"><span class="lbl">Plain RNN cell — output equals the hidden state</span>
+\[ a^{\langle t\rangle} = \tanh\!\big(W_{ax}\,x^{\langle t\rangle} + W_{aa}\,a^{\langle t-1\rangle} + b_a\big) \qquad \hat{y}^{\langle t\rangle} = \mathrm{softmax}\!\big(W_{ya}\,a^{\langle t\rangle} + b_y\big) \]
+</div>
+
+<div class="callout warn">
+  <div class="ttl">RNN training is hard</div>
+  <p><strong>Vanishing gradients</strong> return; the initial-state impact can be severe; it is a <strong>nonlinear dynamical system</strong> prone to <strong>bifurcations</strong> (instability). In theory RNNs handle arbitrarily long sequences, but <strong>in practice they look back only a few steps</strong>.</p>
+</div>
+
+<h3>LSTM vs. GRU</h3>
+<table class="tbl">
+  <thead><tr><th></th><th>LSTM</th><th>GRU</th></tr></thead>
+  <tbody>
+    <tr><td>Year / authors</td><td>1997, Hochreiter &amp; Schmidhuber</td><td>2014, Cho et al.</td></tr>
+    <tr><td>State passed to next step</td><td class="yes"><strong>TWO</strong> — cell state \(C_t\) + hidden \(h_t\)</td><td>One — hidden \(h_t\)</td></tr>
+    <tr><td>Gates</td><td>forget, input, output</td><td>reset, update</td></tr>
+    <tr><td>Speed / small data</td><td>Slower</td><td class="yes">Faster, better on less data</td></tr>
+    <tr><td>Long-range dependencies</td><td class="yes">Better in theory</td><td>Slightly weaker in theory</td></tr>
+  </tbody>
+</table>
+<p>Both use <strong>gating</strong> — conditionally setting / resetting state values — so the net can <strong>learn what to remember and what to discard</strong> over an undetermined time (e.g. "a bracket is still open"). <em>GRUs are used at least as often as LSTMs now; try both.</em></p>
+
+<h3>Bidirectional RNN &amp; seq2seq</h3>
+<p>A <strong>bidirectional RNN</strong> runs one RNN forward and one backward, combining states. <em>This is NOT cheating by looking at the future</em> — the full sequence is already available for offline tasks like tagging.</p>
+<dl class="defs">
+  <dt>seq2seq</dt><dd><strong>Encoder</strong> (LSTM/GRU) compresses the whole input into a <strong>fixed-length context vector</strong>; <strong>decoder</strong> (LSTM/GRU) is <strong>initialized with that context vector</strong> and generates the output sequence (e.g. translation). Context-vector length = encoder units (256/512/1024). <strong>Long sentences stay problematic</strong> because everything is squeezed into one vector.</dd>
+</dl>
+
+<h2>Attention</h2>
+<div class="callout why">
+  <div class="ttl">Why attention</div>
+  <p>It is unreasonable to encode a long sequence into one fixed state vector. (A cheap trick: <strong>reverse the source sequence</strong> — it shortens the decoder-to-encoder path and helps.) Attention lets the decoder <strong>learn what to focus on while generating each output token</strong>.</p>
+</div>
+<p>Two differences from plain seq2seq: (1) the encoder passes <strong>ALL</strong> hidden states (not only the last); (2) before each output the decoder <strong>scores each encoder state, softmaxes the scores, and sums the score-weighted states</strong> into a per-step context vector.</p>
+
+<ol class="steps">
+  <li>Prepare encoder hidden states \(h_1,h_2,h_3\) and the current decoder state.</li>
+  <li><strong>Score</strong> each hidden state (e.g. 13, 9, 9).</li>
+  <li><strong>Softmax</strong> the scores (e.g. 0.96, 0.02, 0.02).</li>
+  <li>Multiply each state vector by its softmaxed score.</li>
+  <li><strong>Sum → context vector</strong> for this decoder step.</li>
+</ol>
+
+<div class="formula"><span class="lbl">Query / Key / Value framing — scaled dot-product (Vaswani 2017)</span>
+\[ \text{attn} = \mathrm{softmax}\!\left( \frac{Q^{\top} K}{\sqrt{n}} \right) , \qquad \text{output} = \text{attn} \times V \]
+</div>
+<p><strong>Query</strong> = "what do I want to look up?" (decoder state). <strong>Keys</strong> &amp; <strong>Values</strong> = the encoder hidden states. With attention we <strong>no longer compress the whole source into one fixed vector</strong> — the cornerstone idea that led to: <em>"maybe we can do away with recurrence altogether?"</em></p>
+
+<h2>The Transformer</h2>
+<dl class="defs">
+  <dt>Transformer</dt><dd>Vaswani et al., <strong>2017</strong>, "Attention is all you need." A stack of encoders + decoders built on <span class="kterm">self-attention</span> — Q, K, V all come from the <strong>same set of tokens</strong>. <strong>GPT and friends use a decoder-only Transformer.</strong></dd>
+</dl>
+
+<h3>Self-attention</h3>
+<p>Each decoder block has <strong>two parts</strong>: self-attention + a per-token dense layer, plus <strong>residual (skip) connections</strong>. Self-attention asks per token: "what other tokens should I look at, and how important is each?" It <strong>gradually refines</strong> each token's representation by letting it repeatedly look at the others.</p>
+<div class="formula"><span class="lbl">Self-attention in matrices</span>
+\[ Q = X W^{Q},\quad K = X W^{K},\quad V = X W^{V} \qquad Z = \mathrm{softmax}\!\left( \frac{Q K^{\top}}{\sqrt{d_k}} \right) V \]
+</div>
+
+<div class="callout exam">
+  <div class="ttl">⚠ Exam watch-out — masking &amp; the two sublayers</div>
+  <p>The attention matrix is <strong>masked</strong> so each token attends only to <strong>previous tokens</strong> — <em>"this is why GPT can generate text."</em> And the bold contrast: <strong>attention mixes information BETWEEN tokens; the feed-forward network processes each token INDEPENDENTLY.</strong> (A classic true/false swap.)</p>
+</div>
+
+<h3>Multi-head attention &amp; positional encoding</h3>
+<ul class="clean">
+  <li><strong>Multi-head attention</strong>: not one but <strong>multiple sets of Q/K/V weight matrices</strong> ("representation subspaces"), letting the model focus on different positions. Concatenate all heads \(Z_0\ldots Z_7\), then <strong>multiply by \(W^O\)</strong> → final \(Z\) sent to the FFNN.</li>
+  <li><strong>Positional encoding</strong>: self-attention has <strong>no notion of word order</strong>, so a sinusoidal positional vector is <strong>ADDED to each input embedding</strong>.</li>
+</ul>
+
+<div class="formula"><span class="lbl">Output head — same linear layer at every position</span>
+\[ \text{logits} = X \cdot W_{\text{vocab}} \]
+</div>
+<p>During training all positions are scored in parallel; at inference only the <strong>last</strong> position is used, its prediction appended, and the model run again — <strong>autoregressive</strong> generation.</p>
+
+<h3>GPT &amp; RLHF</h3>
+<p><span class="kterm">GPT</span> = Generative Pretrained Transformer: bigger decoder-only models trained on <strong>text completion given a prompt</strong>, using <strong>Byte Pair Encoding (BPE)</strong> tokenization and sparse self-attention. Across generations they added more data, tool calling, reasoning tokens, multi-modality, mixture-of-experts — <strong>but the base architecture stayed the same</strong>.</p>
+<div class="callout note">
+  <div class="ttl">RLHF — Reinforcement Learning from Human Feedback</div>
+  <p>A good loss for "desirable text" is intractable, so LLMs train on <strong>next-token-prediction</strong>; metrics like <strong>BLEU / ROUGE</strong> approximate human preference. RLHF uses <strong>human feedback as the measure / loss</strong> to <strong>align</strong> a general model with human values. Already used on top of GPT-3 (InstructGPT) and part of ChatGPT.</p>
+</div>
+
+<div class="q"><div class="q-top"><div class="qnum">3</div><p class="qtext">In a Transformer decoder block, which statement is true?</p></div>
+<ol class="opts" data-explain="Self-attention is the only sublayer that mixes information across tokens; the feed-forward network is applied independently to each token. Masking restricts attention to previous tokens (enabling generation), and positional encoding is added because attention itself is order-blind.">
+  <li data-correct="0"><span class="otxt">The feed-forward layer mixes information between tokens; self-attention processes each token alone.</span></li>
+  <li data-correct="1"><span class="otxt">Self-attention mixes information between tokens; the feed-forward network processes each token independently.</span></li>
+  <li data-correct="0"><span class="otxt">Positional encoding is unnecessary because self-attention already knows word order.</span></li>
+</ol></div>
+
+<h2>Beyond Transformers</h2>
+<div class="callout why">
+  <div class="ttl">The Transformer bottleneck</div>
+  <p>To generate the next token a Transformer must <strong>recompute attention over the entire sequence</strong> → roughly <strong>\(L^2\)</strong> computations for length \(L\). An RNN only needs the previous hidden state + current input, so its inference scales <strong>linearly</strong> and (in theory) has <strong>unbounded context</strong> — but RNNs forget and are slow to train (BPTT).</p>
+</div>
+
+<table class="tbl">
+  <thead><tr><th></th><th>RNN</th><th>Transformer</th></tr></thead>
+  <tbody>
+    <tr><td>Per-token generation</td><td class="yes">Previous state + current input</td><td class="no">Recompute attention over whole sequence</td></tr>
+    <tr><td>Length scaling (generation)</td><td class="yes">Linear</td><td class="no">≈ \(L^2\) (quadratic)</td></tr>
+    <tr><td>Context length</td><td>Infinite in theory</td><td>Bounded; recompute bottleneck</td></tr>
+    <tr><td>Training</td><td>Slow (BPTT)</td><td class="yes">Parallel across positions</td></tr>
+  </tbody>
+</table>
+
+<ul class="clean">
+  <li><strong>State Space Models (SSM)</strong>: a "state" = the minimum set of variables describing the system; SSMs predict the next state from input. <strong>Mamba</strong> (Gu &amp; Dao, 2023, "linear-time sequence modeling with selective state spaces"); <strong>xLSTM</strong> (2024).</li>
+  <li><strong>Diffusion LLMs</strong>: start from corrupted / random tokens and <strong>gradually denoise into text</strong>. Non-autoregressive → parallel token prediction, but quality has historically lagged Transformers.</li>
+  <li><strong>Agents</strong>: <em>"an LLM agent runs tools in a loop to achieve a goal."</em></li>
+</ul>
+
+<div class="q"><div class="q-top"><div class="qnum">4</div><p class="qtext">Why is RNN inference cheaper than Transformer inference for very long generated sequences?</p></div>
+<ol class="opts" data-explain="An RNN carries one hidden state, so each new token only needs that state plus the current input — linear cost. A Transformer recomputes attention over the entire sequence every step, giving roughly L squared cost. RNNs are actually slower to TRAIN (BPTT) and tend to forget, so those are not the advantage.">
+  <li data-correct="0"><span class="otxt">RNNs are faster to train thanks to BPTT, which carries over to inference.</span></li>
+  <li data-correct="0"><span class="otxt">RNNs attend to all previous tokens at once, avoiding recomputation.</span></li>
+  <li data-correct="1"><span class="otxt">An RNN only needs the previous hidden state + current input, so inference scales linearly, whereas a Transformer recomputes attention over the whole sequence (≈ \(L^2\)).</span></li>
+</ol></div>
+
+<div class="card">
+  <h3 style="margin-top:4px;">⏱️ One-minute recap</h3>
+  <ul class="check">
+    <li><strong>TF</strong> divides by document length \(\lvert d\rvert\); <strong>IDF</strong> = \(1+\log(\lvert c\rvert/\mathrm{df})\), large for rare terms. <strong>BM25</strong> saturates TF and can beat embeddings.</li>
+    <li><strong>CBOW</strong>: context→word, averaging activation, order-independent, less data. <strong>Skip-gram</strong>: word→context, pass-through, better vectors, more data.</li>
+    <li>Keep only the <strong>hidden weights \(W\)</strong> after training; size = vector dim. <strong>GloVe</strong> = global co-occurrence; <strong>fastText</strong> = subword → handles OOV words.</li>
+    <li><strong>RNN</strong> output = hidden state; trained with <strong>BPTT</strong>. <strong>LSTM</strong> passes two states (\(C_t\)+\(h_t\)); <strong>GRU</strong> passes one.</li>
+    <li>Plain seq2seq passes only the <strong>last</strong> encoder state; <strong>attention</strong> passes all, scoring → softmax → weighted sum. Scaled dot-product: \(\mathrm{softmax}(Q^{\top}K/\sqrt{n})\,V\).</li>
+    <li><strong>Transformer</strong> = self-attention (Q,K,V same set). Attention <strong>mixes between tokens</strong>; FFNN is <strong>per-token</strong>. GPT = <strong>decoder-only + masked</strong> self-attention; positional encoding is <strong>added</strong>. <strong>RLHF</strong> aligns via human feedback.</li>
+    <li>Transformer generation ≈ \(L^2\); RNN / SSM / diffusion are the cheaper-scaling alternatives.</li>
+  </ul>
+</div>
+
+<footer>
+  <span>Chapter 07 · Deep Learning for Text — Crash Course</span>
+  <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+</footer>
+
+</main>
+</div>
+
+<script>
+/* Left contents rail */
+(function(){
+  var root = document.querySelector("main.chapter-body") || document.querySelector(".wrap") || document.body;
+  var nodes = [].slice.call(root.querySelectorAll("h2, h3, [data-nav-label]"));
+  var items = [];
+  nodes.forEach(function(el){
+    var label = el.getAttribute("data-nav-label"), level, text;
+    if(label !== null){ text = label.trim(); level = 2; }
+    else if(el.tagName === "H2"){ level = 1; text = el.textContent.trim(); }
+    else if(el.tagName === "H3"){ level = 2; text = el.textContent.trim(); }
+    else return;
+    if(!text) return;
+    if(text.length > 60) text = text.slice(0, 58) + "…";
+    if(!el.id){
+      el.id = "sec-" + (items.length + 1) + "-" +
+        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 36);
+    }
+    items.push({ id: el.id, text: text, level: level, el: el });
+  });
+  if(items.length < 2) return;
+
+  var nav = document.createElement("aside"); nav.className = "sidenav";
+  var head = document.createElement("div"); head.className = "sn-head";
+  head.innerHTML = '<span class="dot"></span>Contents';
+  nav.appendChild(head);
+  var list = document.createElement("nav");
+  var links = {};
+  items.forEach(function(it){
+    var a = document.createElement("a");
+    a.href = "#" + it.id; a.textContent = it.text;
+    a.className = it.level === 1 ? "lvl1" : (it.level === 2 ? "lvl2" : "lvl3");
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById(it.id);
+      if(t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + it.id);
+      closeMobile();
+    });
+    links[it.id] = a;
+    list.appendChild(a);
+  });
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  document.body.classList.add("has-sidebar");
+
+  var toggle = document.createElement("button");
+  toggle.className = "sn-toggle"; toggle.setAttribute("aria-label", "Toggle contents");
+  toggle.innerHTML = "<span></span>";
+  var backdrop = document.createElement("div"); backdrop.className = "sn-backdrop";
+  document.body.appendChild(toggle); document.body.appendChild(backdrop);
+  function openMobile(){ nav.classList.add("open"); backdrop.classList.add("show"); }
+  function closeMobile(){ nav.classList.remove("open"); backdrop.classList.remove("show"); }
+  toggle.addEventListener("click", function(){ nav.classList.contains("open") ? closeMobile() : openMobile(); });
+  backdrop.addEventListener("click", closeMobile);
+
+  var current = null;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        if(current && links[current]) links[current].classList.remove("active");
+        current = en.target.id;
+        if(links[current]){
+          links[current].classList.add("active");
+          links[current].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  }, { rootMargin: "-8% 0px -82% 0px", threshold: 0 });
+  items.forEach(function(it){ obs.observe(it.el); });
+})();
+</script>
+
+<script>
+/* Interactive quiz */
+(function(){
+  var L = "ABCDEFGH";
+  var lists = [].slice.call(document.querySelectorAll("ol.opts"));
+  if(!lists.length) return;
+  var total = lists.length, solved = 0, firstTry = 0, state = {};
+  var bar = document.createElement("div"); bar.className = "scorebar";
+  bar.innerHTML = '<span><b class="sc">0</b> solved · <b class="ft">0</b> first-try · of ' + total + '</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent = solved; bar.querySelector(".ft").textContent = firstTry; }
+  function typeset(el){ if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([el]); } }
+
+  lists.forEach(function(ol, qi){
+    var items = [].slice.call(ol.querySelectorAll("li"));
+    var listExplain = ol.getAttribute("data-explain") || "";
+    var perOption = items.some(function(li){ return li.getAttribute("data-explain") !== null; });
+    var ci = []; items.forEach(function(li, i){ if(li.getAttribute("data-correct") === "1") ci.push(i); });
+    var fb = document.createElement("div"); fb.className = "feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+    state[qi] = { solved: false, wrong: 0 };
+
+    function reset(){
+      var st = state[qi];
+      if(st.solved){ solved--; if(st.wrong === 0) firstTry--; }
+      state[qi] = { solved: false, wrong: 0 };
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      fb.className = "feedback"; refresh();
+    }
+    function show(kind, html){
+      fb.className = "feedback " + kind;
+      fb.innerHTML = html + '<button class="reset" type="button">↺ reset this question</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); typeset(fb); });
+    }
+
+    function choose(li, idx){
+      var st = state[qi];
+      if(st.solved) return;
+      if(li.classList.contains("wrong")) return;
+      var correct = li.getAttribute("data-correct") === "1";
+      if(perOption){
+        var why = li.getAttribute("data-explain") || "";
+        if(correct){
+          li.classList.add("correct"); ol.classList.add("answered");
+          st.solved = true; solved++; if(st.wrong === 0) firstTry++;
+          show("ok", '<div class="verdict">✓ Correct!</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div>');
+          refresh();
+        } else {
+          li.classList.add("wrong"); st.wrong++;
+          show("no", '<div class="verdict">✗ Not this one.</div><div class="ans"><span class="opt-tag">' + L[idx] + '.</span>' + why + '</div><div class="hint">The correct answer is not revealed — eliminate and try again.</div>');
+        }
+      } else {
+        // legacy: lock + reveal correct
+        ol.classList.add("answered");
+        ci.forEach(function(k){ items[k].classList.add("correct"); });
+        if(!correct) li.classList.add("wrong");
+        st.solved = true; solved++; if(correct && st.wrong === 0) firstTry++;
+        var letters = ci.map(function(k){ return L[k]; }).join(" / ");
+        var note = correct ? "" : ("Correct answer: <b>" + letters + "</b>. ");
+        show(correct ? "ok" : "no", '<div class="verdict">' + (correct ? "✓ Correct!" : "✗ Not quite.") + '</div><div class="ans">' + note + listExplain + '</div>');
+        refresh();
+      }
+    }
+    items.forEach(function(li, idx){
+      li.setAttribute("role", "button"); li.setAttribute("tabindex", "0");
+      li.addEventListener("click", function(){ choose(li, idx); });
+      li.addEventListener("keydown", function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); choose(li, idx); } });
+    });
+  });
+
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct", "wrong"); });
+      var fb = ol.nextElementSibling; if(fb && fb.classList.contains("feedback")) fb.className = "feedback";
+    });
+    solved = 0; firstTry = 0; Object.keys(state).forEach(function(k){ state[k] = { solved: false, wrong: 0 }; }); refresh();
+  });
+  refresh();
+})();
+</script>
+
+</body>
+</html>

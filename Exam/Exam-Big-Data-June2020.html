@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam · Advanced Analytics in a Big Data World · June 2020</title>
+<style>
+  :root{
+    --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9;
+    --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+    --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+    --line:#E3DAC9; --line-strong:#D6CAB2;
+    --good:#46785A; --good-bg:#E7F0E8; --good-bd:#BCD6BE;
+    --bad:#B0573A; --bad-bg:#F6E5DC; --bad-bd:#E6C3B0;
+    --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:840px; margin:0 auto; padding:0 22px 90px;}
+  h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em;}
+
+  header.hero{
+    background:
+      radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.20), transparent 60%),
+      linear-gradient(168deg, #F7F3EA 0%, #EFE9DA 100%);
+    border-bottom:1px solid var(--line-strong);}
+  .hero-inner{max-width:840px; margin:0 auto; padding:54px 22px 40px;}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:6px 13px; border-radius:999px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+  header.hero h1{font-size:clamp(30px,5vw,42px); line-height:1.1; margin:18px 0 8px; color:var(--ink);}
+  .subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:60ch;}
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+  .chip{display:inline-flex; align-items:center; gap:8px; background:var(--surface);
+    border:1px solid var(--line-strong); border-radius:10px; padding:8px 13px;
+    font-size:13.5px; color:var(--ink-soft); box-shadow:var(--shadow);}
+  .chip b{color:var(--ink); font-weight:600;}
+
+  .provenance{display:flex; gap:13px; align-items:flex-start; margin:30px 0 0;
+    background:var(--surface-2); border:1px solid var(--line); border-left:4px solid var(--clay-soft);
+    border-radius:12px; padding:15px 18px; font-size:14.5px; color:var(--ink-soft);}
+  .provenance .ic{flex:none; font-size:18px;}
+
+  .section-head{display:flex; align-items:baseline; gap:14px; margin:50px 0 8px;}
+  .section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+  .section-head h2{font-size:24px; margin:0; flex:1;}
+  .section-head .weight{font-size:13px; font-weight:600; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+  .section-note{color:var(--muted); font-size:15px; margin:2px 0 24px;}
+
+  .topic-sub{display:flex; align-items:center; gap:11px; margin:34px 0 6px;
+    font-family:Georgia,serif; font-size:19px; color:var(--clay-deep); font-weight:600;}
+  .topic-sub .n{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+    background:var(--surface-2); border:1px solid var(--line); padding:3px 10px; border-radius:999px;
+    font-family:-apple-system,sans-serif; font-weight:700;}
+
+  /* question card */
+  .q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px 14px; margin:14px 0; box-shadow:var(--shadow);}
+  .q-top{display:flex; gap:14px; align-items:flex-start;}
+  .qnum{flex:none; width:40px; height:40px; border-radius:11px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-family:Georgia,serif;
+    font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 10px rgba(168,71,42,.25);}
+  .qtext{font-size:17.5px; color:var(--ink); font-weight:550; margin:4px 0 2px; line-height:1.5;}
+  ol.opts{list-style:none; margin:14px 0 6px; padding:0; counter-reset:opt;}
+  ol.opts li{counter-increment:opt; display:flex; gap:12px; align-items:flex-start; position:relative;
+    padding:11px 40px 11px 14px; margin:8px 0; border:1px solid var(--line); border-radius:11px;
+    background:var(--surface-2); cursor:pointer; user-select:none;
+    transition:border-color .15s, background .15s, box-shadow .15s, transform .04s;}
+  ol.opts li:hover{border-color:var(--clay-soft); background:#fff;}
+  ol.opts li:active{transform:scale(.996);}
+  ol.opts.answered li{cursor:default;}
+  ol.opts.answered li:hover{background:var(--surface-2);}
+  ol.opts li::before{content:counter(opt,upper-alpha);
+    flex:none; width:25px; height:25px; border-radius:7px; background:#fff;
+    border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;}
+  ol.opts li .otxt{flex:1; padding-top:1px;}
+  /* answered states */
+  ol.opts li.correct{background:var(--good-bg); border-color:var(--good-bd); box-shadow:0 0 0 1px var(--good-bd) inset;}
+  ol.opts li.correct:hover{background:var(--good-bg);}
+  ol.opts li.wrong{background:var(--bad-bg); border-color:var(--bad-bd); box-shadow:0 0 0 1px var(--bad-bd) inset;}
+  ol.opts li.wrong:hover{background:var(--bad-bg);}
+  ol.opts li.correct::after,ol.opts li.wrong::after{position:absolute; right:13px; top:50%; transform:translateY(-50%);
+    font-weight:800; font-size:16px; line-height:1;}
+  ol.opts li.correct::after{content:"\2713"; color:var(--good);}
+  ol.opts li.wrong::after{content:"\2717"; color:var(--bad);}
+  /* feedback popup */
+  .feedback{margin:4px 0 6px; padding:0 16px; max-height:0; overflow:hidden; opacity:0; border-radius:11px;
+    transition:max-height .32s ease, opacity .25s, padding .32s, margin .25s; border:1px solid transparent;}
+  .feedback.show{max-height:340px; opacity:1; padding:13px 16px; margin:6px 0 10px;}
+  .feedback.ok{background:var(--good-bg); border-color:var(--good-bd);}
+  .feedback.no{background:var(--bad-bg); border-color:var(--bad-bd);}
+  .feedback .verdict{font-weight:700; font-size:15.5px; display:flex; align-items:center; gap:8px;}
+  .feedback.ok .verdict{color:var(--good);} .feedback.no .verdict{color:var(--bad);}
+  .feedback .ans{font-size:14.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+  .feedback .ans b{color:var(--ink);}
+  .feedback .reset{margin-top:9px; font-size:12.5px; color:var(--muted); background:none; border:none;
+    cursor:pointer; padding:0; text-decoration:underline;}
+  .feedback .reset:hover{color:var(--clay-deep);}
+
+  /* floating score */
+  .scorebar{position:fixed; right:18px; bottom:18px; z-index:60; background:var(--surface);
+    border:1px solid var(--line-strong); border-radius:999px; padding:9px 8px 9px 16px;
+    font-size:13.5px; color:var(--ink-soft); display:flex; gap:12px; align-items:center;
+    box-shadow:0 6px 22px rgba(70,45,20,.16);}
+  .scorebar b{color:var(--clay-deep);}
+  .scorebar .reset-all{cursor:pointer; color:var(--muted); border:1px solid var(--line); background:#fff;
+    border-radius:999px; padding:4px 11px; font-size:12px;}
+  .scorebar .reset-all:hover{color:var(--clay-deep); border-color:var(--clay-soft);}
+
+  code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+    padding:.1em .42em; border-radius:5px; font-size:.88em; color:#5A4632;}
+
+  .open{counter-reset:oq; display:grid; gap:14px;}
+  .oq{display:flex; gap:16px; background:var(--surface); border:1px solid var(--line);
+    border-left:4px solid var(--clay); border-radius:var(--radius); padding:20px 24px; box-shadow:var(--shadow);}
+  .oq .onum{flex:none; width:40px; height:40px; border-radius:11px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-family:Georgia,serif;
+    font-weight:700; font-size:17px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 10px rgba(168,71,42,.25);}
+  .oq .otext{flex:1; padding-top:4px; font-size:17.5px; line-height:1.5;}
+  .oq .otext .hint{display:block; margin-top:6px; font-size:14px; color:var(--muted); font-style:italic;}
+
+  footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+    color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  .nav-note{margin-top:30px; font-size:14px; color:var(--muted);}
+  .nav-note a{color:var(--clay-deep); text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+
+  @media print{ body{background:#fff;} .chip,.q,.oq{box-shadow:none;} header.hero{background:#fff;} .scorebar{display:none;}
+    ol.opts li{cursor:default;} }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>KU Leuven · Examination</span>
+    <h1>Advanced Analytics in a Big&nbsp;Data World</h1>
+    <p class="subtitle">Final examination — June 2020. Multiple-choice section followed by three open questions.</p>
+    <div class="meta-row">
+      <span class="chip">📝 <b>6</b> practice MC</span>
+      <span class="chip">✍️ <b>3</b> open</span>
+      <span class="chip">⚖️ MC <b>40%</b> · Open <b>60%</b></span>
+      <span class="chip">🖱️ <b>Interactive</b> — click to check</span>
+    </div>
+    <div class="provenance">
+      <span class="ic">ℹ️</span>
+      <span>This sheet is a <b>recollection of the June 2020 exam</b> (from the Ekonomika student archive). It recorded only the three multiple-choice <i>topics</i> and the wording of the open questions. The multiple-choice items below are <b>practice questions written to that exact scope</b> (the original options were not preserved); the open questions are transcribed as recalled. <b>Click any option to check it.</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="section-head">
+    <span class="bar"></span>
+    <h2>Multiple-choice questions</h2>
+    <span class="weight">40%</span>
+  </div>
+  <p class="section-note">Two practice questions per examined topic. Select the single best answer — click to reveal whether it is right or wrong.</p>
+
+  <!-- Topic 1: Bagging / Boosting -->
+  <div class="topic-sub"><span class="n">Topic 1</span> Bagging vs. Boosting</div>
+
+  <div class="q">
+    <div class="q-top"><div class="qnum">1</div>
+      <p class="qtext">Which statement best captures the core difference between bagging and boosting?</p></div>
+    <ol class="opts" data-explain="Bagging trains independent models in parallel and averages them, cancelling variance; boosting trains models sequentially, each correcting the last, which mainly reduces bias. (A describes boosting only; C swaps the effects; D swaps the mechanisms.)">
+      <li data-correct="0"><span class="otxt">Both train base learners sequentially, each correcting the previous one's errors.</span></li>
+      <li data-correct="1"><span class="otxt">Bagging trains learners independently (in parallel) and mainly reduces variance; boosting trains them sequentially and mainly reduces bias.</span></li>
+      <li data-correct="0"><span class="otxt">Bagging mainly reduces bias, while boosting mainly reduces variance.</span></li>
+      <li data-correct="0"><span class="otxt">Bagging reweights misclassified instances, while boosting uses bootstrap samples.</span></li>
+    </ol>
+  </div>
+
+  <div class="q">
+    <div class="q-top"><div class="qnum">2</div>
+      <p class="qtext">Which statement correctly distinguishes AdaBoost from gradient boosting?</p></div>
+    <ol class="opts" data-explain="AdaBoost adapts by re-weighting misclassified instances so the next learner focuses on them; gradient boosting fits each new learner to the negative gradient (residuals) of the loss. Option A states these the wrong way round; C and D are false.">
+      <li data-correct="0"><span class="otxt">AdaBoost fits each new learner to the residuals; gradient boosting reweights misclassified instances.</span></li>
+      <li data-correct="1"><span class="otxt">AdaBoost increases the weights of misclassified instances; gradient boosting fits each new learner to the negative gradient (residuals) of the loss.</span></li>
+      <li data-correct="0"><span class="otxt">Both are bagging methods that average independently trained deep trees.</span></li>
+      <li data-correct="0"><span class="otxt">Both require fully grown (unpruned) trees as base learners.</span></li>
+    </ol>
+  </div>
+
+  <!-- Topic 2: t-SNE vs UMAP -->
+  <div class="topic-sub"><span class="n">Topic 2</span> t-SNE vs. UMAP</div>
+
+  <div class="q">
+    <div class="q-top"><div class="qnum">3</div>
+      <p class="qtext">In t-SNE, which hyperparameter sets the effective size of each point's local neighborhood?</p></div>
+    <ol class="opts" data-explain="Perplexity is t-SNE's key knob — loosely the effective number of neighbors (the variance of each point's conditional Gaussian). Learning rate is an optimisation setting, min_dist is a UMAP parameter, and 'number of estimators' belongs to tree ensembles.">
+      <li data-correct="0"><span class="otxt">Learning rate</span></li>
+      <li data-correct="1"><span class="otxt">Perplexity</span></li>
+      <li data-correct="0"><span class="otxt">min_dist</span></li>
+      <li data-correct="0"><span class="otxt">Number of estimators</span></li>
+    </ol>
+  </div>
+
+  <div class="q">
+    <div class="q-top"><div class="qnum">4</div>
+      <p class="qtext">Which statement about t-SNE and UMAP is correct?</p></div>
+    <ol class="opts" data-explain="UMAP is generally faster, scales better, tends to preserve global structure better, and (unlike t-SNE) can transform new out-of-sample points. Both are nonlinear (not like PCA), so A is false; C reverses the out-of-sample property; D is false because UMAP has n_neighbors and min_dist.">
+      <li data-correct="0"><span class="otxt">Both are linear projection methods, like PCA.</span></li>
+      <li data-correct="1"><span class="otxt">UMAP typically preserves global structure better and scales to large datasets faster than t-SNE.</span></li>
+      <li data-correct="0"><span class="otxt">t-SNE can project new, unseen points into an existing embedding, whereas UMAP cannot.</span></li>
+      <li data-correct="0"><span class="otxt">UMAP has no hyperparameters, while t-SNE has perplexity.</span></li>
+    </ol>
+  </div>
+
+  <!-- Topic 3: Lasso vs Ridge -->
+  <div class="topic-sub"><span class="n">Topic 3</span> Lasso vs. Ridge</div>
+
+  <div class="q">
+    <div class="q-top"><div class="qnum">5</div>
+      <p class="qtext">Which statement about Lasso (L1) and Ridge (L2) regression is correct?</p></div>
+    <ol class="opts" data-explain="Lasso (L1, absolute-value penalty) has a diamond constraint with corners on the axes, so it drives some coefficients exactly to zero → feature selection. Ridge (L2, squared penalty) only shrinks coefficients smoothly toward zero. A and B swap the methods; D is false for Lasso.">
+      <li data-correct="0"><span class="otxt">Ridge drives some coefficients exactly to zero, performing automatic feature selection.</span></li>
+      <li data-correct="0"><span class="otxt">Lasso penalizes the sum of squared coefficients, while Ridge penalizes the sum of absolute values.</span></li>
+      <li data-correct="1"><span class="otxt">Lasso can set some coefficients exactly to zero (feature selection), whereas Ridge only shrinks coefficients toward zero without eliminating them.</span></li>
+      <li data-correct="0"><span class="otxt">Both methods always keep every feature with a non-zero coefficient.</span></li>
+    </ol>
+  </div>
+
+  <div class="q">
+    <div class="q-top"><div class="qnum">6</div>
+      <p class="qtext">You have many strongly correlated predictors and want a stable model that retains all of them. Which approach is most appropriate?</p></div>
+    <ol class="opts" data-explain="Ridge is preferred: it shrinks coefficients smoothly and spreads weight across the correlated group, giving stable estimates while keeping all predictors. Option A is a true description of lasso's behaviour — but dropping features contradicts the goal of retaining all of them. C and D are false.">
+      <li data-correct="0"><span class="otxt">Lasso (L1), because it keeps exactly one feature from each correlated group and zeros the rest.</span></li>
+      <li data-correct="1"><span class="otxt">Ridge (L2), because it shrinks coefficients smoothly and spreads weight across correlated predictors, giving stable estimates.</span></li>
+      <li data-correct="0"><span class="otxt">Ordinary least squares with no penalty, because regularization cannot handle correlation.</span></li>
+      <li data-correct="0"><span class="otxt">Lasso (L1), because it assigns infinite weight to correlated features.</span></li>
+    </ol>
+  </div>
+
+  <div class="section-head">
+    <span class="bar"></span>
+    <h2>Open questions</h2>
+    <span class="weight">60%</span>
+  </div>
+  <p class="section-note">Answer all three questions.</p>
+  <div class="open">
+    <div class="oq">
+      <div class="onum">1</div>
+      <div class="otext">Calculate, for a given threshold value, the recall, precision and confusion matrix, and draw the ROC curve.
+        <span class="hint">A set of scored instances with their true labels and a chosen threshold were provided in the original exam.</span></div>
+    </div>
+    <div class="oq">
+      <div class="onum">2</div>
+      <div class="otext">Explain the feature permutation algorithm, give its drawbacks, and apply it if it can be applied.
+        <span class="hint">It cannot be applied here, because you need the trained algorithm/model to compute predictions — which was not given.</span></div>
+    </div>
+    <div class="oq">
+      <div class="onum">3</div>
+      <div class="otext">What makes a random forest “random”? And what is the difference between a random forest and an isolation forest?</div>
+    </div>
+  </div>
+
+  <p class="nav-note">→ Worked solutions: <a href="Solutions-Big-Data-June2020.html">Solutions-Big-Data-June2020.html</a></p>
+
+  <footer>
+    <span>Advanced Analytics in a Big Data World · KU Leuven</span>
+    <span>Examination — June 2020</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var L="ABCDEFGH";
+  var lists=[].slice.call(document.querySelectorAll("ol.opts"));
+  var total=lists.length, answered=0, correct=0, state={};
+  var bar=document.createElement("div"); bar.className="scorebar";
+  bar.innerHTML='<span><b class="sc">0</b> correct · <b class="an">0</b>/'+total+' answered</span><button class="reset-all" type="button">reset all</button>';
+  document.body.appendChild(bar);
+  function refresh(){ bar.querySelector(".sc").textContent=correct; bar.querySelector(".an").textContent=answered; }
+
+  lists.forEach(function(ol,qi){
+    var items=[].slice.call(ol.querySelectorAll("li"));
+    var explain=ol.getAttribute("data-explain")||"";
+    var ci=[]; items.forEach(function(li,i){ if(li.getAttribute("data-correct")==="1") ci.push(i); });
+    var fb=document.createElement("div"); fb.className="feedback";
+    ol.parentNode.insertBefore(fb, ol.nextSibling);
+
+    function reset(){
+      if(state[qi]){ answered--; if(state[qi].ok) correct--; state[qi]=null; refresh(); }
+      ol.classList.remove("answered");
+      items.forEach(function(li){ li.classList.remove("correct","wrong"); });
+      fb.className="feedback";
+    }
+    function choose(li){
+      if(ol.classList.contains("answered")) return;
+      ol.classList.add("answered");
+      var ok = li.getAttribute("data-correct")==="1";
+      ci.forEach(function(k){ items[k].classList.add("correct"); });
+      if(!ok) li.classList.add("wrong");
+      var letters=ci.map(function(k){return L[k];}).join(" / ");
+      var note = ok ? "" : ("Correct answer: <b>"+letters+"</b>. ");
+      fb.classList.add(ok?"ok":"no");
+      fb.innerHTML='<div class="verdict">'+(ok?"✓ Correct!":"✗ Not quite.")+'</div>'+
+                   '<div class="ans">'+note+explain+'</div>'+
+                   '<button class="reset" type="button">↺ try again</button>';
+      fb.querySelector(".reset").addEventListener("click", reset);
+      requestAnimationFrame(function(){ fb.classList.add("show"); });
+      state[qi]={ok:ok}; answered++; if(ok) correct++; refresh();
+    }
+    items.forEach(function(li){
+      li.setAttribute("role","button"); li.setAttribute("tabindex","0");
+      li.addEventListener("click", function(){ choose(li); });
+      li.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); choose(li); }});
+    });
+  });
+  bar.querySelector(".reset-all").addEventListener("click", function(){
+    lists.forEach(function(ol){
+      ol.classList.remove("answered");
+      ol.querySelectorAll("li").forEach(function(li){ li.classList.remove("correct","wrong"); });
+      var fb=ol.nextElementSibling; if(fb&&fb.classList.contains("feedback")) fb.className="feedback";
+    });
+    answered=0; correct=0; state={}; refresh();
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>

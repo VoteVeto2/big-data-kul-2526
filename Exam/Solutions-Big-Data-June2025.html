@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solutions · Advanced Analytics in a Big Data World · June 2025</title>
+<style>
+  :root{
+    --bg:#F0EEE6; --bg-2:#EAE5D8; --surface:#FBFAF6; --surface-2:#F6F2E9;
+    --ink:#22201C; --ink-soft:#4F4B43; --muted:#7E776B;
+    --clay:#CC785C; --clay-deep:#A8472A; --clay-soft:#EAD2C5;
+    --line:#E3DAC9; --line-strong:#D6CAB2;
+    --good:#46785A; --good-bg:#E7F0E8; --good-bd:#BCD6BE;
+    --bad:#B0573A; --bad-bg:#F6E5DC; --bad-bd:#E6C3B0;
+    --shadow:0 1px 2px rgba(40,30,20,.04), 0 10px 28px rgba(70,45,20,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:880px; margin:0 auto; padding:0 22px 90px;}
+  h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:600; letter-spacing:-.01em;}
+  a{color:var(--clay-deep);}
+
+  /* hero */
+  header.hero{background:
+    radial-gradient(900px 360px at 82% -10%, rgba(204,120,92,.22), transparent 60%),
+    linear-gradient(168deg, #F7F3EA 0%, #ECE4D3 100%);
+    border-bottom:1px solid var(--line-strong);}
+  .hero-inner{max-width:880px; margin:0 auto; padding:54px 22px 40px;}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-size:12.5px; font-weight:600;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:6px 13px; border-radius:999px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--clay);}
+  header.hero h1{font-size:clamp(28px,5vw,40px); line-height:1.1; margin:18px 0 8px; color:var(--ink);}
+  .subtitle{font-size:18px; color:var(--ink-soft); margin:0; max-width:62ch;}
+  .verify-note{margin-top:20px; font-size:13.5px; color:var(--muted); display:flex; align-items:center; gap:8px;}
+  .verify-note b{color:var(--ink-soft);}
+
+  /* answer key */
+  .keycard{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:8px 8px; margin:34px 0 10px; overflow:hidden;}
+  .keycard h3{margin:14px 16px 6px; font-size:16px; display:flex; align-items:center; gap:9px;}
+  .keycard h3 .k{width:8px;height:18px;border-radius:3px;background:var(--clay);}
+  table.key{width:100%; border-collapse:collapse; font-size:14.5px;}
+  table.key td{padding:9px 16px; border-top:1px solid var(--line); vertical-align:top;}
+  table.key tr:first-child td{border-top:none;}
+  table.key td.q{font-weight:700; color:var(--clay-deep); white-space:nowrap; width:46px; font-family:Georgia,serif;}
+  table.key td.a{color:var(--ink-soft);}
+  table.key td.a b{color:var(--ink);}
+
+  /* section head */
+  .section-head{display:flex; align-items:baseline; gap:14px; margin:54px 0 18px;}
+  .section-head .bar{width:34px; height:3px; border-radius:2px; background:var(--clay); transform:translateY(-6px);}
+  .section-head h2{font-size:24px; margin:0; flex:1;}
+  .section-head .weight{font-size:13px; font-weight:600; color:var(--clay-deep);
+    background:rgba(204,120,92,.10); border:1px solid var(--clay-soft); padding:4px 11px; border-radius:999px; white-space:nowrap;}
+
+  /* question/solution card */
+  .q{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px 20px; margin:18px 0; box-shadow:var(--shadow);}
+  .q-top{display:flex; gap:14px; align-items:flex-start;}
+  .qnum{flex:none; width:40px; height:40px; border-radius:11px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-family:Georgia,serif;
+    font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 10px rgba(168,71,42,.25);}
+  .qtext{font-size:17px; color:var(--ink); font-weight:550; margin:6px 0 0; line-height:1.5; flex:1;}
+  .answer-tag{display:inline-flex; align-items:center; gap:7px; margin-top:14px;
+    background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-weight:650; font-size:14px;
+    padding:6px 14px; border-radius:999px; box-shadow:0 3px 9px rgba(168,71,42,.22);}
+  .answer-tag .lbl{font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.85; font-weight:700;}
+
+  ol.opts{list-style:none; margin:16px 0 4px; padding:0; counter-reset:opt;}
+  ol.opts li{counter-increment:opt; display:flex; gap:12px; align-items:flex-start;
+    padding:11px 14px; margin:8px 0; border:1px solid var(--line); border-radius:11px;
+    background:var(--surface-2); position:relative;}
+  ol.opts li::before{content:counter(opt,upper-alpha);
+    flex:none; width:25px; height:25px; border-radius:7px; background:#fff;
+    border:1px solid var(--line-strong); color:var(--clay-deep); font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;}
+  ol.opts li .otxt{flex:1; padding-top:1px;}
+  ol.opts li .vpill{flex:none; align-self:center; font-size:11.5px; font-weight:700; letter-spacing:.04em;
+    padding:3px 10px; border-radius:999px; white-space:nowrap;}
+  .v-true{background:var(--good-bg); color:var(--good); border:1px solid var(--good-bd);}
+  .v-false{background:var(--bad-bg); color:var(--bad); border:1px solid var(--bad-bd);}
+  .v-dep{background:#F2ECDC; color:#8A6D2F; border:1px solid #E0D2AE;}
+  /* the chosen exam answer */
+  ol.opts li.answer{background:#fff; border-color:var(--clay); box-shadow:0 0 0 1px var(--clay) inset, 0 4px 14px rgba(204,120,92,.14);}
+  ol.opts li.answer::after{content:"★ answer"; position:absolute; top:-10px; right:12px;
+    background:var(--clay-deep); color:#fff; font-size:10.5px; font-weight:700; letter-spacing:.06em;
+    padding:2px 9px; border-radius:999px; text-transform:uppercase;}
+
+  .motivation{margin-top:16px; padding:15px 18px; background:#FBF7EF;
+    border:1px solid var(--line); border-left:3px solid var(--clay); border-radius:11px; font-size:15.5px; color:var(--ink-soft);}
+  .motivation b{color:var(--ink);}
+  .motivation .h{display:block; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--clay-deep); font-weight:700; margin-bottom:5px;}
+  .framing{margin-top:12px; padding:11px 16px; background:#F3ECDD; border:1px dashed #D9C79C; border-radius:10px;
+    font-size:14px; color:#7d6630;}
+  .framing b{color:#5e4d20;}
+
+  code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:#EFE7D6;
+    padding:.1em .42em; border-radius:5px; font-size:.88em; color:#5A4632;}
+
+  /* open question */
+  .open-block{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:26px 28px; margin:18px 0;}
+  .open-block h3{font-size:20px; margin:0 0 4px; color:var(--ink);}
+  .open-block .part-label{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--clay-deep); background:rgba(204,120,92,.10);
+    border:1px solid var(--clay-soft); padding:3px 11px; border-radius:999px; margin-bottom:10px;}
+  .open-block p{margin:11px 0;}
+  .open-block h4{font-family:Georgia,serif; font-size:16.5px; margin:22px 0 6px; color:var(--clay-deep);}
+  .open-block ul{margin:10px 0; padding-left:22px;}
+  .open-block li{margin:6px 0;}
+  .formula{background:#2B2722; color:#F0E7D6; font-family:ui-monospace,Menlo,monospace; font-size:14.5px;
+    padding:12px 16px; border-radius:10px; margin:12px 0; overflow-x:auto; line-height:1.5;}
+  .formula .c{color:#E0A07F;}
+  .keypoints{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:14px 18px 14px 20px; margin:18px 0;}
+  .keypoints .h{font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--clay-deep); font-weight:700; margin-bottom:6px;}
+  .keypoints ul{margin:0; padding-left:20px;}
+  .keypoints li{margin:5px 0; font-size:14.5px; color:var(--ink-soft);}
+
+  figure{margin:22px 0; text-align:center;}
+  figure svg{max-width:100%; height:auto; background:var(--surface-2); border:1px solid var(--line);
+    border-radius:14px; padding:14px; box-shadow:var(--shadow);}
+  figcaption{font-size:13px; color:var(--muted); margin-top:10px; font-style:italic;}
+
+  table.data{border-collapse:collapse; width:100%; margin:14px 0; font-size:14px;}
+  table.data th, table.data td{border:1px solid var(--line-strong); padding:7px 11px; text-align:center;}
+  table.data th{background:var(--surface-2); color:var(--ink); font-weight:650;}
+  table.data td.lab{background:#FBF7EF; font-weight:600; text-align:left;}
+
+  footer{margin-top:60px; padding-top:22px; border-top:1px solid var(--line-strong);
+    color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  .nav-note{margin-top:28px; font-size:14px; color:var(--muted);}
+  .nav-note a{text-decoration:none; border-bottom:1px solid var(--clay-soft);}
+
+  @media print{ body{background:#fff;} .q,.open-block,.keycard,figure svg{box-shadow:none;} header.hero{background:#fff;}
+    .q,.open-block{break-inside:avoid;} }
+  @media(max-width:560px){ ol.opts li{flex-wrap:wrap;} ol.opts li .vpill{margin-left:37px;} }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Worked Solutions</span>
+    <h1>Solutions — June 2025</h1>
+    <p class="subtitle">Advanced Analytics in a Big Data World (HIRB). Motivated answers to all 15 multiple-choice questions and the open question on variational auto-encoders.</p>
+    <div class="verify-note">✓&nbsp; <b>Each multiple-choice answer was cross-checked option-by-option.</b>&nbsp; Several items were phrased “correct / incorrect”; for those, every option is tagged <span style="color:var(--good);font-weight:700">True</span>/<span style="color:var(--bad);font-weight:700">False</span> so the answer is robust to either framing.</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ANSWER KEY -->
+  <div class="keycard">
+    <h3><span class="k"></span>Answer key at a glance</h3>
+    <table class="key">
+      <tr><td class="q">Q1</td><td class="a"><b>A — AUC.</b> The only threshold-free metric.</td></tr>
+      <tr><td class="q">Q2</td><td class="a"><b>All four statements are true</b> descriptions of Spark (the “incorrect” framing is a recollection artifact).</td></tr>
+      <tr><td class="q">Q3</td><td class="a"><b>C — “None are incorrect.”</b> Both other statements are true.</td></tr>
+      <tr><td class="q">Q4</td><td class="a"><b>A is false</b> (WoE is not inherently monotonic); B &amp; C are true.</td></tr>
+      <tr><td class="q">Q5</td><td class="a"><b>B — L2 = Ridge,</b> penalty ∝ squared coefficients.</td></tr>
+      <tr><td class="q">Q6</td><td class="a"><b>C is false</b> (2-D PDPs <i>do</i> show interactions); A &amp; D are true.</td></tr>
+      <tr><td class="q">Q7</td><td class="a"><b>C — Bagging decreases variance,</b> not necessarily bias.</td></tr>
+      <tr><td class="q">Q8</td><td class="a"><b>C — Smaller batch size</b> is not an overfitting-prevention technique.</td></tr>
+      <tr><td class="q">Q9</td><td class="a"><b>A, B, C are all true;</b> D (“none”) is false.</td></tr>
+      <tr><td class="q">Q10</td><td class="a"><b>C is false</b> (UMAP <i>has</i> hyperparameters); B &amp; D are true.</td></tr>
+      <tr><td class="q">Q11</td><td class="a"><b>A — <span class="mono">map(lambda x: x*x)</span></b> → [4, 9, 25].</td></tr>
+      <tr><td class="q">Q12</td><td class="a"><b>A is incorrect</b> (TF-IDF rewards corpus-<i>rare</i> words).</td></tr>
+      <tr><td class="q">Q13</td><td class="a"><b>A &amp; D are real weaknesses</b> (true); B &amp; C are false.</td></tr>
+      <tr><td class="q">Q14</td><td class="a"><b>A is incorrect</b>; B, C, D are true.</td></tr>
+      <tr><td class="q">Q15</td><td class="a"><b>B — 8×8×4.</b></td></tr>
+    </table>
+  </div>
+
+  <div class="section-head"><span class="bar"></span><h2>Multiple-choice solutions</h2><span class="weight">60%</span></div>
+
+  <!-- Q1 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">1</div><p class="qtext">Which metric is independent of the chosen threshold for classification?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> A · AUC</span>
+    <ol class="opts">
+      <li class="answer"><span class="otxt">AUC</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Accuracy</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Precision</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Balanced accuracy</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      AUC integrates ranking performance over <b>every</b> threshold — equivalently, it is the probability a random positive is scored above a random negative — so it never depends on a single cutoff. Accuracy, precision and balanced accuracy are all read off a confusion matrix, which only exists <i>after</i> you convert scores to hard labels at a fixed threshold.</div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">2</div><p class="qtext">Which of these four statements (about Spark) is correct / incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> All four are true statements</span>
+    <ol class="opts">
+      <li><span class="otxt">DStream as a continuous RDD.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">DataFrame vs. Dataset (DataFrame = untyped <span class="mono">Dataset[Row]</span>).</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Spark replaces map-reduce by building a directed acyclic graph (DAG).</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Spark is much more efficient on RDDs because it does more compute in memory.</span><span class="vpill v-true">TRUE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      All four are accurate: a <b>DStream</b> is literally a discretised sequence of RDDs (one per micro-batch); a <b>DataFrame</b> is an untyped <span class="mono">Dataset[Row]</span>; Spark’s engine schedules work as a <b>DAG</b> of stages with lazy evaluation; and its headline advantage over Hadoop MapReduce is <b>in-memory</b> computation that avoids disk I/O between stages.</div>
+    <div class="framing"><b>Framing note:</b> since every option is factually true, the “incorrect” version of this question would have a distorted option that the recollection lost. As transcribed, treat all four as correct statements.</div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">3</div><p class="qtext">Which of these statements is incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> C · None are incorrect</span>
+    <ol class="opts">
+      <li><span class="otxt">Train-test split needs to be done even before preprocessing.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Random forest is robust to outliers.</span><span class="vpill v-true">TRUE</span></li>
+      <li class="answer"><span class="otxt">None of the above answers are incorrect.</span><span class="vpill v-true">TRUE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      Splitting <b>before</b> preprocessing is the standard guard against <b>data leakage</b> — scalers, imputers and encoders must be fit on the training fold only. Random forests <b>are</b> robust to outliers because tree splits are threshold/order-based (not magnitude-based) and predictions average over many bootstrapped trees. Both statements are true, so the only consistent answer is “none are incorrect.”</div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">4</div><p class="qtext">Which of these statements (about weights of evidence, WoE) is correct / incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Incorrect statement</span> A</span>
+    <ol class="opts">
+      <li class="answer"><span class="otxt">WoE encodes a monotonic relationship with the target variable.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">WoE encoding is possible for a binary classification target.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">WoE vs. the information value (IV) of those variables.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">None of the above answers are correct / incorrect.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      WoE replaces a bin/category with <span class="mono">ln(%good / %bad)</span>. It does <b>not inherently</b> create a monotonic relationship with the target — monotonicity is an <i>optional</i> design goal achieved through deliberate coarse binning, so (A) is the false claim. WoE <b>is</b> defined for a binary target (its canonical credit-scoring use), and IV is built directly from WoE via <span class="mono">IV = Σ(%good − %bad)·WoE</span>, so (B) and (C) are true.</div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">5</div><p class="qtext">Which statement about regularization terms is correct?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> B</span>
+    <ol class="opts">
+      <li><span class="otxt">L1 (Ridge) adds a penalty ∝ the square of the coefficients.</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">L2 (Ridge) adds a penalty ∝ the square of the coefficients.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">L1 (Lasso) adds a penalty ∝ the square of the coefficients.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">L2 (Lasso) adds a penalty ∝ the square of the coefficients.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      <b>L2 = Ridge</b> penalises the sum of <b>squared</b> coefficients <span class="mono">(λΣβ²)</span> → smooth shrinkage. <b>L1 = Lasso</b> penalises the sum of <b>absolute</b> values <span class="mono">(λΣ|β|)</span> → sparsity. Only (B) pairs the right name with the right penalty form; the others mislabel L1↔Ridge or attach the square penalty to Lasso.</div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">6</div><p class="qtext">Which of these statements (interpretability / metrics) is correct / incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Incorrect statement</span> C</span>
+    <ol class="opts">
+      <li><span class="otxt">AU(RO)C vs. AUREC (regression error characteristic) for regression tasks.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Permutation feature importance breaks the correlation between variables.</span><span class="vpill v-true">TRUE</span></li>
+      <li class="answer"><span class="otxt">Partial dependence plots are unable to model interactions between variables.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">An ICE plot is similar to a univariate partial dependence plot.</span><span class="vpill v-true">TRUE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      (C) is the false statement: a <b>1-D</b> PDP shows only an averaged marginal effect, but a <b>2-D (two-way) PDP can</b> visualise pairwise interactions — so the blanket “unable” is wrong. AUROC (classification) has the REC/AUREC analogue for regression (A ✓); permutation importance <b>does</b> break correlations by shuffling a column (B ✓ — the “doesn’t break” phrasing would be false); and a PDP is exactly the average of the per-instance <b>ICE</b> curves, so they are closely related (D ✓).</div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">7</div><p class="qtext">Which statement regarding the bias–variance trade-off is correct?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> C</span>
+    <ol class="opts">
+      <li><span class="otxt">Bagging increases variance but not necessarily bias.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Boosting increases variance but not necessarily bias.</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">Bagging decreases variance but not necessarily bias.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Boosting decreases variance but not necessarily bias.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      <b>Bagging</b> averages many deep, low-bias / high-variance trees trained on bootstrap samples → it slashes <b>variance</b> while leaving bias roughly unchanged. <b>Boosting</b> works the opposite way: it sequentially fits the residual errors of weak learners, mainly cutting <b>bias</b> (and often <i>raising</i> variance). So (C) is correct and (D) is its mirror-image error.</div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">8</div><p class="qtext">Which deep-learning technique doesn’t help to prevent overfitting?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> C · Smaller batch size</span>
+    <ol class="opts">
+      <li><span class="otxt">Batch normalization</span><span class="vpill v-true">helps</span></li>
+      <li><span class="otxt">Dropout</span><span class="vpill v-true">helps</span></li>
+      <li class="answer"><span class="otxt">Smaller batch size</span><span class="vpill v-false">doesn’t</span></li>
+      <li><span class="otxt">Regularization</span><span class="vpill v-true">helps</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      <b>Dropout</b> (kills co-adaptation), <b>L1/L2 regularization</b> (weight decay constrains capacity) and <b>batch normalization</b> (mild noise from per-batch statistics) are all deliberate overfitting controls. A <b>smaller batch size</b> is fundamentally an optimisation / memory choice — its gradient noise can <i>incidentally</i> aid generalisation, but it is not a regularisation technique, so it’s the odd one out the question is after.</div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">9</div><p class="qtext">Which statement about clustering and dimensionality reduction is correct / incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> A, B, C true · D false</span>
+    <ol class="opts">
+      <li><span class="otxt">Divisive (top-down) vs. agglomerative (bottom-up) clustering.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">DBSCAN marks points alone in low-density regions as outliers.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">t-SNE uses perplexity to define a point’s neighborhood.</span><span class="vpill v-true">TRUE</span></li>
+      <li class="answer"><span class="otxt">None of the above are correct / incorrect.</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      All three substantive statements are correct: <b>agglomerative</b> merges from singletons up while <b>divisive</b> splits from the top down; <b>DBSCAN</b> labels points unreachable from any core point as noise; and <b>perplexity</b> sets the effective neighborhood size (Gaussian bandwidth) for each point in t-SNE. Hence “none of the above” (D) is the only false option.</div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">10</div><p class="qtext">Which statement about t-SNE vs UMAP is correct / incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Incorrect statement</span> C</span>
+    <ol class="opts">
+      <li><span class="otxt">UMAP is better because it performs better for dimensionality &gt; 3.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">UMAP gives nicer interpretation properties in the reduced representation.</span><span class="vpill v-true">TRUE</span></li>
+      <li class="answer"><span class="otxt">t-SNE has a hyperparameter (perplexity), UMAP doesn’t.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Both can be optimised through stochastic gradient descent.</span><span class="vpill v-true">TRUE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      (C) is the clear falsehood: <b>UMAP has hyperparameters too</b> — <span class="mono">n_neighbors</span> (the analogue of perplexity) and <span class="mono">min_dist</span>. UMAP tends to preserve <b>global structure</b> better, so its embedding is more interpretable (B ✓), and both methods optimise their low-D layout by gradient descent — UMAP via SGD with negative sampling (D ✓). (A) is garbled: both methods take high-dimensional input, so “&gt; 3” is not a real distinction.</div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">11</div><p class="qtext">Which is the map-reduce pseudo-code to get the list <code>[4, 9, 25]</code>?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> A</span>
+    <ol class="opts">
+      <li class="answer"><span class="otxt"><span class="mono">[2,3,5].map(lambda x: x*x)</span></span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt"><span class="mono">[2,3,5].reduce(lambda x: 2*x)</span></span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt"><span class="mono">[2,3,5].map(lambda x: 2*x)</span></span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt"><span class="mono">[2,3,5].reduce(lambda x: x*x)</span></span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      <b>map</b> transforms each element independently and <b>preserves the list</b>: 2²=4, 3²=9, 5²=25 → <span class="mono">[4,9,25]</span>. <b>reduce</b> folds the whole collection into a <i>single</i> aggregate, so both reduce options fail on structure alone; <span class="mono">map(2*x)</span> would give <span class="mono">[4,6,10]</span>.</div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">12</div><p class="qtext">Which statement about text mining is incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> A · the incorrect one</span>
+    <ol class="opts">
+      <li class="answer"><span class="otxt">TF-IDF scores high for words frequent in a document <b>and</b> frequent in the corpus.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Bag of words encodes per-word frequency/binary and scales poorly.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">CBOW uses context words as input to predict a target word.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Word embeddings can be used for topic modeling.</span><span class="vpill v-true">TRUE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      (A) inverts the IDF logic. TF-IDF = term-frequency × <b>inverse</b> document-frequency <span class="mono">(log N/df)</span>, which <b>down-weights</b> words common across the corpus. A high TF-IDF needs a word frequent in <i>one</i> document yet <b>rare</b> across the corpus — not “frequent in the corpus.” The other three are accurate (BoW is high-dimensional/sparse; CBOW predicts the centre word from context; embeddings can be clustered into topics).</div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">13</div><p class="qtext">Which statement about the weaknesses of decision trees is correct / incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Real weaknesses</span> A &amp; D · B &amp; C false</span>
+    <ol class="opts">
+      <li><span class="otxt">Decision trees have a high tendency to overfit.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Decision trees cannot deal with continuous variables.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Decision trees cannot deal with missing values.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Decision trees are highly sensitive to changes in the training data.</span><span class="vpill v-true">TRUE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      Trees are <b>high-variance</b> learners: fully grown they overfit (A ✓), and a small change in the data can produce a very different tree (D ✓) — exactly why bagging / random forests exist. But trees handle <b>continuous variables</b> natively via split thresholds <span class="mono">(x &lt; c)</span> and can handle <b>missing values</b> (e.g. surrogate splits / fractional routing), so (B) and (C) are false as stated weaknesses.</div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">14</div><p class="qtext">Which statement about working with class imbalance is correct / incorrect?</p></div>
+    <span class="answer-tag"><span class="lbl">Incorrect statement</span> A</span>
+    <ol class="opts">
+      <li class="answer"><span class="otxt">Undersampling removes highly similar majority-class observations.</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">Oversampling adds duplicates of minority-class observations.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Under/oversampling results in a biased prediction distribution.</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">Never under/oversample the test set.</span><span class="vpill v-true">TRUE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      (A) is false as a general claim: <b>random</b> undersampling drops majority points <i>at random</i>, not selectively by similarity — removing “highly similar” points is the behaviour of <i>informed</i> methods (Tomek links, ENN). Plain random oversampling <b>does</b> duplicate minority instances (B ✓ — SMOTE instead <i>synthesises</i>); resampling shifts the class prior so predicted probabilities are biased unless recalibrated (C ✓); and you must keep the <b>test set</b> at its natural rate for honest estimates (D ✓).</div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="q">
+    <div class="q-top"><div class="qnum">15</div><p class="qtext">A CNN takes a 3-channel 10×10 RGB image and applies 4 kernels of 3×3 with stride 1 and no padding. What are the hidden-layer dimensions?</p></div>
+    <span class="answer-tag"><span class="lbl">Answer</span> B · 8×8×4</span>
+    <ol class="opts">
+      <li><span class="otxt">8×8×3</span><span class="vpill v-false">FALSE</span></li>
+      <li class="answer"><span class="otxt">8×8×4</span><span class="vpill v-true">TRUE</span></li>
+      <li><span class="otxt">10×10×4</span><span class="vpill v-false">FALSE</span></li>
+      <li><span class="otxt">None of the above</span><span class="vpill v-false">FALSE</span></li>
+    </ol>
+    <div class="motivation"><span class="h">Why</span>
+      Spatial size with no padding: <span class="mono">(10 − 3)/1 + 1 = 8</span> in each dimension. Each 3×3 kernel automatically spans <b>all 3 input channels</b> and outputs a single 2-D feature map, so the output <b>depth equals the number of kernels (4)</b>, not the channel count. Result: <b>8×8×4</b>. (Choosing 8×8×3 is the classic trap of confusing output depth with input channels.)</div>
+  </div>
+
+  <!-- OPEN QUESTION -->
+  <div class="section-head"><span class="bar"></span><h2>Open question — Variational auto-encoders</h2><span class="weight">40%</span></div>
+
+  <div class="open-block">
+    <span class="part-label">Part a</span>
+    <h3>Architecture of a variational auto-encoder (VAE)</h3>
+    <p>A VAE is a <b>generative</b> auto-encoder that learns a <b>probabilistic</b> latent space. Where a plain auto-encoder maps an input to a single fixed code, the VAE encoder maps each input to a <b>distribution</b> over latent space, and we <b>sample</b> from that distribution before decoding. This forces the latent space to be smooth and continuous, so decoding random samples yields realistic new outputs.</p>
+
+    <figure>
+      <svg viewBox="0 0 860 400" role="img" aria-label="Variational auto-encoder architecture diagram">
+        <defs>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="#8a6c5b"/>
+          </marker>
+          <marker id="ahd" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="#A8472A"/>
+          </marker>
+          <linearGradient id="enc" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#E8D8C8"/><stop offset="1" stop-color="#D9B59E"/>
+          </linearGradient>
+          <linearGradient id="dec" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#D9B59E"/><stop offset="1" stop-color="#E8D8C8"/>
+          </linearGradient>
+        </defs>
+        <style>
+          .bx{fill:#FBFAF6;stroke:#C9A98E;stroke-width:1.4;}
+          .lab{font:600 12.5px Georgia,serif;fill:#3a342c;}
+          .small{font:500 11px -apple-system,sans-serif;fill:#6b6253;}
+          .edge{stroke:#8a6c5b;stroke-width:1.6;fill:none;}
+          .edged{stroke:#A8472A;stroke-width:1.5;fill:none;stroke-dasharray:5 4;}
+          .ttl{font:700 11px -apple-system,sans-serif;fill:#A8472A;letter-spacing:.04em;}
+        </style>
+        <!-- input -->
+        <rect class="bx" x="18" y="160" width="64" height="80" rx="8"/>
+        <text class="lab" x="50" y="205" text-anchor="middle">x</text>
+        <text class="small" x="50" y="252" text-anchor="middle">input</text>
+        <!-- encoder funnel -->
+        <polygon points="100,150 222,178 222,222 100,250" fill="url(#enc)" stroke="#C9A98E" stroke-width="1.4"/>
+        <text class="lab" x="161" y="196" text-anchor="middle">Encoder</text>
+        <text class="small" x="161" y="212" text-anchor="middle">q(z|x)</text>
+        <line class="edge" x1="82" y1="200" x2="98" y2="200" marker-end="url(#ah)"/>
+        <!-- mu / logvar -->
+        <rect class="bx" x="248" y="150" width="96" height="38" rx="7"/>
+        <text class="lab" x="296" y="174" text-anchor="middle">&#956; (mean)</text>
+        <rect class="bx" x="248" y="212" width="96" height="38" rx="7"/>
+        <text class="lab" x="296" y="236" text-anchor="middle">log &#963;&#178;</text>
+        <line class="edge" x1="222" y1="186" x2="246" y2="171" marker-end="url(#ah)"/>
+        <line class="edge" x1="222" y1="214" x2="246" y2="229" marker-end="url(#ah)"/>
+        <!-- reparam node -->
+        <circle cx="430" cy="200" r="44" fill="#FBF1E9" stroke="#CC785C" stroke-width="1.8"/>
+        <text class="lab" x="430" y="194" text-anchor="middle" style="font-size:11.5px">z = &#956; + &#963;&#183;&#949;</text>
+        <text class="small" x="430" y="212" text-anchor="middle" style="font-size:9.5px">reparameterization</text>
+        <line class="edge" x1="344" y1="169" x2="392" y2="190" marker-end="url(#ah)"/>
+        <line class="edge" x1="344" y1="231" x2="392" y2="212" marker-end="url(#ah)"/>
+        <!-- epsilon external -->
+        <rect class="bx" x="372" y="320" width="118" height="34" rx="7" style="stroke:#A8472A;stroke-dasharray:5 4;"/>
+        <text class="lab" x="431" y="342" text-anchor="middle" style="fill:#A8472A">&#949; ~ N(0, I)</text>
+        <line class="edged" x1="431" y1="320" x2="431" y2="248" marker-end="url(#ahd)"/>
+        <!-- z -->
+        <rect class="bx" x="500" y="180" width="44" height="40" rx="7" style="fill:#F3E4D8;stroke:#CC785C;"/>
+        <text class="lab" x="522" y="205" text-anchor="middle">z</text>
+        <line class="edge" x1="474" y1="200" x2="498" y2="200" marker-end="url(#ah)"/>
+        <!-- decoder funnel -->
+        <polygon points="638,178 760,150 760,250 638,222" fill="url(#dec)" stroke="#C9A98E" stroke-width="1.4"/>
+        <text class="lab" x="699" y="196" text-anchor="middle">Decoder</text>
+        <text class="small" x="699" y="212" text-anchor="middle">p(x|z)</text>
+        <line class="edge" x1="544" y1="200" x2="636" y2="200" marker-end="url(#ah)"/>
+        <!-- output -->
+        <rect class="bx" x="778" y="160" width="64" height="80" rx="8"/>
+        <text class="lab" x="810" y="205" text-anchor="middle">x&#770;</text>
+        <text class="small" x="810" y="252" text-anchor="middle">recon.</text>
+        <line class="edge" x1="760" y1="200" x2="776" y2="200" marker-end="url(#ah)"/>
+        <!-- loss annotations -->
+        <path class="edged" d="M50,160 C50,70 810,70 810,160" />
+        <text class="ttl" x="430" y="60" text-anchor="middle">Reconstruction loss (BCE / MSE):  x  vs  x&#770;</text>
+        <text class="ttl" x="296" y="290" text-anchor="middle" style="fill:#7d6630">KL( N(&#956;,&#963;&#178;) &#8741; N(0,I) )</text>
+        <line class="edged" x1="296" y1="252" x2="296" y2="278" style="stroke:#bca15f;"/>
+        <text class="small" x="430" y="384" text-anchor="middle" style="font-style:italic">Total loss = Reconstruction + KL &#160;&#183;&#160; hourglass: wide &#8594; latent bottleneck &#8594; wide</text>
+      </svg>
+      <figcaption>VAE architecture — the latent bottleneck stores a distribution (μ, σ²), not a point; ε injects the randomness from outside so gradients still flow.</figcaption>
+    </figure>
+
+    <h4>1 · Encoder (recognition network)</h4>
+    <p>A neural network (dense for tabular data, convolutional for images) compresses the input <span class="mono">x</span>. Its output is <b>not</b> a code but the <b>parameters of a Gaussian</b> over the latent variable: a mean vector <b>μ</b> and a spread. In practice we predict the <b>log-variance</b> <span class="mono">log σ²</span> rather than σ, because it is unconstrained, numerically stable, and guarantees a positive variance after <span class="mono">σ = exp(0.5·log σ²)</span>. This defines the approximate posterior <span class="mono">q(z|x) = N(μ(x), σ(x)²·I)</span>.</p>
+
+    <h4>2 · Latent sampling &amp; the reparameterization trick</h4>
+    <p>We must draw <span class="mono">z ∼ N(μ, σ²)</span>, but you cannot backpropagate through a random node. The reparameterization trick moves the randomness <b>outside</b> the differentiable path:</p>
+    <div class="formula">z = <span class="c">&#956;</span> + <span class="c">&#963;</span> &#183; &#949;,&#160;&#160;&#160;&#160; &#949; ~ N(0, I)</div>
+    <p>Now μ and σ flow deterministically from the encoder while ε supplies the noise, so the whole network trains end-to-end by ordinary backprop.</p>
+
+    <h4>3 · Decoder (generative network)</h4>
+    <p>A second network maps the sampled <span class="mono">z</span> back to a reconstruction <span class="mono">x̂</span> (e.g. pixels via sigmoid), defining <span class="mono">p(x|z)</span>. After training you can <b>discard the encoder</b> and generate new data by sampling <span class="mono">z ∼ N(0, I)</span> and decoding it.</p>
+
+    <h4>4 · Loss — the evidence lower bound (ELBO)</h4>
+    <div class="formula">L = <span class="c">Reconstruction</span>(x, x&#770;) &#160;+&#160; <span class="c">KL</span>( q(z|x) &#8741; N(0, I) )</div>
+    <p>The <b>reconstruction</b> term (binary cross-entropy or MSE) makes x̂ resemble x. The <b>KL</b> term pulls the encoded distribution toward a standard-normal prior, <b>regularising</b> the latent space so it stays centred, compact and continuous. For two Gaussians it has a closed form:</p>
+    <div class="formula">KL = &#8722;&#189; &#183; &#931;<sub>j</sub> ( 1 + log &#963;<sub>j</sub>&#178; &#8722; &#956;<sub>j</sub>&#178; &#8722; &#963;<sub>j</sub>&#178; )</div>
+    <p>The two terms pull against each other — reconstruction wants to spread codes apart to store detail; the KL wants to collapse them onto the prior. Their balance yields a well-structured generative latent space. (The <b>β-VAE</b> variant scales the KL term by β to tune disentanglement.)</p>
+
+    <div class="keypoints"><div class="h">Key points</div><ul>
+      <li>Encoder outputs <b>μ</b> and <b>log σ²</b> (a distribution, not a point): <span class="mono">q(z|x)=N(μ, σ²I)</span>.</li>
+      <li>Predict <b>log-variance</b> for stability and guaranteed positivity.</li>
+      <li><b>Reparameterization:</b> <span class="mono">z = μ + σ·ε</span>, <span class="mono">ε∼N(0,I)</span> — keeps the network differentiable.</li>
+      <li>Decoder <span class="mono">p(x|z)</span> reconstructs; <b>generate</b> by sampling <span class="mono">z∼N(0,I)</span>.</li>
+      <li>Loss = <b>reconstruction + KL</b>; the KL regularises the latent space toward the prior.</li>
+    </ul></div>
+  </div>
+
+  <div class="open-block">
+    <span class="part-label">Part b</span>
+    <h3>Advantage of a VAE over a normal auto-encoder</h3>
+    <p>The core advantage is a <b>continuous, smooth, regularised latent space</b>. Because the encoder outputs a <i>distribution</i> and the KL term pulls every encoding toward a standard-normal prior, the latent space is densely and smoothly packed — without the <b>“holes”</b> a plain auto-encoder leaves between training points. Concretely:</p>
+    <ul>
+      <li><b>It is generative.</b> Sample a random vector from the prior <span class="mono">N(0, I)</span>, decode it, and obtain a plausible <i>new</i> data point. A vanilla AE cannot do this reliably — arbitrary latent points fall into undefined gaps and decode to garbage.</li>
+      <li><b>Smooth interpolation.</b> Nearby latent points decode to semantically similar outputs, so interpolating between two encodings produces a meaningful morph.</li>
+      <li><b>More organised / disentangled representation.</b> The prior constraint encourages structured, often more interpretable latent dimensions.</li>
+    </ul>
+    <p><b>Trade-off:</b> the KL regularisation and the stochastic sampling constrain the encoding, so VAE reconstructions are typically <b>slightly blurrier / less sharp</b> than a deterministic auto-encoder’s, which optimises reconstruction alone.</p>
+  </div>
+
+  <p class="nav-note">← Back to the exam: <a href="Exam-Big-Data-June2025.html">Exam-Big-Data-June2025.html</a></p>
+
+  <footer>
+    <span>Worked solutions · Advanced Analytics in a Big Data World (HIRB) · KU Leuven</span>
+    <span>June 2025</span>
+  </footer>
+</div>
+</body>
+</html>
