@@ -351,6 +351,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q1">
     <div class="q-top"><div class="qnum">1</div>
       <p class="qtext">Which statement about supervised versus unsupervised learning is INCORRECT?</p></div>
+    <p class="qmeta">📖 Ch 1 · Introduction</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This is correct: unsupervised methods need no target and look for structure/patterns, so it is not the incorrect statement sought."><span class="otxt">Unsupervised learning does not require a target variable and aims to find structure in the data</span></li>
 <li data-correct="0" data-explain="This is correct: all three are listed as unsupervised, descriptive techniques, so it is not the answer."><span class="otxt">Clustering, anomaly detection and dimensionality reduction are all unsupervised techniques</span></li>
@@ -361,6 +362,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q2">
     <div class="q-top"><div class="qnum">2</div>
       <p class="qtext">A team imputes missing values, fits scaling parameters, and builds Weights-of-Evidence groupings, then evaluates the model. Which practice is CORRECT?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Recomputing statistics on the test set leaks test information into preprocessing and breaks the production pipeline; the test set must be treated as unseen."><span class="otxt">The imputation median and scaling parameters should be recomputed on the test set so they match its distribution</span></li>
 <li data-correct="1" data-explain="Any transformation using statistics across instances is part of the model pipeline; it is fit on training data and re-applied unchanged so the model behaves the same on unseen data."><span class="otxt">All these transformations are fit on the training data only and then re-applied identically to validation, test, and production data</span></li>
@@ -371,6 +373,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q3">
     <div class="q-top"><div class="qnum">3</div>
       <p class="qtext">A categorical Purpose feature has odds (good/bad) of: car=2, cash=20, travel=15, study=1.25, house=6.25. Following odds-based grouping, which pair is MOST natural to merge?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Their odds (2 vs 20) are far apart, so they are poor candidates to group together."><span class="otxt">car and cash</span></li>
 <li data-correct="1" data-explain="Their odds (20 and 15) are the closest among the choices, and odds-based grouping merges categories with similar odds."><span class="otxt">cash and travel</span></li>
@@ -381,6 +384,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q4">
     <div class="q-top"><div class="qnum">4</div>
       <p class="qtext">A node S contains 4 positive and 4 negative instances. A candidate split produces a pure child of 4 positives and a pure child of 4 negatives. What is the information gain of this split (using entropy in bits)?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Zero gain would mean no impurity reduction, but the split turns a maximally impure node into two pure ones."><span class="otxt">0</span></li>
 <li data-correct="0" data-explain="The parent entropy is 1 bit and both children are pure (entropy 0), so the reduction is the full parent entropy, not half."><span class="otxt">0.5</span></li>
@@ -391,6 +395,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q5">
     <div class="q-top"><div class="qnum">5</div>
       <p class="qtext">A binary classifier is evaluated on a hold-out set with the confusion matrix: TN \(= 3\), FP \(= 2\), FN \(= 2\), TP \(= 7\). What is its recall (sensitivity)?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Recall = TP/(TP+FN) = 7/(7+2) = 7/9 ≈ 0.78."><span class="otxt">\( 7/9 \approx 0.78 \)</span></li>
 <li data-correct="0" data-explain="This is TN/(TN+FP) = specificity, which uses the negative class, not recall."><span class="otxt">\( 3/5 = 0.60 \)</span></li>
@@ -401,6 +406,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q6">
     <div class="q-top"><div class="qnum">6</div>
       <p class="qtext">A cost-insensitive model outputs \(p(1\mid x)=0.22\). With costs \(C(0,1)=5\) (predicting negative when actually positive) and \(C(1,0)=1\), and \(C(0,0)=C(1,1)=0\), how should \(x\) be classified under the decision rule "positive iff \(l(x,1)\lt l(x,0)\)"?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="1" data-explain="l(x,0)=p(1|x)·C(0,1)=0.22·5=1.10; l(x,1)=p(0|x)·C(1,0)=0.78·1=0.78; since 0.78 is less than 1.10, classify positive."><span class="otxt">Positive, because \(l(x,1)=0.78\lt l(x,0)=1.10\).</span></li>
 <li data-correct="0" data-explain="The 0.5 default ignores costs; with asymmetric costs the cost-sensitive threshold drops below 0.22, so the default cut-off is the wrong rule here."><span class="otxt">Negative, because \(p(1\mid x)=0.22\lt 0.5\).</span></li>
@@ -411,6 +417,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q7">
     <div class="q-top"><div class="qnum">7</div>
       <p class="qtext">Which statement about k-fold cross-validation is correct?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="CV is for tuning and protecting against lucky hits; a strict held-out test set is still the only guarantee for true generalization."><span class="otxt">Cross-validation replaces the need for a separate held-out test set.</span></li>
 <li data-correct="0" data-explain="Using the best single fold invites a lucky hit; configurations are compared by their AVERAGE score across folds."><span class="otxt">When comparing hyperparameter configurations, you should pick the one with the best single-fold score.</span></li>
@@ -421,6 +428,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q8">
     <div class="q-top"><div class="qnum">8</div>
       <p class="qtext">In a random forest, when is the random subset of candidate features selected?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Fixing one feature subset per tree would remove most of the per-split diversity that the method relies on; the resampling happens more frequently than this."><span class="otxt">Once per tree, fixed for all of that tree's splits</span></li>
 <li data-correct="1" data-explain="Correct: in addition to the row bootstrap, a new random subset of features is considered at each candidate split, which is the extra source of randomness over plain bagging."><span class="otxt">A fresh random subset is drawn at every individual split</span></li>
@@ -431,6 +439,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q9">
     <div class="q-top"><div class="qnum">9</div>
       <p class="qtext">In AdaBoost a weak learner in a given round achieves a weighted error of \(\varepsilon_{t} = 0.5\). What happens?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Large \(\alpha_{t}\) corresponds to low error; an error of \(0.5\) is the no-information point, not the best case."><span class="otxt">It receives the largest possible vote weight \(\alpha_{t}\)</span></li>
 <li data-correct="1" data-explain="Correct: \(\tfrac{1}{2}\ln(0.5/0.5) = \tfrac{1}{2}\ln 1 = 0\); a learner no better than random gets zero weight, and any \(\varepsilon_{t} \gt 0.5\) triggers a stop."><span class="otxt">Its vote weight \(\alpha_{t} = \tfrac{1}{2}\ln\!\frac{1-\varepsilon_{t}}{\varepsilon_{t}}\) becomes \(0\), so it contributes nothing</span></li>
@@ -441,6 +450,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q10">
     <div class="q-top"><div class="qnum">10</div>
       <p class="qtext">Out-of-bag (OOB) validation in bagging works because, on average, each bootstrap sample leaves out roughly which fraction of the training instances?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Half is too many; sampling \(N\) times with replacement excludes fewer instances than this on average."><span class="otxt">About \(50\%\)</span></li>
 <li data-correct="1" data-explain="Correct: drawing \(N\) times with replacement leaves about \(e^{-1} \approx 0.37\) of instances unpicked, forming each instance&#x27;s natural hold-out."><span class="otxt">About \(37\%\)</span></li>
@@ -451,6 +461,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q11">
     <div class="q-top"><div class="qnum">11</div>
       <p class="qtext">Why do sigmoid and tanh activations tend to cause vanishing gradients in deep networks?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Sigmoid and tanh are bounded (0..1 and -1..1); unbounded growth describes a different problem."><span class="otxt">Their outputs are unbounded, so activations grow without limit toward the input layers.</span></li>
 <li data-correct="1" data-explain="Each layer multiplies by the activation derivative; since these are \(\lt 1\), the product shrinks as it propagates back to the first layers."><span class="otxt">Their derivatives are at most \(1\) and often much smaller, so repeated multiplication shrinks gradients toward the early layers.</span></li>
@@ -461,6 +472,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q12">
     <div class="q-top"><div class="qnum">12</div>
       <p class="qtext">Which statement about dropout is correct?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="At test time the full network is used once with scaled activations, not by averaging multiple stochastic runs."><span class="otxt">At test time, all neurons are kept but the network is run multiple times and the outputs averaged.</span></li>
 <li data-correct="0" data-explain="A different random subset of neurons is dropped per sample/epoch, which is what produces the ensemble-like effect."><span class="otxt">During training, the same fixed subset of neurons is dropped for every example.</span></li>
@@ -471,6 +483,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q13">
     <div class="q-top"><div class="qnum">13</div>
       <p class="qtext">Which statement about generative adversarial networks (GANs) is correct?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="1" data-explain="In mode collapse the generator keeps emitting the same outputs, fooling the discriminator while failing to cover the real data distribution."><span class="otxt">Mode collapse occurs when the generator produces a very narrow set of nearly identical outputs.</span></li>
 <li data-correct="0" data-explain="G and D play a two-player non-cooperative game with opposing objectives, and convergence to equilibrium is not guaranteed."><span class="otxt">GAN training is guaranteed to converge because both networks minimize the same loss.</span></li>
@@ -481,6 +494,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q14">
     <div class="q-top"><div class="qnum">14</div>
       <p class="qtext">Which statement correctly distinguishes k-means from EM-based (Gaussian-mixture) clustering?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="1" data-explain="k-means assigns each point to exactly one cluster, whereas EM estimates a membership probability per cluster."><span class="otxt">k-means makes hard assignments while EM makes soft, probabilistic assignments of instances to clusters.</span></li>
 <li data-correct="0" data-explain="EM still requires k to be specified in advance, just like k-means."><span class="otxt">EM does not require the number of clusters k to be specified, unlike k-means.</span></li>
@@ -491,6 +505,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q15">
     <div class="q-top"><div class="qnum">15</div>
       <p class="qtext">Which statement about t-SNE is correct?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="0" data-explain="t-SNE is a dimensionality-reduction technique; any clustering must be done as a separate second step on its output."><span class="otxt">t-SNE is itself a clustering algorithm that outputs cluster labels.</span></li>
 <li data-correct="0" data-explain="t-SNE preserves only local similarities; cluster size and inter-cluster distance in the map are not meaningful."><span class="otxt">In a t-SNE map, the relative size of clusters and the distance between clusters are reliably meaningful.</span></li>
@@ -501,6 +516,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q16">
     <div class="q-top"><div class="qnum">16</div>
       <p class="qtext">A vocabulary is \{this, is, an, a, example, second\}. Under a binary bag-of-words representation, what is the vector for the document "This is a second example"?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This marks &#x27;an&#x27; present and &#x27;a&#x27;/&#x27;second&#x27; absent, which corresponds to a different sentence; the given document contains &#x27;a&#x27; and &#x27;second&#x27; but not &#x27;an&#x27;."><span class="otxt">\( 1\ 1\ 1\ 0\ 1\ 0 \)</span></li>
 <li data-correct="1" data-explain="The document contains this, is, a, example and second, but not &#x27;an&#x27;, giving 1 1 0 1 1 1 in vocabulary order."><span class="otxt">\( 1\ 1\ 0\ 1\ 1\ 1 \)</span></li>
@@ -511,6 +527,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q17">
     <div class="q-top"><div class="qnum">17</div>
       <p class="qtext">What is a key difference between an LSTM cell and a GRU cell?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="1" data-explain="The LSTM maintains both a cell state \( C_t \) and a hidden state \( h_t \) flowing forward, while the GRU carries only a single hidden state."><span class="otxt">An LSTM passes two values to the next step (a cell state and a hidden state), whereas a GRU passes only one</span></li>
 <li data-correct="0" data-explain="A GRU does use gates (a reset and an update gate); it is the absence of gating that characterizes a plain RNN, not a GRU."><span class="otxt">A GRU has no gates, relying purely on a tanh recurrence</span></li>
@@ -521,6 +538,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q18">
     <div class="q-top"><div class="qnum">18</div>
       <p class="qtext">Map over genre yields drama \(\to [100, 200]\). A naive reduce computes \(\frac{100+200}{2}=150\). Later a straggling mapper emits drama \(\to 300\) and the partial result \(150\) is re-reduced with \(300\). What value does the naive reduce now produce, and is it correct?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="0" data-explain="The naive reduce has no record counts, so it cannot weight 150 by the two records it summarised; it does not arrive at the true mean of 200."><span class="otxt">It produces \(200\), which is the correct mean of \(100, 200, 300\).</span></li>
 <li data-correct="1" data-explain="Re-reducing [150, 300] gives \(\frac{150+300}{2}=225\); the true mean of 100, 200, 300 is 200, so the naive scheme is incorrect on partial results."><span class="otxt">It produces \(225\), which is wrong because the partial average of two records is weighted as if it were one.</span></li>
@@ -531,6 +549,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q19">
     <div class="q-top"><div class="qnum">19</div>
       <p class="qtext">Which statement about Spark Streaming (DStreams) versus Spark Structured Streaming is correct?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="0" data-explain="A DStream is internally a sequence of RDDs, each holding the data of one micro-batch interval, not one ever-growing RDD."><span class="otxt">A DStream is internally represented as a single continuously-growing RDD that is never split into intervals.</span></li>
 <li data-correct="0" data-explain="Structured Streaming deliberately does not materialise the whole table; it processes new data incrementally and discards the source, keeping only minimal state."><span class="otxt">Structured Streaming materialises the entire unbounded table in memory before producing any output.</span></li>
@@ -541,6 +560,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q20">
     <div class="q-top"><div class="qnum">20</div>
       <p class="qtext">Which statement correctly distinguishes plain PageRank from Personalized PageRank as used for network-based inference?</p></div>
+    <p class="qmeta">📖 Ch 9 · Deep Learning: Graphs</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Personalized PageRank replaces the uniform teleport with a chosen (non-uniform) jump distribution, letting the propagated scores be biased toward the \(Y=1\) class of interest."><span class="otxt">Plain PageRank teleports the random walker to a node chosen uniformly at random, whereas Personalized PageRank teleports according to a non-uniform distribution biased toward a class of interest.</span></li>
 <li data-correct="0" data-explain="This reverses the roles: it is the personalized variant that incorporates label information through its biased teleport, which is also why it leaks more in evaluation."><span class="otxt">Plain PageRank uses label information of the target class, whereas Personalized PageRank ignores labels entirely.</span></li>
@@ -554,21 +574,25 @@ body.has-sidebar{padding-left:264px;}
   <div class="open" data-nav-label="Open 1">
     <div class="otop"><div class="qnum">1</div>
       <p class="qtext" style="margin-top:6px">Weights of Evidence (WoE) encoding and Information Value (IV) are used to encode and screen a high-cardinality categorical predictor against a binary target.</p></div>
+<p class="qmeta">📖 Ch 2 · Preprocessing</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Define WoE for a category and explain the meaning of its sign. State the property that makes WoE attractive for use in a linear/logistic model.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Information Value is \( IV = \sum (p_G - p_B)\cdot \text{WoE} \). Explain how IV is used in practice, and state why both WoE and IV must be computed only after the train/test split.</div></div>
   </div>
   <div class="open" data-nav-label="Open 2">
     <div class="otop"><div class="qnum">2</div>
       <p class="qtext" style="margin-top:6px">Bagging and boosting are the two dominant ensemble paradigms for trees.</p></div>
+<p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Compare bagging and boosting along (i) how base models are constructed, (ii) whether bootstrapping is used, and (iii) the core intuition behind each.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Using the bias-variance decomposition, explain which type of base model each method is best suited to and which error component each mainly reduces.</div></div>
   </div>
   <div class="open" data-nav-label="Open 3">
     <div class="otop"><div class="qnum">3</div>
       <p class="qtext" style="margin-top:6px">Apriori frequent-itemset mining and the downward-closure property.</p></div>
+<p class="qmeta">📖 Ch 1 · Introduction</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain the two-stage structure of the apriori algorithm and state, with the power-set argument, why a brute-force search for frequent itemsets is infeasible for many items.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">State the downward-closure (anti-monotonicity) property of support and explain how the 'join and prune' candidate-generation step exploits it.</div></div>
   </div>
   <div class="open" data-nav-label="Open 4">
     <div class="otop"><div class="qnum">4</div>
       <p class="qtext" style="margin-top:6px">MapReduce processes data as a pipeline over (key, value) pairs.</p></div>
+<p class="qmeta">📖 Ch 8 · Big Data</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain the three stages of the Hadoop MapReduce pipeline (map, shuffle/distribute, reduce). For each stage state what it does and one key property (e.g. parallelism, how many outputs map may emit, what determines where a value is sent).</div></div><div class="part"><div class="plabel">b</div><div class="ptext">The deck states a reduce function must (1) emit the same structure that map emits and (2) be correct even when applied multiple times on partial results. Explain WHY both requirements matter, using the idea of stragglers / partial reduction.</div></div>
   </div>
   <p class="nav-note">→ Worked solutions for the open questions: <a href="Mock-Exam-2-Solutions.html">Mock-Exam-2-Solutions.html</a></p>

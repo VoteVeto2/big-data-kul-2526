@@ -70,6 +70,7 @@
     background:linear-gradient(160deg,#CC785C,#A8472A); color:#fff; font-weight:650; font-size:14px;
     padding:6px 14px; border-radius:999px; box-shadow:0 3px 9px rgba(168,71,42,.22);}
   .answer-tag .lbl{font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.85; font-weight:700;}
+  .qmeta{font-size:11.5px; font-weight:650; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin:4px 0 2px;}
 
   ol.opts{list-style:none; margin:16px 0 4px; padding:0; counter-reset:opt;}
   ol.opts li{counter-increment:opt; display:flex; gap:12px; align-items:flex-start;
@@ -180,6 +181,7 @@
   <!-- Q1 -->
   <div class="q">
     <div class="q-top"><div class="qnum">1</div><p class="qtext">Which metric is independent of the chosen threshold for classification?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <span class="answer-tag"><span class="lbl">Answer</span> A · AUC</span>
     <ol class="opts">
       <li class="answer"><span class="otxt">AUC</span><span class="vpill v-true">TRUE</span></li>
@@ -194,6 +196,7 @@
   <!-- Q2 -->
   <div class="q">
     <div class="q-top"><div class="qnum">2</div><p class="qtext">Which of these four statements (about Spark) is correct / incorrect?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <span class="answer-tag"><span class="lbl">Answer</span> All four are true statements</span>
     <ol class="opts">
       <li><span class="otxt">DStream as a continuous RDD.</span><span class="vpill v-true">TRUE</span></li>
@@ -209,6 +212,7 @@
   <!-- Q3 -->
   <div class="q">
     <div class="q-top"><div class="qnum">3</div><p class="qtext">Which of these statements is incorrect?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation &amp; Ch 4 · Trees &amp; Ensembles</p>
     <span class="answer-tag"><span class="lbl">Answer</span> C · None are incorrect</span>
     <ol class="opts">
       <li><span class="otxt">Train-test split needs to be done even before preprocessing.</span><span class="vpill v-true">TRUE</span></li>
@@ -222,6 +226,7 @@
   <!-- Q4 -->
   <div class="q">
     <div class="q-top"><div class="qnum">4</div><p class="qtext">Which of these statements (about weights of evidence, WoE) is correct / incorrect?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <span class="answer-tag"><span class="lbl">Incorrect statement</span> A</span>
     <ol class="opts">
       <li class="answer"><span class="otxt">WoE encodes a monotonic relationship with the target variable.</span><span class="vpill v-false">FALSE</span></li>
@@ -236,6 +241,7 @@
   <!-- Q5 -->
   <div class="q">
     <div class="q-top"><div class="qnum">5</div><p class="qtext">Which statement about regularization terms is correct?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <span class="answer-tag"><span class="lbl">Answer</span> B</span>
     <ol class="opts">
       <li><span class="otxt">L1 (Ridge) adds a penalty ∝ the square of the coefficients.</span><span class="vpill v-false">FALSE</span></li>
@@ -250,6 +256,7 @@
   <!-- Q6 -->
   <div class="q">
     <div class="q-top"><div class="qnum">6</div><p class="qtext">Which of these statements (interpretability / metrics) is correct / incorrect?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <span class="answer-tag"><span class="lbl">Incorrect statement</span> C</span>
     <ol class="opts">
       <li><span class="otxt">AU(RO)C vs. AUREC (regression error characteristic) for regression tasks.</span><span class="vpill v-true">TRUE</span></li>
@@ -264,6 +271,7 @@
   <!-- Q7 -->
   <div class="q">
     <div class="q-top"><div class="qnum">7</div><p class="qtext">Which statement regarding the bias–variance trade-off is correct?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <span class="answer-tag"><span class="lbl">Answer</span> C</span>
     <ol class="opts">
       <li><span class="otxt">Bagging increases variance but not necessarily bias.</span><span class="vpill v-false">FALSE</span></li>
@@ -278,6 +286,7 @@
   <!-- Q8 -->
   <div class="q">
     <div class="q-top"><div class="qnum">8</div><p class="qtext">Which deep-learning technique doesn’t help to prevent overfitting?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <span class="answer-tag"><span class="lbl">Answer</span> C · Smaller batch size</span>
     <ol class="opts">
       <li><span class="otxt">Batch normalization</span><span class="vpill v-true">helps</span></li>
@@ -292,6 +301,7 @@
   <!-- Q9 -->
   <div class="q">
     <div class="q-top"><div class="qnum">9</div><p class="qtext">Which statement about clustering and dimensionality reduction is correct / incorrect?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <span class="answer-tag"><span class="lbl">Answer</span> A, B, C true · D false</span>
     <ol class="opts">
       <li><span class="otxt">Divisive (top-down) vs. agglomerative (bottom-up) clustering.</span><span class="vpill v-true">TRUE</span></li>
@@ -306,6 +316,7 @@
   <!-- Q10 -->
   <div class="q">
     <div class="q-top"><div class="qnum">10</div><p class="qtext">Which statement about t-SNE vs UMAP is correct / incorrect?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <span class="answer-tag"><span class="lbl">Incorrect statement</span> C</span>
     <ol class="opts">
       <li><span class="otxt">UMAP is better because it performs better for dimensionality &gt; 3.</span><span class="vpill v-false">FALSE</span></li>
@@ -320,6 +331,7 @@
   <!-- Q11 -->
   <div class="q">
     <div class="q-top"><div class="qnum">11</div><p class="qtext">Which is the map-reduce pseudo-code to get the list <code>[4, 9, 25]</code>?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <span class="answer-tag"><span class="lbl">Answer</span> A</span>
     <ol class="opts">
       <li class="answer"><span class="otxt"><span class="mono">[2,3,5].map(lambda x: x*x)</span></span><span class="vpill v-true">TRUE</span></li>
@@ -334,6 +346,7 @@
   <!-- Q12 -->
   <div class="q">
     <div class="q-top"><div class="qnum">12</div><p class="qtext">Which statement about text mining is incorrect?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <span class="answer-tag"><span class="lbl">Answer</span> A · the incorrect one</span>
     <ol class="opts">
       <li class="answer"><span class="otxt">TF-IDF scores high for words frequent in a document <b>and</b> frequent in the corpus.</span><span class="vpill v-false">FALSE</span></li>
@@ -348,6 +361,7 @@
   <!-- Q13 -->
   <div class="q">
     <div class="q-top"><div class="qnum">13</div><p class="qtext">Which statement about the weaknesses of decision trees is correct / incorrect?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing &amp; Ch 4 · Trees &amp; Ensembles</p>
     <span class="answer-tag"><span class="lbl">Real weaknesses</span> A &amp; D · B &amp; C false</span>
     <ol class="opts">
       <li><span class="otxt">Decision trees have a high tendency to overfit.</span><span class="vpill v-true">TRUE</span></li>
@@ -362,6 +376,7 @@
   <!-- Q14 -->
   <div class="q">
     <div class="q-top"><div class="qnum">14</div><p class="qtext">Which statement about working with class imbalance is correct / incorrect?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <span class="answer-tag"><span class="lbl">Incorrect statement</span> A</span>
     <ol class="opts">
       <li class="answer"><span class="otxt">Undersampling removes highly similar majority-class observations.</span><span class="vpill v-false">FALSE</span></li>
@@ -376,6 +391,7 @@
   <!-- Q15 -->
   <div class="q">
     <div class="q-top"><div class="qnum">15</div><p class="qtext">A CNN takes a 3-channel 10×10 RGB image and applies 4 kernels of 3×3 with stride 1 and no padding. What are the hidden-layer dimensions?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <span class="answer-tag"><span class="lbl">Answer</span> B · 8×8×4</span>
     <ol class="opts">
       <li><span class="otxt">8×8×3</span><span class="vpill v-false">FALSE</span></li>
@@ -391,6 +407,7 @@
   <div class="section-head"><span class="bar"></span><h2>Open question — Variational auto-encoders</h2><span class="weight">40%</span></div>
 
   <div class="open-block">
+    <p class="qmeta" style="margin-bottom:8px;">📖 Ch 5 · Deep Learning: Images</p>
     <span class="part-label">Part a</span>
     <h3>Architecture of a variational auto-encoder (VAE)</h3>
     <p>A VAE is a <b>generative</b> auto-encoder that learns a <b>probabilistic</b> latent space. Where a plain auto-encoder maps an input to a single fixed code, the VAE encoder maps each input to a <b>distribution</b> over latent space, and we <b>sample</b> from that distribution before decoding. This forces the latent space to be smooth and continuous, so decoding random samples yields realistic new outputs.</p>

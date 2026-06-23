@@ -351,6 +351,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q1">
     <div class="q-top"><div class="qnum">1</div>
       <p class="qtext">The lecture lists four quality criteria a discovered pattern or model should satisfy: valid, useful, unexpected, understandable. Which pairing of a criterion with its meaning is correct?</p></div>
+    <p class="qmeta">📖 Ch 1 · Introduction</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This describes the &#x27;unexpected&#x27; criterion, not validity; validity concerns whether the pattern holds on new data."><span class="otxt">Valid = the pattern is interesting and non-obvious to the system</span></li>
 <li data-correct="1" data-explain="Useful is defined precisely as actionable: it must be possible to act on the pattern, e.g. by mapping it to a business decision."><span class="otxt">Useful = the pattern can be acted upon (actionable)</span></li>
@@ -361,6 +362,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q2">
     <div class="q-top"><div class="qnum">2</div>
       <p class="qtext">A generative model models the joint probability density of data and labels, and then uses Bayes' rule to obtain the probability of a label given the data. Which expression correctly states this Bayes' rule?</p></div>
+    <p class="qmeta">📖 Ch 1 · Introduction</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Correct: the joint P(data, label) equals P(data | label) P(label), and dividing by P(data) gives the posterior P(label | data)."><span class="otxt">\( P(\text{label} \mid \text{data}) = \dfrac{P(\text{data} \mid \text{label}) \cdot P(\text{label})}{P(\text{data})} \)</span></li>
 <li data-correct="0" data-explain="This neither divides by the evidence nor includes the prior on the label, so it does not yield a valid posterior probability."><span class="otxt">\( P(\text{label} \mid \text{data}) = P(\text{data} \mid \text{label}) \cdot P(\text{data}) \)</span></li>
@@ -371,6 +373,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q3">
     <div class="q-top"><div class="qnum">3</div>
       <p class="qtext">Compared with equal-width and equal-frequency binning, what is the key advantage of odds-based grouping and Weights-of-Evidence encoding?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Equal counts per bin is the defining property of equal-frequency binning, not of target-based grouping."><span class="otxt">They guarantee bins of exactly equal counts, improving statistical stability</span></li>
 <li data-correct="0" data-explain="Equal value-width is the property of equal-width binning, and it is unrelated to using the target."><span class="otxt">They produce bins of equal value-width, which is easier to interpret</span></li>
@@ -381,6 +384,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q4">
     <div class="q-top"><div class="qnum">4</div>
       <p class="qtext">Which statement correctly contrasts Lasso (L1) and Ridge (L2) regularization?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This reverses the roles: it is the L1 penalty that drives coefficients exactly to zero, not L2."><span class="otxt">Ridge can drive coefficients to exactly zero, performing variable selection, while Lasso only shrinks them</span></li>
 <li data-correct="0" data-explain="The intercept is not penalized in either Lasso or Ridge."><span class="otxt">Both penalize the intercept as well as the slope coefficients</span></li>
@@ -391,6 +395,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q5">
     <div class="q-top"><div class="qnum">5</div>
       <p class="qtext">Which statement about k-nearest neighbors (k-NN) is CORRECT?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="1" data-explain="k-NN stores the data and defers all computation to prediction time, so there is no formula or tree and the training set must be retained, with slow scoring."><span class="otxt">It is a lazy learner: it builds no summary model and must keep the training data around, making prediction relatively slow</span></li>
 <li data-correct="0" data-explain="k-NN learns no parametric model, and because it relies on distances it does require normalization/standardization."><span class="otxt">Because it learns a compact parametric model, it does not require feature scaling</span></li>
@@ -401,6 +406,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q6">
     <div class="q-top"><div class="qnum">6</div>
       <p class="qtext">For an imbalanced dataset, why is the precision-recall (PR) curve often preferred over the ROC curve?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Both curves are swept over all thresholds; neither is fixed to a single threshold, so this is not the distinguishing reason."><span class="otxt">The PR curve is threshold-independent whereas the ROC curve is not.</span></li>
 <li data-correct="1" data-explain="With many negatives, FPR = FP/(TN+FP) is deflated so ROC looks deceptively good; precision = TP/(TP+FP) does not involve TN, so PR reflects the minority performance honestly."><span class="otxt">Because true negatives dominate under imbalance, FPR stays small and ROC looks over-optimistic, while precision ignores TNs.</span></li>
@@ -411,6 +417,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q7">
     <div class="q-top"><div class="qnum">7</div>
       <p class="qtext">The Accuracy Ratio (AR) of a CAP curve relates to AUC by which expression?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="1" data-explain="AR (the Gini coefficient) equals 2·AUC − 1; a random model with AUC 0.5 gives AR 0."><span class="otxt">\( AR = 2 \cdot AUC - 1 \)</span></li>
 <li data-correct="0" data-explain="This would give AR 0.5 for a random model, which is wrong; a random model should have AR 0."><span class="otxt">\( AR = 1 - AUC \)</span></li>
@@ -421,6 +428,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q8">
     <div class="q-top"><div class="qnum">8</div>
       <p class="qtext">Which statement correctly characterizes a Shapley (SHAP) value for a single prediction?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="A Shapley value is the average marginal contribution over all orderings, not the change from removing one feature in isolation."><span class="otxt">It equals exactly how much the model output would change if that feature were removed from the model.</span></li>
 <li data-correct="1" data-explain="SHAP attributes the gap between the base (average) prediction and this instance&#x27;s output across features additively."><span class="otxt">It is the feature's contribution toward the given output, and all contributions sum to the output minus the base rate.</span></li>
@@ -431,6 +439,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q9">
     <div class="q-top"><div class="qnum">9</div>
       <p class="qtext">Boosting differs from bagging in several ways. Which statement is correct?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Bootstrapping with replacement is the bagging mechanism; boosting reweights instances instead of resampling them this way."><span class="otxt">Boosting trains its base models on bootstrap replicas drawn with replacement</span></li>
 <li data-correct="0" data-explain="Independent parallel construction describes bagging; boosting adds each learner to fix the previous ensemble&#x27;s errors."><span class="otxt">Boosting builds its base models independently and fully in parallel</span></li>
@@ -441,6 +450,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q10">
     <div class="q-top"><div class="qnum">10</div>
       <p class="qtext">Which statement about the three gradient-boosting libraries is correct?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Correct: LightGBM uses leaf-wise growth and histogram binning for speed on large data, at the cost of greater overfitting risk without tuning."><span class="otxt">LightGBM grows trees leaf-wise and is histogram-based, but has higher overfitting risk if untuned</span></li>
 <li data-correct="0" data-explain="XGBoost uses level-wise growth; leaf-wise growth belongs to a different library."><span class="otxt">XGBoost grows trees leaf-wise, which is its key speed advantage</span></li>
@@ -451,6 +461,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q11">
     <div class="q-top"><div class="qnum">11</div>
       <p class="qtext">Which statement about the difference between a single perceptron and a multilayer perceptron (MLP) is correct?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="XOR is not linearly separable, so no amount of training lets a single perceptron solve it."><span class="otxt">A single perceptron can solve the XOR problem if trained long enough.</span></li>
 <li data-correct="1" data-explain="Stacking layers with non-linear activations lets the MLP carve non-linear decision boundaries, solving problems like XOR."><span class="otxt">An MLP with hidden layers can represent non-linearly-separable functions that a single perceptron cannot.</span></li>
@@ -461,6 +472,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q12">
     <div class="q-top"><div class="qnum">12</div>
       <p class="qtext">What is the key efficiency that a convolutional layer has over a fully connected layer for image input?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Reusing one small kernel over the whole image drastically cuts the number of parameters and respects spatial structure."><span class="otxt">It uses weight (parameter) sharing: the same kernel is applied across all spatial positions.</span></li>
 <li data-correct="0" data-explain="That describes a fully connected layer; the convolutional layer deliberately avoids connecting everything to everything."><span class="otxt">It connects every input pixel to every output unit, but with smaller weights.</span></li>
@@ -471,6 +483,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q13">
     <div class="q-top"><div class="qnum">13</div>
       <p class="qtext">Which statement correctly characterizes the output-layer activation choices for different tasks?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Independent per-class sigmoids describe the multilabel setting; multiclass needs outputs that compete and sum to 1."><span class="otxt">Multiclass classification uses one sigmoid per class so the outputs are independent.</span></li>
 <li data-correct="1" data-explain="Softmax normalizes the exponentials so the class probabilities sum to 1, suitable for mutually exclusive classes."><span class="otxt">Multiclass classification uses softmax so the \(k\) outputs sum to 1.</span></li>
@@ -481,6 +494,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q14">
     <div class="q-top"><div class="qnum">14</div>
       <p class="qtext">A property that any valid distance metric must satisfy is the triangular inequality \( d(a,b) \le d(a,c) + d(c,b) \). Which of the following is NOT one of the stated required properties of a metric?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Symmetry is one of the four required properties of a metric."><span class="otxt">Symmetry: \( d(a,b) = d(b,a) \)</span></li>
 <li data-correct="0" data-explain="Self-similarity equal to zero is one of the four required properties."><span class="otxt">Constancy of self-similarity: \( d(a,a) = 0 \)</span></li>
@@ -491,6 +505,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q15">
     <div class="q-top"><div class="qnum">15</div>
       <p class="qtext">Regarding the Davies-Bouldin Index (DBI) for cluster validation, with \( R_{ij} = (S_i + S_j)/D_{ij} \) where \( S_i \) is within-cluster spread and \( D_{ij} \) is between-centroid distance, which statement is correct?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="0" data-explain="A higher value means more within-cluster spread relative to separation, which is worse."><span class="otxt">A higher DBI indicates a better clustering result.</span></li>
 <li data-correct="1" data-explain="Small \( S_i \) and large \( D_{ij} \) shrink the index, so a low score reflects compact, well-separated clusters."><span class="otxt">A lower DBI indicates a better clustering result, favoring compact, well-separated clusters.</span></li>
@@ -501,6 +516,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q16">
     <div class="q-top"><div class="qnum">16</div>
       <p class="qtext">Which statement about BM25 compared with plain TF-IDF is correct?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This describes the linear behavior BM25 deliberately avoids; BM25 saturates term frequency so extra repetitions add diminishing weight."><span class="otxt">BM25 weights term frequency linearly, so a word appearing 100 times counts as 100 times more important</span></li>
 <li data-correct="0" data-explain="BM25 actually normalizes for document length better than TF-IDF, using the average document length and parameter \( b \)."><span class="otxt">BM25 ignores document length entirely, unlike TF-IDF</span></li>
@@ -511,6 +527,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q17">
     <div class="q-top"><div class="qnum">17</div>
       <p class="qtext">In the plain RNN cell, the hidden state is updated as \( a\langle t\rangle = \tanh(W_{ax} x\langle t\rangle + W_{aa} a\langle t-1\rangle + b_a) \). Which statement about this recurrent architecture is correct?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="0" data-explain="The defining feature of an RNN is weight sharing: the same weights are reused at every time step, which is why training unfolds them through time."><span class="otxt">Each time step uses its own separate weight matrices, learned independently</span></li>
 <li data-correct="1" data-explain="An unrolled RNN is a deep network with weight sharing between steps, so gradients are computed by backpropagation through the time-unfolded graph (BPTT)."><span class="otxt">The same weights are shared across time steps, and training uses backpropagation through time</span></li>
@@ -521,6 +538,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q18">
     <div class="q-top"><div class="qnum">18</div>
       <p class="qtext">In the classic MapReduce averaging example, the value emitted by map is a pair \((\text{nrPages}, 1)\) rather than just nrPages. Why is this design needed?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Routing in the shuffle is based on the key, not the value&#x27;s structure; a plain scalar value would still be shuffled correctly by key."><span class="otxt">Because the shuffle step requires every value to be a pair so that keys can be routed to the correct worker.</span></li>
 <li data-correct="0" data-explain="Map can emit values of any shape; there is no rule forcing pairs, so this is not the reason the pair is used."><span class="otxt">Because map functions in Hadoop are syntactically forbidden from emitting a single scalar value.</span></li>
@@ -531,6 +549,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q19">
     <div class="q-top"><div class="qnum">19</div>
       <p class="qtext">Regarding the relationship between RDDs, DataFrames, and Datasets in Spark, which statement is correct?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="1" data-explain="After the DataFrame/Dataset unification a DataFrame is exactly a Dataset of untyped Row objects with named columns."><span class="otxt">A Spark DataFrame is equivalent to a Dataset of generic Row objects, i.e. \(\text{DataFrame} = \text{Dataset[Row]}\).</span></li>
 <li data-correct="0" data-explain="Python and R lack compile-time type safety, so only the untyped DataFrame API exists there; the typed Dataset[T] API is Scala/Java only."><span class="otxt">Strongly-typed Datasets with compile-time type safety are fully available in Python and R.</span></li>
@@ -541,6 +560,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q20">
     <div class="q-top"><div class="qnum">20</div>
       <p class="qtext">Which statement about the Girvan–Newman community-detection algorithm is correct?</p></div>
+    <p class="qmeta">📖 Ch 9 · Deep Learning: Graphs</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Girvan–Newman removes edges, not nodes; removing whole nodes would discard the node&#x27;s other relationships entirely."><span class="otxt">It repeatedly removes the node with the highest betweenness centrality until communities separate.</span></li>
 <li data-correct="0" data-explain="This describes a greedy modularity-optimising, agglomerative approach, which is a different algorithm; Girvan–Newman works top-down by splitting."><span class="otxt">It greedily merges nodes into communities to maximise modularity, then collapses each community into a supernode.</span></li>
@@ -554,21 +574,25 @@ body.has-sidebar{padding-left:264px;}
   <div class="open" data-nav-label="Open 1">
     <div class="otop"><div class="qnum">1</div>
       <p class="qtext" style="margin-top:6px">The lecture repeatedly argues that 'analytics is not (only) about machine learning or about big data', and stresses the role of purpose.</p></div>
+<p class="qmeta">📖 Ch 1 · Introduction</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain what is meant by the claim that 'a large majority of ML/AI use cases in business are not really about ML, but about automation', and how this connects to Google's 'Rule #1' (don't be afraid to launch a product without machine learning).</div></div><div class="part"><div class="plabel">b</div><div class="ptext">The lecture states that big data and analytics are 'orthogonal'. Explain this using the two complementary statements given on the slides, and name the V's used to characterize big data.</div></div>
   </div>
   <div class="open" data-nav-label="Open 2">
     <div class="otop"><div class="qnum">2</div>
       <p class="qtext" style="margin-top:6px">A bank builds a churn classifier on a dataset where churners are rare (about 2% of customers).</p></div>
+<p class="qmeta">📖 Ch 3 · Evaluation</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain why reporting only accuracy is misleading here, and name two threshold-independent measures better suited to this imbalanced setting.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">The team considers oversampling the minority class to address imbalance. Explain (i) on which split resampling may be applied, (ii) what typically happens to test-set accuracy afterwards and why, and (iii) the equivalence between balancing by sampling and cost-sensitive learning.</div></div>
   </div>
   <div class="open" data-nav-label="Open 3">
     <div class="otop"><div class="qnum">3</div>
       <p class="qtext" style="margin-top:6px">Diffusion models are a popular family of generative models for images.</p></div>
+<p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">EXPLAIN the forward (noising) and reverse (generation) processes of a diffusion model, including what the trained network actually learns to predict.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">COMPARE diffusion models with GANs in terms of training behaviour, naming one concrete difficulty that diffusion models avoid.</div></div>
   </div>
   <div class="open" data-nav-label="Open 4">
     <div class="otop"><div class="qnum">4</div>
       <p class="qtext" style="margin-top:6px">Attention and the Transformer architecture removed the need for recurrence in sequence modeling, but with trade-offs.</p></div>
+<p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Compare a plain seq2seq model with a seq2seq model that uses attention. What information does the decoder receive in each case, and why does attention help with long sentences?</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Explain the self-attention computation in a Transformer using the Query/Key/Value framing, including the scaled dot-product formula, and contrast what self-attention does versus what the feed-forward sublayer does within a block.</div></div>
   </div>
   <p class="nav-note">→ Worked solutions for the open questions: <a href="Mock-Exam-1-Solutions.html">Mock-Exam-1-Solutions.html</a></p>

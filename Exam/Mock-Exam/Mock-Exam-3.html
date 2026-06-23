@@ -351,6 +351,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q1">
     <div class="q-top"><div class="qnum">1</div>
       <p class="qtext">A modeling approach assumes no fixed functional form in advance; instead the shape of the mapping from inputs to output is itself learned from the data. Decision trees and their ensembles are given as the typical examples. Which type of model is being described?</p></div>
+    <p class="qmeta">📖 Ch 1 · Introduction</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Generative refers to modeling the joint density of data and labels (and using Bayes&#x27; rule), which is a different axis than whether a functional form is assumed."><span class="otxt">A generative model</span></li>
 <li data-correct="0" data-explain="A parametric model is the opposite: it requires specifying a functional form (e.g. a linear function) whose parameters are then estimated."><span class="otxt">A parametric model</span></li>
@@ -361,6 +362,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q2">
     <div class="q-top"><div class="qnum">2</div>
       <p class="qtext">For which of the following is standardization (\( x_{new}=(x-\mu)/\sigma \)) essentially USELESS?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="k-NN relies on distances between instances, so feature scales directly affect which neighbors are closest; scaling matters."><span class="otxt">k-nearest neighbors</span></li>
 <li data-correct="1" data-explain="Trees split on thresholds per feature and only care about the ordering of values within a feature, which monotone rescaling does not change, so standardization has no effect."><span class="otxt">Decision trees</span></li>
@@ -371,6 +373,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q3">
     <div class="q-top"><div class="qnum">3</div>
       <p class="qtext">Which statement about Weights of Evidence (WoE) and Information Value (IV) is CORRECT?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="1" data-explain="WoE is monotonic with the target (higher WoE meaning lower risk), and \( IV \gt 0.1 \) is the rule of thumb for screening in a variable as predictive."><span class="otxt">WoE has a monotonic relationship with the target, and variables with \( IV \gt 0.1 \) are considered important</span></li>
 <li data-correct="0" data-explain="Larger n reduces reliance on the data and pushes WoE toward zero, not away from it."><span class="otxt">Increasing the Laplace smoothing parameter n pushes WoE values further from zero</span></li>
@@ -381,6 +384,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q4">
     <div class="q-top"><div class="qnum">4</div>
       <p class="qtext">Which statement about decision trees is INCORRECT?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This is a correct property of trees: threshold splits are insensitive to extreme values, so it is not the incorrect statement."><span class="otxt">They are robust to outliers and generally need little preprocessing beyond missing-value treatment</span></li>
 <li data-correct="0" data-explain="This is correct: standard trees split one feature at a time, carving the space into axis-aligned boxes."><span class="otxt">Their decision boundary consists of axis-aligned rectangular regions</span></li>
@@ -391,6 +395,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q5">
     <div class="q-top"><div class="qnum">5</div>
       <p class="qtext">Which of the following performance measures is threshold-independent?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Balanced accuracy = (recall + specificity)/2 is computed from a confusion matrix, which depends on the chosen threshold."><span class="otxt">Balanced accuracy</span></li>
 <li data-correct="0" data-explain="F1 combines precision and recall, both read off a single confusion matrix obtained at one threshold."><span class="otxt">F1 score</span></li>
@@ -401,6 +406,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q6">
     <div class="q-top"><div class="qnum">6</div>
       <p class="qtext">Which statement about resampling for class imbalance is INCORRECT?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This is a correct description of (random) oversampling, so it is not the incorrect statement."><span class="otxt">Oversampling duplicates minority-class instances in the training set.</span></li>
 <li data-correct="0" data-explain="This equivalence between sampling and cost-sensitivity is stated explicitly in the material, so it is correct."><span class="otxt">Balancing the classes by sampling biases the learner in the same way as an inverse-class-imbalance cost matrix.</span></li>
@@ -411,6 +417,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q7">
     <div class="q-top"><div class="qnum">7</div>
       <p class="qtext">For a 4-class problem, how many binary classifiers does a one-vs-one scheme build, and how is the final class assigned?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="That describes one-vs-all (k classifiers, highest posterior), not one-vs-one."><span class="otxt">4 classifiers; assign the class with the highest posterior probability.</span></li>
 <li data-correct="1" data-explain="One-vs-one builds k(k−1)/2 = 4·3/2 = 6 pairwise classifiers and assigns the class winning the majority vote."><span class="otxt">6 classifiers; assign by majority voting.</span></li>
@@ -421,6 +428,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q8">
     <div class="q-top"><div class="qnum">8</div>
       <p class="qtext">Which statement about the bias-variance behaviour of bagging and boosting is correct?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This reverses the two effects; bagging&#x27;s averaging targets the spread of predictions, not the systematic error."><span class="otxt">Bagging primarily reduces bias, boosting primarily reduces variance</span></li>
 <li data-correct="0" data-explain="Boosting&#x27;s sequential error-correction mechanism attacks systematic underfitting, so it is not chiefly a variance-reduction method."><span class="otxt">Both bagging and boosting primarily reduce variance</span></li>
@@ -431,6 +439,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q9">
     <div class="q-top"><div class="qnum">9</div>
       <p class="qtext">Gradient boosting is often described as fitting each new learner to the residuals \(y - F_{m}(x)\). Which statement most accurately captures the general principle?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Plain residual fitting is tied to squared-error loss; it is not the general recipe for arbitrary losses."><span class="otxt">Fitting residuals is the general rule and applies identically to every loss function</span></li>
 <li data-correct="1" data-explain="Correct: in general each learner targets the negative gradient of the loss, and for MSE that negative gradient equals the residual up to a constant factor."><span class="otxt">Gradient boosting fits the negative gradient of the loss w.r.t. the model output; residual fitting is the special case for squared error</span></li>
@@ -441,6 +450,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q10">
     <div class="q-top"><div class="qnum">10</div>
       <p class="qtext">Why does deep learning usually fail to beat gradient-boosted trees on tabular data?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles &amp; Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Tabular data generally lack the spatial structure that favours architectures like CNNs; this is not why trees win."><span class="otxt">Tabular data have strong spatial structure that trees exploit but neural nets cannot</span></li>
 <li data-correct="1" data-explain="Correct: without spatial or sequential priors, with modest dataset sizes, and with trees handling nonlinear interactions for free, gradient boosting tends to win honest benchmarks."><span class="otxt">Tabular data lack strong spatial/sequential structure, are often limited in size, and tree ensembles capture interactions easily</span></li>
@@ -451,6 +461,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q11">
     <div class="q-top"><div class="qnum">11</div>
       <p class="qtext">Which technique does NOT primarily help prevent overfitting in a deep network?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Dropout randomly zeros nodes during training, acting like an ensemble and reducing overfitting."><span class="otxt">Dropout</span></li>
 <li data-correct="0" data-explain="Augmentation expands the effective training set with transformed examples, which reduces overfitting."><span class="otxt">Data augmentation</span></li>
@@ -461,6 +472,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q12">
     <div class="q-top"><div class="qnum">12</div>
       <p class="qtext">How does a linear autoencoder relate to PCA?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images &amp; Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Both target the optimal linear subspace, yet the autoencoder&#x27;s learned basis need not be orthogonal or variance-ordered, so its solution is one of many."><span class="otxt">Both find a best linear subspace, but the linear autoencoder imposes no orthogonality constraint and does not order components by variance.</span></li>
 <li data-correct="0" data-explain="The linear autoencoder lacks the orthogonality and variance-ordering constraints that PCA enforces."><span class="otxt">A linear autoencoder always produces orthogonal components ordered by decreasing variance, exactly like PCA.</span></li>
@@ -471,6 +483,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q13">
     <div class="q-top"><div class="qnum">13</div>
       <p class="qtext">Which statement about agglomerative vs. divisive hierarchical clustering is correct?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This describes a top-down procedure, whereas agglomerative clustering works bottom-up starting from singletons."><span class="otxt">Agglomerative clustering starts from the complete dataset and recursively splits it into partitions.</span></li>
 <li data-correct="0" data-explain="Merging singletons upward is a bottom-up procedure; divisive clustering goes the other direction."><span class="otxt">Divisive clustering is bottom-up, merging singletons until one cluster remains.</span></li>
@@ -481,6 +494,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q14">
     <div class="q-top"><div class="qnum">14</div>
       <p class="qtext">In k-means++, after the first center is chosen uniformly at random, how is each subsequent center selected?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="0" data-explain="k-means++ does not perform a greedy SSE minimization to place centers; it uses a randomized distance-weighted rule."><span class="otxt">By picking the point that minimizes the total SSE if added as a center.</span></li>
 <li data-correct="1" data-explain="Weighting by squared distance to the nearest center spreads the initial centers apart."><span class="otxt">By choosing a point with probability proportional to \( d(x,c)^2 \), where \( c \) is the nearest already-chosen center.</span></li>
@@ -491,6 +505,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q15">
     <div class="q-top"><div class="qnum">15</div>
       <p class="qtext">For the rule \( X \Rightarrow Y \), a lift value greater than 1 indicates which of the following?</p></div>
+    <p class="qmeta">📖 Ch 1 · Introduction</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Independence corresponds to a lift of exactly 1, not greater than 1."><span class="otxt">X and Y are statistically independent.</span></li>
 <li data-correct="1" data-explain="Lift above 1 means X and Y co-occur more often than expected under independence, signalling positive dependence."><span class="otxt">A positive association (dependence) between X and Y beyond what independence would predict.</span></li>
@@ -501,6 +516,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q16">
     <div class="q-top"><div class="qnum">16</div>
       <p class="qtext">Which statement about CBOW versus skip-gram (CSG) in word2vec is correct?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Predicting context from a single focus word is the skip-gram setup; CBOW does the reverse, predicting the focus word from its context."><span class="otxt">CBOW predicts the context words from a single focus word</span></li>
 <li data-correct="0" data-explain="CBOW assumes independence in its inputs and averages them, so the ordering of the context words does not matter."><span class="otxt">In CBOW the ordering of the context words matters and is encoded explicitly</span></li>
@@ -511,6 +527,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q17">
     <div class="q-top"><div class="qnum">17</div>
       <p class="qtext">In a decoder-only Transformer (as used by GPT), why is the self-attention masked?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Masking here is about temporal order, not padding; the causal mask blocks future tokens regardless of whether they are padding."><span class="otxt">To prevent the model from attending to padding tokens that carry no information</span></li>
 <li data-correct="1" data-explain="Causal masking removes later tokens from each token&#x27;s attention, so predictions depend only on the past, which is exactly what makes autoregressive generation possible."><span class="otxt">So that each token can only attend to previous tokens, which is what enables left-to-right text generation</span></li>
@@ -521,6 +538,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q18">
     <div class="q-top"><div class="qnum">18</div>
       <p class="qtext">Which statement about the file formats discussed (AVRO, Parquet, Arrow) is correct?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Parquet is column-oriented and optimised for reading/querying specific columns, not for fast row-wise writing."><span class="otxt">Parquet is row-oriented and is mainly chosen for fast writing of complete records in ETL pipelines.</span></li>
 <li data-correct="0" data-explain="Arrow specifies an in-memory columnar representation for zero-copy interchange, not an on-disk file format."><span class="otxt">Arrow is a binary on-disk file specification that competes with Parquet for long-term storage.</span></li>
@@ -531,6 +549,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q19">
     <div class="q-top"><div class="qnum">19</div>
       <p class="qtext">The lecture distinguishes three aspects of "streaming" and argues about when online algorithms are actually needed. Which statement is correct?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="0" data-explain="The deck stresses these are distinct aspects that should not be conflated; handling streaming data does not force online training or prediction."><span class="otxt">Streaming data, streaming training, and streaming prediction are the same problem and are always solved together.</span></li>
 <li data-correct="1" data-explain="The common pragmatic pattern is offline training plus online prediction; true online (incremental) training is often unnecessary and hard to implement."><span class="otxt">In many cases one can ingest streaming data and predict online while training the model offline on historical data.</span></li>
@@ -541,6 +560,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q20">
     <div class="q-top"><div class="qnum">20</div>
       <p class="qtext">Which statement about feeding a graph's connectivity into a neural network is INCORRECT?</p></div>
+    <p class="qmeta">📖 Ch 9 · Deep Learning: Graphs</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This is a correct observation: adjacency matrices are sparse and node re-orderings yield many matrices for one graph."><span class="otxt">An adjacency matrix is typically sparse, and many different adjacency matrices can encode the very same connectivity.</span></li>
 <li data-correct="1" data-explain="This is the incorrect statement: a standard DNN is NOT permutation invariant, so different node orderings of the same graph can give different outputs, which motivates adjacency lists."><span class="otxt">A plain DNN fed an adjacency matrix is permutation invariant, so node ordering does not affect its output.</span></li>
@@ -554,21 +574,25 @@ body.has-sidebar{padding-left:264px;}
   <div class="open" data-nav-label="Open 1">
     <div class="otop"><div class="qnum">1</div>
       <p class="qtext" style="margin-top:6px">Compare the three foundational white-box supervised techniques of this chapter: logistic regression, decision trees, and k-nearest neighbors.</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Characterize each technique on the parametric-to-data-driven spectrum, and describe the shape of the decision boundary each produces.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">For each technique, state whether feature scaling is needed and whether it is sensitive or robust to outliers, and justify why.</div></div>
   </div>
   <div class="open" data-nav-label="Open 2">
     <div class="otop"><div class="qnum">2</div>
       <p class="qtext" style="margin-top:6px">AdaBoost combines weak learners over several rounds by reweighting both the data and the learners.</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Describe one full round of AdaBoost: how the weighted error \(\varepsilon_{t}\) and the learner weight \(\alpha_{t}\) are computed, how the instance weights are then updated, and what stopping condition applies.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Compute \(\alpha_{t}\) for a learner with weighted error \(\varepsilon_{t} = 0.25\), and explain in one sentence why a noisy/outlier-heavy dataset can be problematic for AdaBoost.</div></div>
   </div>
   <div class="open" data-nav-label="Open 3">
     <div class="otop"><div class="qnum">3</div>
       <p class="qtext" style="margin-top:6px">Compare PCA, t-SNE, and UMAP as dimensionality-reduction techniques.</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Contrast PCA with t-SNE in terms of linearity, what structure they preserve, and whether new (unseen) points can be embedded.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Give three concrete advantages of UMAP over t-SNE.</div></div>
   </div>
   <div class="open" data-nav-label="Open 4">
     <div class="otop"><div class="qnum">4</div>
       <p class="qtext" style="margin-top:6px">Spark and Hadoop MapReduce are both distributed processing approaches, but they differ fundamentally.</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Compare Hadoop MapReduce and Spark on (i) the execution model / handling of intermediate data and (ii) how each achieves fault tolerance. Explain why Spark is typically much faster.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Explain why MapReduce was a poor fit for analytics/machine-learning workloads, and what abstraction Spark offers (beyond raw RDDs) that makes it more accessible to data scientists.</div></div>
   </div>
   <p class="nav-note">→ Worked solutions for the open questions: <a href="Mock-Exam-3-Solutions.html">Mock-Exam-3-Solutions.html</a></p>

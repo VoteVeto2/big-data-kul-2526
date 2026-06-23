@@ -351,6 +351,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q1">
     <div class="q-top"><div class="qnum">1</div>
       <p class="qtext">In the analytics process model, the seven steps are grouped into preprocessing, analytics, and post-processing. Which step belongs to the analytics phase?</p></div>
+    <p class="qmeta">📖 Ch 1 · Introduction</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Transforming the data is the last step of the preprocessing phase (steps 1 to 5), not the analytics phase."><span class="otxt">Transform the Data</span></li>
 <li data-correct="0" data-explain="Cleaning the data falls within preprocessing (steps 1 to 5), before any analysis is performed."><span class="otxt">Clean the Data</span></li>
@@ -361,6 +362,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q2">
     <div class="q-top"><div class="qnum">2</div>
       <p class="qtext">Encoding the nominal feature account-activity (high/medium/low) as 1/2/3 in a single column is problematic mainly because:</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Integer encoding uses a single column, fewer than one-hot, so dimensionality is not the issue."><span class="otxt">It uses more columns than one-hot encoding and explodes dimensionality</span></li>
 <li data-correct="1" data-explain="Mapping unordered categories to 1/2/3 tells the model that low is three times high and that the gaps are equal, a numeric structure that does not exist."><span class="otxt">It imposes a false ordering and equal spacing that a linear or distance-based model interprets as a real numeric magnitude</span></li>
@@ -371,6 +373,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q3">
     <div class="q-top"><div class="qnum">3</div>
       <p class="qtext">In logistic regression a feature has coefficient \( \beta_i = 0.7 \). What does \( e^{\beta_i} \) represent?</p></div>
+    <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="The probability change is not additive and not given by \( e^{\beta_i} \); the simple multiplicative effect applies to the odds, not the probability."><span class="otxt">The additive increase in the predicted probability when \( X_i \) increases by one unit</span></li>
 <li data-correct="1" data-explain="Increasing \( X_i \) by one multiplies the odds by \( e^{\beta_i} \); this quantity is exactly the odds-ratio."><span class="otxt">The multiplicative change in the odds of the positive outcome when \( X_i \) increases by one unit (the odds-ratio)</span></li>
@@ -381,6 +384,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q4">
     <div class="q-top"><div class="qnum">4</div>
       <p class="qtext">Why does the move from multi-way to binary splits help decision-tree learning when using information gain?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Binary splits do not guarantee purity and do nothing on their own to stop overfitting; growth must still be controlled by stopping or pruning."><span class="otxt">Binary splits guarantee pure leaves, so overfitting can no longer occur</span></li>
 <li data-correct="1" data-explain="Multi-way splits tend to score higher simply because they create more partitions; binary splits put candidates on equal footing and let attributes be reused down the tree."><span class="otxt">Information gain is biased toward splits that produce more subsets, and forcing two subsets removes this bias</span></li>
@@ -391,6 +395,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q5">
     <div class="q-top"><div class="qnum">5</div>
       <p class="qtext">In a fraud problem where positives occur in only \(1\%\) of cases, a model trained to maximize accuracy predicts everything as negative. Which statement best describes this outcome?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Always predicting the majority gives ~99% accuracy with TP=0; this is exactly why one should never trust accuracy alone under imbalance."><span class="otxt">It achieves about \(99\%\) accuracy while catching zero positives, so accuracy alone is misleading.</span></li>
 <li data-correct="0" data-explain="The classes are not balanced (1% positive); predicting all-negative scores ~99% accuracy, not 50%."><span class="otxt">It achieves about \(50\%\) accuracy because the classes are balanced after training.</span></li>
@@ -401,6 +406,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q6">
     <div class="q-top"><div class="qnum">6</div>
       <p class="qtext">How does SMOTE generate new minority-class examples?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="That describes plain random oversampling; SMOTE creates new synthetic points rather than exact duplicates."><span class="otxt">By duplicating existing minority instances multiple times.</span></li>
 <li data-correct="1" data-explain="SMOTE finds k nearest neighbors of a minority point and interpolates synthetic samples between them."><span class="otxt">By creating synthetic points along the lines between a minority instance and its nearest neighbors.</span></li>
@@ -411,6 +417,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q7">
     <div class="q-top"><div class="qnum">7</div>
       <p class="qtext">Why is Mean Decrease in Impurity (MDI) feature importance considered untrustworthy in certain settings?</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
     <ol class="opts">
 <li data-correct="0" data-explain="That describes drop-column importance; MDI is computed directly from the trained trees without retraining."><span class="otxt">It requires retraining the model once per feature, making it computationally infeasible.</span></li>
 <li data-correct="1" data-explain="MDI favors high-cardinality (often numerical) features and becomes unreliable under overfitting, even ranking random noise highly."><span class="otxt">It is biased toward high-cardinality features and can rank a column of pure random numbers above a real feature when overfitting.</span></li>
@@ -421,6 +428,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q8">
     <div class="q-top"><div class="qnum">8</div>
       <p class="qtext">A random forest is trained for a classification problem with \(N = 25\) input features. Using the standard heuristic, how many features should be considered at each split?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Correct: the classification heuristic is \(\lfloor \sqrt{N} \rfloor = \lfloor \sqrt{25} \rfloor = 5\)."><span class="otxt">\(5\)</span></li>
 <li data-correct="0" data-explain="This is \(\lfloor N/3 \rfloor\), which is the regression heuristic, not the classification one."><span class="otxt">\(8\)</span></li>
@@ -431,6 +439,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q9">
     <div class="q-top"><div class="qnum">9</div>
       <p class="qtext">What is the main computational difference between XGBoost and a classical gradient boosting machine?</p></div>
+    <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="XGBoost still grows regression trees as its base learners; the improvement is in how the optimisation uses loss information."><span class="otxt">XGBoost replaces decision trees with linear base learners</span></li>
 <li data-correct="0" data-explain="XGBoost adds strong L1/L2 regularization on tree complexity rather than removing it."><span class="otxt">XGBoost removes regularization to fit the training data more tightly</span></li>
@@ -441,6 +450,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q10">
     <div class="q-top"><div class="qnum">10</div>
       <p class="qtext">A convolutional layer receives an input of shape \(3 \times 32 \times 32\) (channels \(\times\) height \(\times\) width) and applies 8 kernels of size \(5 \times 5\) with stride 1 and no padding. What is the shape of the resulting feature volume?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="1" data-explain="Using \((W-F+2P)/S+1 = (32-5+0)/1+1 = 28\) for both spatial dimensions, and 8 kernels give depth 8."><span class="otxt">\(8 \times 28 \times 28\)</span></li>
 <li data-correct="0" data-explain="The output depth equals the number of kernels (8), not the number of input channels; each kernel produces one feature map."><span class="otxt">\(3 \times 28 \times 28\)</span></li>
@@ -451,6 +461,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q11">
     <div class="q-top"><div class="qnum">11</div>
       <p class="qtext">A \(4 \times 4\) feature map \(\begin{pmatrix}3 &amp; 13 &amp; 17 &amp; 11\\ 5 &amp; 3 &amp; 1 &amp; 23\\ 7 &amp; 1 &amp; 2 &amp; 3\\ 11 &amp; 17 &amp; 1 &amp; 4\end{pmatrix}\) is passed through \(2 \times 2\) max pooling with stride 2. What is the result?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="These are the per-window averages, which correspond to average pooling rather than taking the maximum."><span class="otxt">\(\begin{pmatrix}6 &amp; 13\\ 9 &amp; 2.5\end{pmatrix}\)</span></li>
 <li data-correct="1" data-explain="Taking the max of each non-overlapping \(2 \times 2\) window gives 13, 23 (top row) and 17, 4 (bottom row)."><span class="otxt">\(\begin{pmatrix}13 &amp; 23\\ 17 &amp; 4\end{pmatrix}\)</span></li>
@@ -461,6 +472,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q12">
     <div class="q-top"><div class="qnum">12</div>
       <p class="qtext">In a ResNet, a residual block computes its output as which of the following (where \(x\) is the block input and \(F(x)\) the learned transformation)?</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
     <ol class="opts">
 <li data-correct="0" data-explain="The skip connection adds the identity back, it does not multiply it element-wise with the learned transformation."><span class="otxt">\(F(x) \cdot x\)</span></li>
 <li data-correct="1" data-explain="The identity \(x\) is added back to the learned residual \(F(x)\), giving more direct gradient paths to early layers."><span class="otxt">\(F(x) + x\)</span></li>
@@ -471,6 +483,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q13">
     <div class="q-top"><div class="qnum">13</div>
       <p class="qtext">Which linkage criterion tends to produce long, skinny clusters because of a chaining effect?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Taking the maximum pairwise distance produces tight, compact clusters rather than chained ones."><span class="otxt">Complete (maximum) linkage</span></li>
 <li data-correct="1" data-explain="Using the minimum pairwise distance lets clusters extend through chains of nearby points, giving long, skinny shapes."><span class="otxt">Single (minimum) linkage</span></li>
@@ -481,6 +494,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q14">
     <div class="q-top"><div class="qnum">14</div>
       <p class="qtext">Which statement about DBSCAN is correct?</p></div>
+    <p class="qmeta">📖 Ch 6 · Unsupervised</p>
     <ol class="opts">
 <li data-correct="0" data-explain="DBSCAN is controlled by Eps and MinPts and does not require specifying the number of clusters."><span class="otxt">It requires the number of clusters to be specified in advance via a parameter k.</span></li>
 <li data-correct="1" data-explain="Density-based grouping flags low-density isolated points as noise and handles non-convex clusters that k-means cannot."><span class="otxt">It labels isolated points in low-density regions as noise and can recover non-convex shapes.</span></li>
@@ -491,6 +505,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q15">
     <div class="q-top"><div class="qnum">15</div>
       <p class="qtext">In the TF-IDF weighting scheme, the term-frequency component \( TF(t_i, d) \) divides the raw count of a term by which quantity?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Dividing by the corpus document count is what the inverse-document-frequency part is built from, not the term-frequency part; TF is a within-document quantity."><span class="otxt">The total number of documents in the corpus</span></li>
 <li data-correct="1" data-explain="TF normalizes the raw term count by document length so that long documents do not automatically get higher term weights."><span class="otxt">The length of the document \( |d| \) (its total number of words)</span></li>
@@ -501,6 +516,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q16">
     <div class="q-top"><div class="qnum">16</div>
       <p class="qtext">fastText can produce a vector even for a misspelled or made-up word that never appeared in training. Why?</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
     <ol class="opts">
 <li data-correct="1" data-explain="fastText represents a word as a composition of its subword (character n-gram) vectors, so unseen or misspelled words still get a vector from their substrings."><span class="otxt">It builds word vectors from the vectors of character n-gram substrings of the word</span></li>
 <li data-correct="0" data-explain="No finite table can hold made-up words; fastText handles novel words through subword composition, not exhaustive storage."><span class="otxt">It stores every possible word in a giant pre-computed lookup table</span></li>
@@ -511,6 +527,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q17">
     <div class="q-top"><div class="qnum">17</div>
       <p class="qtext">A Spark RDD is transformed by a chain of operations and then an action is finally called. Which statement about transformations and actions is correct?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="0" data-explain="This reverses the evaluation behaviour: the operations that build new RDDs are not run immediately, so describing them as eager is incorrect."><span class="otxt">Transformations are evaluated eagerly the moment they are written, while actions are deferred until the program exits.</span></li>
 <li data-correct="1" data-explain="Transformations build a new RDD but are not computed until an action (count, collect, reduce, ...) forces the lineage to be materialised."><span class="otxt">Transformations are lazily evaluated and only executed once an action requires their result.</span></li>
@@ -521,6 +538,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q18">
     <div class="q-top"><div class="qnum">18</div>
       <p class="qtext">Spark is often said to "kick out" one part of the Hadoop stack while keeping the others. Which statement captures this correctly?</p></div>
+    <p class="qmeta">📖 Ch 8 · Big Data</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Spark does not replace storage; it works with many systems including HDFS, S3, Cassandra, HBase, Hive and flat files."><span class="otxt">Spark replaces HDFS with its own proprietary file system and can no longer read from S3 or Cassandra.</span></li>
 <li data-correct="0" data-explain="Spark still runs on clusters and can use YARN, Mesos, or standalone mode; it does not abolish resource management."><span class="otxt">Spark replaces the YARN resource manager and is therefore unable to run on a cluster of machines.</span></li>
@@ -531,6 +549,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q19">
     <div class="q-top"><div class="qnum">19</div>
       <p class="qtext">A node sits in the network with five direct neighbours whose known classes are \{NF, F, F, NF, NF\} (F = fraud, NF = non-fraud). Using the Relational Neighbor Classifier, what is the estimated \( P(F \mid ?) \) for this node?</p></div>
+    <p class="qmeta">📖 Ch 9 · Deep Learning: Graphs</p>
     <ol class="opts">
 <li data-correct="1" data-explain="The Relational Neighbor Classifier sets the probability of a class equal to the fraction of neighbours carrying that class: 2 fraud out of 5 neighbours gives \( 2/5 \)."><span class="otxt">\( \frac{2}{5} \)</span></li>
 <li data-correct="0" data-explain="This is the fraction of non-fraud neighbours, i.e. \( P(NF \mid ?) \), not the requested fraud probability."><span class="otxt">\( \frac{3}{5} \)</span></li>
@@ -541,6 +560,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="q" data-nav-label="Q20">
     <div class="q-top"><div class="qnum">20</div>
       <p class="qtext">Which statement about transductive versus inductive evaluation of GNNs is correct?</p></div>
+    <p class="qmeta">📖 Ch 9 · Deep Learning: Graphs</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Inductive evaluation uses a separate, unseen graph rather than masked nodes within one graph, and it is not described as fully leakage-free either, since overlapping time windows can still leak."><span class="otxt">Inductive evaluation is leakage-free because masked nodes never pass messages to scored nodes.</span></li>
 <li data-correct="0" data-explain="Testing on a separate, unseen graph is the inductive setting; the transductive setting tests on the same graph used in training."><span class="otxt">Transductive evaluation tests on a separate graph the model never saw during training.</span></li>
@@ -554,21 +574,25 @@ body.has-sidebar{padding-left:264px;}
   <div class="open" data-nav-label="Open 1">
     <div class="otop"><div class="qnum">1</div>
       <p class="qtext" style="margin-top:6px">Partial Dependence Plots (PDP) and Individual Conditional Expectation (ICE) plots are two related model-agnostic interpretability techniques.</p></div>
+    <p class="qmeta">📖 Ch 3 · Evaluation</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain how a PDP is constructed and what a single point on the curve represents.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Explain how ICE differs from PDP and one situation where ICE is more informative.</div></div><div class="part"><div class="plabel">c</div><div class="ptext">Both PDP and ICE hold other features fixed (ceteris paribus). Explain the resulting pitfall and why one should inspect both the raw data and the PDP.</div></div>
   </div>
   <div class="open" data-nav-label="Open 2">
     <div class="otop"><div class="qnum">2</div>
       <p class="qtext" style="margin-top:6px">Variational autoencoders (VAEs) build on ordinary autoencoders for generative tasks.</p></div>
+    <p class="qmeta">📖 Ch 5 · Deep Learning: Images</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">EXPLAIN how the encoding step of a VAE differs from that of a standard autoencoder, and state the two terms that make up the VAE loss function.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">EXPLAIN why the KL regularization term is necessary and what would happen to the latent space without it.</div></div>
   </div>
   <div class="open" data-nav-label="Open 3">
     <div class="otop"><div class="qnum">3</div>
       <p class="qtext" style="margin-top:6px">Word embeddings are central to modern NLP. Answer the following about how they are learned and what they capture.</p></div>
+    <p class="qmeta">📖 Ch 7 · Deep Learning: Text</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain what a word embedding is and contrast it with a bag-of-words / TF-IDF representation, focusing on dimensionality, sparsity, and what distances between vectors mean.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">word2vec learns embeddings from a large corpus using a self-supervision task rather than hand-crafted vectors. Explain the core idea (context-based prediction) and describe what is kept from the network after training and why the hidden-layer size matters.</div></div>
   </div>
   <div class="open" data-nav-label="Open 4">
     <div class="otop"><div class="qnum">4</div>
       <p class="qtext" style="margin-top:6px">Shallow node-embedding methods such as DeepWalk and node2vec were early attempts to bring deep learning to graphs, but graph neural networks (GNNs) were introduced to overcome their limitations.</p></div>
+    <p class="qmeta">📖 Ch 9 · Deep Learning: Graphs</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain how DeepWalk produces node embeddings, and state precisely what node2vec adds on top of DeepWalk.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">Give two drawbacks of these shallow embedding approaches and explain how GNNs address them.</div></div>
   </div>
   <p class="nav-note">→ Worked solutions for the open questions: <a href="Mock-Exam-4-Solutions.html">Mock-Exam-4-Solutions.html</a></p>
