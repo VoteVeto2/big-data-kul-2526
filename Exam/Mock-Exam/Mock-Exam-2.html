@@ -372,12 +372,12 @@ body.has-sidebar{padding-left:264px;}
   </div>
   <div class="q" data-nav-label="Q3">
     <div class="q-top"><div class="qnum">3</div>
-      <p class="qtext">A categorical Purpose feature has odds (good/bad) of: car=2, cash=20, travel=15, study=1.25, house=6.25. Following odds-based grouping, which pair is MOST natural to merge?</p></div>
+      <p class="qtext">A categorical Purpose feature has odds (good/bad) of: car=2, cash=20, travel=15, study=1.25, house=6.25. Following odds-based grouping (merge the categories with the most similar Weights-of-Evidence, i.e. the closest log-odds / odds ratio), which pair is MOST natural to merge?</p></div>
     <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Their odds (2 vs 20) are far apart, so they are poor candidates to group together."><span class="otxt">car and cash</span></li>
-<li data-correct="1" data-explain="Their odds (20 and 15) are the closest among the choices, and odds-based grouping merges categories with similar odds."><span class="otxt">cash and travel</span></li>
-<li data-correct="0" data-explain="Although 2 and 1.25 are somewhat close, another listed pair has odds that are even closer together, and grouping picks the most similar odds."><span class="otxt">car and study</span></li>
+<li data-correct="1" data-explain="Odds-based / WoE grouping merges the categories with the most similar log-odds (odds ratio). cash:travel = 20:15 (ratio approx 1.33) is the closest pair on that scale, which is the criterion WoE encoding actually uses."><span class="otxt">cash and travel</span></li>
+<li data-correct="0" data-explain="In raw absolute terms 2 and 1.25 look close, but grouping compares odds multiplicatively (log-odds / WoE): the ratio car:study = 1.6 is a wider gap than cash:travel approx 1.33, so cash and travel merge first."><span class="otxt">car and study</span></li>
 <li data-correct="0" data-explain="Their odds (1.25 vs 6.25) differ by a factor of five, so they are not similar."><span class="otxt">study and house</span></li>
     </ol>
   </div>
@@ -586,7 +586,7 @@ body.has-sidebar{padding-left:264px;}
   <div class="open" data-nav-label="Open 3">
     <div class="otop"><div class="qnum">3</div>
       <p class="qtext" style="margin-top:6px">Apriori frequent-itemset mining and the downward-closure property.</p></div>
-<p class="qmeta">📖 Ch 1 · Introduction</p>
+<p class="qmeta">📖 Ch 6 · Unsupervised</p>
 <div class="part"><div class="plabel">a</div><div class="ptext">Explain the two-stage structure of the apriori algorithm and state, with the power-set argument, why a brute-force search for frequent itemsets is infeasible for many items.</div></div><div class="part"><div class="plabel">b</div><div class="ptext">State the downward-closure (anti-monotonicity) property of support and explain how the 'join and prune' candidate-generation step exploits it.</div></div>
   </div>
   <div class="open" data-nav-label="Open 4">

@@ -361,11 +361,11 @@ body.has-sidebar{padding-left:264px;}
   </div>
   <div class="q" data-nav-label="Q2">
     <div class="q-top"><div class="qnum">2</div>
-      <p class="qtext">Encoding the nominal feature account-activity (high/medium/low) as 1/2/3 in a single column is problematic mainly because:</p></div>
+      <p class="qtext">Encoding the categorical feature account-activity (high/medium/low) as 1/2/3 in a single column is problematic mainly because:</p></div>
     <p class="qmeta">📖 Ch 2 · Preprocessing</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Integer encoding uses a single column, fewer than one-hot, so dimensionality is not the issue."><span class="otxt">It uses more columns than one-hot encoding and explodes dimensionality</span></li>
-<li data-correct="1" data-explain="Mapping unordered categories to 1/2/3 tells the model that low is three times high and that the gaps are equal, a numeric structure that does not exist."><span class="otxt">It imposes a false ordering and equal spacing that a linear or distance-based model interprets as a real numeric magnitude</span></li>
+<li data-correct="1" data-explain="Mapping the labels to 1/2/3 tells the model the gaps are equal and that low is three times high; that equal spacing and cardinal magnitude is not justified, even if the categories do have a natural order."><span class="otxt">It imposes an artificial equal spacing and cardinal magnitude that a linear or distance-based model treats as real numeric structure</span></li>
 <li data-correct="0" data-explain="Trees can split on integer-coded categories fine; the problem is the false numeric structure for other model families, not tree compatibility."><span class="otxt">It cannot be used by decision trees, which require one-hot input</span></li>
 <li data-correct="0" data-explain="Multicollinearity from redundant columns is a concern for one-hot dummies, not for a single integer-coded column."><span class="otxt">It introduces perfect multicollinearity that must be fixed by dropping a column</span></li>
     </ol>
@@ -387,7 +387,7 @@ body.has-sidebar{padding-left:264px;}
     <p class="qmeta">📖 Ch 4 · Trees &amp; Ensembles</p>
     <ol class="opts">
 <li data-correct="0" data-explain="Binary splits do not guarantee purity and do nothing on their own to stop overfitting; growth must still be controlled by stopping or pruning."><span class="otxt">Binary splits guarantee pure leaves, so overfitting can no longer occur</span></li>
-<li data-correct="1" data-explain="Multi-way splits tend to score higher simply because they create more partitions; binary splits put candidates on equal footing and let attributes be reused down the tree."><span class="otxt">Information gain is biased toward splits that produce more subsets, and forcing two subsets removes this bias</span></li>
+<li data-correct="1" data-explain="Multi-way splits tend to score higher simply because they create more partitions; forcing two subsets removes this many-branch bias and lets attributes be reused down the tree. (High-cardinality features can still offer many binary cut-points, so it targets the branch-count bias specifically.)"><span class="otxt">Information gain is biased toward splits that produce more subsets, and forcing two subsets removes this bias</span></li>
 <li data-correct="0" data-explain="Trees never need standardization regardless of split arity, so this is not the reason."><span class="otxt">Binary splits make standardization of continuous features unnecessary</span></li>
 <li data-correct="0" data-explain="Trees can already handle categorical features without dummy encoding under either scheme; this is not what binary splitting fixes."><span class="otxt">Binary splits allow categorical features to be used without any encoding, unlike multi-way splits</span></li>
     </ol>
