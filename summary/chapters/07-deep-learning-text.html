@@ -596,7 +596,7 @@ body.has-sidebar{padding-left:264px;}
 </ol>
 
 <div class="formula"><span class="lbl">Query / Key / Value framing — scaled dot-product (Vaswani 2017)</span>
-\[ \text{attn} = \mathrm{softmax}\!\left( \frac{Q^{\top} K}{\sqrt{n}} \right) , \qquad \text{output} = \text{attn} \times V \]
+\[ \text{attn} = \mathrm{softmax}\!\left( \frac{Q K^{\top}}{\sqrt{d_k}} \right) , \qquad \text{output} = \text{attn} \times V \]
 </div>
 <p><strong>Query</strong> = "what do I want to look up?" (decoder state). <strong>Keys</strong> &amp; <strong>Values</strong> = the encoder hidden states. With attention we <strong>no longer compress the whole source into one fixed vector</strong> — the cornerstone idea that led to: <em>"maybe we can do away with recurrence altogether?"</em></p>
 
@@ -628,7 +628,7 @@ body.has-sidebar{padding-left:264px;}
 <p>During training all positions are scored in parallel; at inference only the <strong>last</strong> position is used, its prediction appended, and the model run again — <strong>autoregressive</strong> generation.</p>
 
 <h3>GPT &amp; RLHF</h3>
-<p><span class="kterm">GPT</span> = Generative Pretrained Transformer: bigger decoder-only models trained on <strong>text completion given a prompt</strong>, using <strong>Byte Pair Encoding (BPE)</strong> tokenization and sparse self-attention. Across generations they added more data, tool calling, reasoning tokens, multi-modality, mixture-of-experts — <strong>but the base architecture stayed the same</strong>.</p>
+<p><span class="kterm">GPT</span> = Generative Pretrained Transformer: bigger decoder-only models trained on <strong>text completion given a prompt</strong>, using <strong>Byte Pair Encoding (BPE)</strong> tokenization and <strong>masked (causal) self-attention</strong>. Across generations they added more data, tool calling, reasoning tokens, multi-modality, mixture-of-experts — <strong>but the base architecture stayed the same</strong>.</p>
 <div class="callout note">
   <div class="ttl">RLHF — Reinforcement Learning from Human Feedback</div>
   <p>A good loss for "desirable text" is intractable, so LLMs train on <strong>next-token-prediction</strong>; metrics like <strong>BLEU / ROUGE</strong> approximate human preference. RLHF uses <strong>human feedback as the measure / loss</strong> to <strong>align</strong> a general model with human values. Already used on top of GPT-3 (InstructGPT) and part of ChatGPT.</p>
@@ -644,13 +644,13 @@ body.has-sidebar{padding-left:264px;}
 <h2>Beyond Transformers</h2>
 <div class="callout why">
   <div class="ttl">The Transformer bottleneck</div>
-  <p>To generate the next token a Transformer must <strong>recompute attention over the entire sequence</strong> → roughly <strong>\(L^2\)</strong> computations for length \(L\). An RNN only needs the previous hidden state + current input, so its inference scales <strong>linearly</strong> and (in theory) has <strong>unbounded context</strong> — but RNNs forget and are slow to train (BPTT).</p>
+  <p>To generate the next token a Transformer must <strong>attend over all previous tokens</strong> → roughly <strong>\(L^2\)</strong> computations over a full sequence of length \(L\) (even with KV caching). An RNN only needs the previous hidden state + current input, so its inference scales <strong>linearly</strong> and (in theory) has <strong>unbounded context</strong> — but RNNs forget and are slow to train (BPTT).</p>
 </div>
 
 <table class="tbl">
   <thead><tr><th></th><th>RNN</th><th>Transformer</th></tr></thead>
   <tbody>
-    <tr><td>Per-token generation</td><td class="yes">Previous state + current input</td><td class="no">Recompute attention over whole sequence</td></tr>
+    <tr><td>Per-token generation</td><td class="yes">Previous state + current input</td><td class="no">Attend over all previous tokens</td></tr>
     <tr><td>Length scaling (generation)</td><td class="yes">Linear</td><td class="no">≈ \(L^2\) (quadratic)</td></tr>
     <tr><td>Context length</td><td>Infinite in theory</td><td>Bounded; recompute bottleneck</td></tr>
     <tr><td>Training</td><td>Slow (BPTT)</td><td class="yes">Parallel across positions</td></tr>

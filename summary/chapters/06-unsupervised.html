@@ -659,7 +659,7 @@ body.has-sidebar{padding-left:264px;}
 <h2>UMAP</h2>
 <p>Like t-SNE, a <strong>non-linear manifold</strong> DR — used as a <strong>drop-in t-SNE replacement</strong>. Advantages:</p>
 <ul class="check">
-  <li><strong>Parametric by default</strong> → can embed new points → good general-purpose <strong>preprocessing</strong>.</li>
+  <li><strong>Can embed new points</strong> (out-of-sample <code>transform</code>, unlike basic t-SNE) → good general-purpose <strong>preprocessing</strong>.</li>
   <li><strong>Can incorporate supervised labels</strong> in the mapping.</li>
   <li><strong>Scales better</strong> than t-SNE and MDS; better for <strong>dims greater than 3</strong>.</li>
   <li>Nicer interpretation properties than t-SNE.</li>
@@ -671,7 +671,7 @@ body.has-sidebar{padding-left:264px;}
   <tbody>
     <tr><td>Linear?</td><td>Linear</td><td>Non-linear</td><td>Non-linear</td></tr>
     <tr><td>Preserves</td><td>Global variance</td><td>Local similarities</td><td>Local + better global</td></tr>
-    <tr><td>Embeds new points?</td><td class="yes">Yes</td><td class="no">No (parametric variant exists)</td><td class="yes">Yes (parametric default)</td></tr>
+    <tr><td>Embeds new points?</td><td class="yes">Yes</td><td class="no">No (parametric variant exists)</td><td class="yes">Yes (out-of-sample transform)</td></tr>
     <tr><td>Uses labels?</td><td class="no">No</td><td class="no">No</td><td class="yes">Yes (can)</td></tr>
     <tr><td>Output dims</td><td>Any</td><td>Usually 2D/3D</td><td>Good above 3</td></tr>
     <tr><td>Key hyperparam</td><td>#components</td><td>Perplexity (5–50)</td><td>—</td></tr>
@@ -680,10 +680,10 @@ body.has-sidebar{padding-left:264px;}
 </table>
 
 <div class="q"><div class="q-top"><div class="qnum">3</div><p class="qtext">Which is the strongest reason to prefer UMAP over t-SNE as a preprocessing step in a predictive pipeline?</p></div>
-<ol class="opts" data-explain="UMAP is parametric by default, so it learns an explicit mapping and can embed UNSEEN test points — exactly what a predictive pipeline needs. t-SNE is non-parametric and cannot embed new points. Both are non-linear; PCA (not UMAP) is the linear one.">
+<ol class="opts" data-explain="Standard UMAP learns a reusable mapping and exposes a transform method, so it can embed UNSEEN test points — exactly what a predictive pipeline needs. Basic t-SNE cannot embed new points. Both are non-linear; PCA (not UMAP) is the linear one. (Parametric UMAP is a separate neural-network variant, not the default.)">
   <li data-correct="0"><span class="otxt">UMAP is a linear method, so it is easier to interpret</span></li>
   <li data-correct="0"><span class="otxt">UMAP guarantees the global optimum of its loss</span></li>
-  <li data-correct="1"><span class="otxt">UMAP is parametric by default, so it can embed unseen test points</span></li>
+  <li data-correct="1"><span class="otxt">UMAP learns a reusable mapping (transform), so it can embed unseen test points</span></li>
 </ol></div>
 
 <h2>Anomaly detection</h2>

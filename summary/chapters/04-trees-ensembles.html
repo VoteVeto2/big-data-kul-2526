@@ -401,7 +401,7 @@ body.has-sidebar{padding-left:264px;}
 
 <div class="callout note">
   <div class="ttl">◆ scikit-learn detail</div>
-  <p>scikit-learn combines by <strong>averaging probabilistic predictions</strong>, not by letting each classifier vote a single class (contrast with the original Breiman publication). For large ensembles, averaging probabilities and majority voting "virtually guarantee" the same outcome.</p>
+  <p>scikit-learn combines by <strong>averaging probabilistic predictions</strong>, not by letting each classifier vote a single class (contrast with the original Breiman publication). For large ensembles the two <strong>often agree</strong>, but are <strong>not guaranteed to</strong> — they can diverge when the base probabilities are poorly calibrated or cluster near 0.5.</p>
 </div>
 
 <h3>Out-of-bag (OOB) validation</h3>
@@ -484,7 +484,7 @@ output H(x) = sign( sum_t alpha_t * h_t(x) )</code></pre>
 
 <div class="callout note">
   <div class="ttl">◆ General statement</div>
-  <p>GBM fits the negative gradient of the loss in <em>general</em>; <strong>residual-fitting is just the special case for MSE</strong>. Swap in another loss + its gradient: LogLoss (binary), MLogLoss (multiclass). Quirk: squared-error loss \( (y-F)^2 \) <em>rises again once \( yF\gt 1 \)</em>, penalizing predictions that are "too correct".</p>
+  <p>GBM fits the negative gradient of the loss in <em>general</em>; <strong>residual-fitting is just the special case for MSE</strong>. Swap in another loss + its gradient: LogLoss (binary), MLogLoss (multiclass). Quirk (<strong>classification-margin view, \(y\in\{-1,+1\}\)</strong>): squared-error loss \( (y-F)^2 \) <em>rises again once \( yF\gt 1 \)</em>, penalizing predictions that are "too correct" — this does <strong>not</strong> apply to ordinary regression MSE.</p>
 </div>
 
 <h3>XGBoost / LightGBM / CatBoost</h3>

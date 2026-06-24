@@ -427,7 +427,7 @@ body.has-sidebar{padding-left:264px;}
   \[ w_{i,t+1} = w_{i,t} + \lambda\,(\text{expected} - \text{predicted})\,x_i \]
 </div>
 
-<p>The full derivative \(\frac{\partial L}{\partial w_i} = -2(y-\hat{y})\,\sigma(o)(1-\sigma(o))\,x_i\); the positive factors \(2\) and \(\sigma(o)(1-\sigma(o))\) are folded into \(\lambda\).</p>
+<p>The full derivative \(\frac{\partial L}{\partial w_i} = -2(y-\hat{y})\,\sigma(o)(1-\sigma(o))\,x_i\); the constant \(2\) folds into \(\lambda\), and \(\sigma(o)(1-\sigma(o))\) is dropped in this simplified form (it is <strong>not constant</strong> — it varies per instance and step).</p>
 
 <div class="callout exam">
   <div class="ttl">⚠ Learning rate \(\lambda\)</div>
@@ -527,7 +527,7 @@ body.has-sidebar{padding-left:264px;}
 <h3>Output types</h3>
 <div class="formula">
   <span class="lbl">Softmax (multiclass) — outputs sum to 1</span>
-  \[ \sigma(z)_i = \frac{e^{-\beta z_i}}{\sum_j e^{-\beta z_j}} \]
+  \[ \sigma(z)_i = \frac{e^{\beta z_i}}{\sum_j e^{\beta z_j}} \]
 </div>
 <div class="callout exam">
   <div class="ttl">⚠ Exam watch-out</div>
@@ -568,7 +568,7 @@ body.has-sidebar{padding-left:264px;}
   <dd>Each training step <b>drops out nodes</b> with some probability (forces 0 activation), leaving a reduced network. Different node set per sample/epoch; <b>gradients flow only through active neurons</b>.</dd>
 </dl>
 <ul class="clean">
-  <li><b>At test time:</b> use <b>all activations but scale them down</b> by a factor.</li>
+  <li><b>At test time:</b> use <b>all activations but scale them down</b> by a factor (original dropout; modern <b>inverted dropout</b> rescales during training instead, leaving test time unscaled).</li>
   <li><b>Why it works:</b> like an <b>ensemble of sparse networks</b>; each neuron must be useful on its own (reduces co-adaptation).</li>
   <li>Typically on <b>fully connected layers</b>.</li>
 </ul>
@@ -676,7 +676,7 @@ body.has-sidebar{padding-left:264px;}
 <dl class="defs">
   <dt>Localization</dt><dd>class label <b>+ bounding box</b> (RCNN family).</dd>
   <dt>Segmentation</dt><dd>class label <b>+ outline of every object</b>. <b>U-Net</b> = encoder-decoder with <b>skip connections</b>.</dd>
-  <dt>YOLO ("You Only Look Once")</dt><dd>Divides image into <b>S×S grid</b>, bounding-box regression, uses <b>IOU (Intersection Over Union)</b> as the loss metric.</dd>
+  <dt>YOLO ("You Only Look Once")</dt><dd>Divides image into <b>S×S grid</b>, bounding-box regression, uses <b>IOU (Intersection Over Union)</b> to match/evaluate boxes (the original loss is a <b>composite</b> of coordinate, confidence, and class terms — not pure IoU).</dd>
   <dt>ViT (Dosovitskiy 2020)</dt><dd>Image → <b>patches</b> + linear embed + <b>position embeddings</b> + learnable <b>class token</b> → Transformer encoder. A <b>pure transformer can match CNNs — CNNs are not necessary.</b></dd>
 </dl>
 

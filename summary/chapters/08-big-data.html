@@ -387,7 +387,7 @@ body.has-sidebar{padding-left:264px;}
   <dt>Data nodes</dt><dd>Hold the actual data blocks.</dd>
 </dl>
 <ul class="clean">
-  <li>Typical <b>block size = 64&nbsp;MB</b>; large files = multiple 64&nbsp;MB blocks, each placed on <b>separate data nodes</b>.</li>
+  <li>Typical <b>block size = 64&nbsp;MB</b> (older default; modern Hadoop commonly <b>128&nbsp;MB+</b>); large files = multiple blocks, each placed on <b>separate data nodes</b>.</li>
   <li><b>Replication</b> gives fault tolerance; replica count is set <b>at file-creation time</b>.</li>
   <li>"A massive, distributed C:&nbsp;drive." <b>Storage, not yet computing</b> — naively reading a huge file locally still ends badly.</li>
 </ul>
@@ -396,7 +396,7 @@ body.has-sidebar{padding-left:264px;}
 <ul class="clean">
   <li><b>Hadoop 1:</b> the <b>JobTracker</b> managed the cluster — it <b>didn't scale</b>.</li>
   <li><b>Hadoop 2:</b> split MapReduce into <b>YARN</b> (resource management) + MapReduce (compute). Single active + single standby NameNode.</li>
-  <li><b>Hadoop 3:</b> <b>erasure coding</b> — 1 parity block per 2 data blocks → only <b>1.5×</b> disk space (vs <b>3×</b> with replication in Hadoop 2), <b>same fault tolerance</b>; supports <b>multiple standby NameNodes</b>.</li>
+  <li><b>Hadoop 3:</b> <b>erasure coding</b> — e.g. Reed–Solomon with <b>6 data + 3 parity</b> blocks → only <b>1.5×</b> disk space (vs <b>3×</b> with replication in Hadoop 2), <b>same fault tolerance</b>; supports <b>multiple standby NameNodes</b>.</li>
 </ul>
 
 <div class="callout exam">
@@ -503,7 +503,7 @@ body.has-sidebar{padding-left:264px;}
 
 <div class="callout why">
   <div class="ttl">◆ What Spark keeps vs throws out</div>
-  <p><b>Keeps:</b> a resource manager (YARN, but also <b>Mesos</b> or <b>standalone</b>) and storage (HDFS, S3, Cassandra, HBase, Hive, flat files). <b>Throws out: MapReduce.</b> It replaces it with an <b>advanced DAG execution engine supporting cyclic data flow and in-memory computing</b> (note the similarity to Dask).</p>
+  <p><b>Keeps:</b> a resource manager (YARN, but also <b>Mesos</b> or <b>standalone</b>) and storage (HDFS, S3, Cassandra, HBase, Hive, flat files). <b>Throws out: MapReduce.</b> It replaces it with an <b>advanced DAG execution engine supporting cyclic data flow and in-memory computing</b> (note the similarity to Dask). "Cyclic data flow" is Spark's own phrasing — a DAG is <em>acyclic</em> by definition, so this just means iterative jobs run as <b>repeated acyclic graphs</b>.</p>
 </div>
 
 <h3>Building blocks</h3>
@@ -597,7 +597,7 @@ body.has-sidebar{padding-left:264px;}
 <h3>MLlib — "scikit-learn on Spark"</h3>
 <ul class="clean">
   <li>Provides ML algorithms, <b>Featurization</b>, <b>Pipelines</b>, <b>Persistence</b>, <b>Utilities</b>.</li>
-  <li>Since <b>Spark 2.0</b> the primary API is the <b>DataFrame-based <code>spark.ml</code></b>; the older <b>RDD-based <code>spark.mllib</code></b> reached <b>feature parity in 2.3</b> and is in <b>maintenance mode in Spark 3</b>.</li>
+  <li>Since <b>Spark 2.0</b> the <b>RDD-based <code>spark.mllib</code></b> is in <b>maintenance mode</b> (no new features) and the <b>DataFrame-based <code>spark.ml</code></b> is the <b>primary API</b>, which reached <b>feature parity ~Spark 2.3</b>.</li>
 </ul>
 
 <h2>Spark vs the field</h2>
@@ -668,7 +668,7 @@ body.has-sidebar{padding-left:264px;}
 <ul class="clean">
   <li><b>Data:</b> bounded (finite) or unbounded (infinite). <b>Engine:</b> streaming or batch. Combinations are possible.</li>
   <li><b>Finite:</b> simple — reprocess on failure, use <b>checkpoints</b> (the "resilient" in RDD). <b>Infinite:</b> must account for <b>time</b> (event creation / ingestion / processing); aggregate over a <b>WINDOW</b>.</li>
-  <li><b>Sliding window:</b> overlapping, slides by an interval (time- or count-based). <b>Hopping (tumbling):</b> non-overlapping consecutive windows.</li>
+  <li><b>Sliding window:</b> overlapping, slides by an interval (time- or count-based). <b>Tumbling:</b> non-overlapping consecutive windows. <b>Hopping:</b> advances by a fixed hop — <b>overlaps</b> if hop &lt; size, <b>gaps</b> if hop &gt; size (tumbling = the special case hop = size).</li>
 </ul>
 
 <h3>The pipeline &amp; Kafka</h3>

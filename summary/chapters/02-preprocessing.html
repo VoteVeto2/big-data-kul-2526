@@ -416,7 +416,7 @@ body.has-sidebar{padding-left:264px;}
 
 <h2>Scaling: standardization vs normalization</h2>
 
-<div class="formula"><span class="lbl">Standardization → N(0,1)</span>\[ x_{new} = \frac{x - \mu}{\sigma} \]</div>
+<div class="formula"><span class="lbl">Standardization → mean 0, sd 1</span>\[ x_{new} = \frac{x - \mu}{\sigma} \]</div>
 <div class="formula"><span class="lbl">Normalization (feature scaling) → bounded</span>\[ x_{new} = \frac{x - x_{min}}{x_{max} - x_{min}} \]</div>
 
 <table class="tbl">
@@ -431,7 +431,7 @@ body.has-sidebar{padding-left:264px;}
 
 <div class="callout exam">
   <div class="ttl">⚠ Exam watch-out</div>
-  <p>Scaling is <strong>necessary for SVM, regression, k-NN, neural networks</strong> (anything using Euclidean distance/similarity) and for <strong>regularized regression</strong> (so \(\lambda\) affects all variables similarly). It is <strong>useless for decision trees.</strong></p>
+  <p>Scaling is <strong>necessary for SVM, k-NN, neural networks</strong> (anything using Euclidean distance/similarity) and for <strong>regularized regression</strong> (so \(\lambda\) affects all variables similarly). Plain unregularized OLS does not need it for correctness. It is <strong>useless for decision trees.</strong></p>
 </div>
 
 <hr>
@@ -484,7 +484,7 @@ body.has-sidebar{padding-left:264px;}
 
 <dl class="defs">
   <dt>Key property</dt>
-  <dd>WoE has a <strong>monotonic relationship with the target</strong>; higher WoE = less risk. \(p_{c1}\gt p_{c2}\Rightarrow\) WoE \(\gt 0\).</dd>
+  <dd>WoE has a <strong>monotonic relationship with the target</strong>; higher WoE = less risk <strong>when class 1 = good/non-event</strong> (the sign flips if the class coding is reversed). \(p_{c1}\gt p_{c2}\Rightarrow\) WoE \(\gt 0\).</dd>
 </dl>
 
 <div class="formula"><span class="lbl">Information Value — variable screening</span>\[ \text{IV} = \sum (p_G - p_B)\cdot \text{WoE} \]</div>
@@ -533,7 +533,7 @@ body.has-sidebar{padding-left:264px;}
 <h2>Linear &amp; logistic regression</h2>
 
 <h3>Linear regression (OLS)</h3>
-<div class="formula"><span class="lbl">Model</span>\[ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \varepsilon, \quad \varepsilon \sim N(0,\sigma) \]</div>
+<div class="formula"><span class="lbl">Model</span>\[ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \varepsilon, \quad \varepsilon \sim N(0,\sigma^2) \]</div>
 <div class="formula"><span class="lbl">Ordinary Least Squares — minimize SSE</span>\[ \arg\min_{\beta} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \]</div>
 <p>SSE/MSE is <strong>convex</strong> (single minimum, fully differentiable); if \(X\) is full rank there is a <strong>unique closed-form solution</strong>. Gradient descent may be preferred at scale.</p>
 
@@ -576,7 +576,7 @@ body.has-sidebar{padding-left:264px;}
 
 <div class="formula"><span class="lbl">Loss — cross-entropy / log loss (binary)</span>\[ -\big( y\log p + (1-y)\log(1-p) \big) \]</div>
 
-<p><strong>Logistic regression is</strong>: a formula (easy to interpret, well-calibrated), with a <strong>linear decision boundary</strong>, but <strong>sensitive to outliers, correlated features, and the curse of dimensionality</strong>; categoricals must be encoded.</p>
+<p><strong>Logistic regression is</strong>: a formula (easy to interpret, usually well-calibrated <strong>when correctly specified</strong>), with a <strong>linear decision boundary</strong>, but <strong>sensitive to outliers, correlated features, and the curse of dimensionality</strong>; categoricals must be encoded.</p>
 
 <div class="q"><div class="q-top"><div class="qnum">1</div><p class="qtext">In a logistic model, a coefficient \(\beta_i = 0.69\) for feature \(X_i\) means a one-unit increase in \(X_i\)…</p></div>
 <ol class="opts" data-explain="The multiplicative change in odds is the odds-ratio \( e^{\beta_i} \). Here \( e^{0.69}\approx 2 \), so the odds roughly double. The logit (log-odds) increases additively by \( \beta_i \), but the odds themselves change multiplicatively — not additively, and not the probability directly.">
@@ -624,7 +624,7 @@ body.has-sidebar{padding-left:264px;}
     <tr><td>Variable selection</td><td class="yes">yes, "for free"</td><td class="no">no</td></tr>
     <tr><td>Constraint shape</td><td>diamond</td><td>circle</td></tr>
     <tr><td>Grouping (correlated vars)</td><td class="no">no — picks one at random</td><td class="yes">handles better</td></tr>
-    <tr><td>#instances \(\lt\) #features</td><td class="no">does not work</td><td>—</td></tr>
+    <tr><td>#instances \(\lt\) #features</td><td>works, but selects at most \(\approx n\) variables</td><td>—</td></tr>
   </tbody>
 </table>
 

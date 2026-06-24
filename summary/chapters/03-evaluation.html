@@ -436,7 +436,7 @@ body.has-sidebar{padding-left:264px;}
     <tr><td>Accuracy</td><td>\((TP+TN)/\text{total}\)</td><td>fraction correct overall</td></tr>
     <tr><td><b>Recall</b> = Sensitivity = TPR</td><td>\(TP/(TP+FN)\)</td><td>of the actual positives, how many caught?</td></tr>
     <tr><td><b>Precision</b> = PPV</td><td>\(TP/(TP+FP)\)</td><td>of the predicted positives, how many right?</td></tr>
-    <tr><td>Specificity = TNR</td><td>\(TN/(TN+FP)\)</td><td>of the actual negatives, how many flagged?</td></tr>
+    <tr><td>Specificity = TNR</td><td>\(TN/(TN+FP)\)</td><td>of the actual negatives, how many correctly cleared (not flagged)?</td></tr>
     <tr><td>FPR = Fall-out</td><td>\(FP/(TN+FP)=1-\text{spec}\)</td><td>negatives wrongly flagged</td></tr>
     <tr><td>Balanced accuracy</td><td>\((\text{recall}+\text{spec})/2\)</td><td>average of the two rates</td></tr>
     <tr><td><b>F1</b></td><td>\(2\cdot\dfrac{\text{prec}\cdot\text{recall}}{\text{prec}+\text{recall}}\)</td><td><strong>harmonic</strong> mean of P and R</td></tr>
@@ -459,7 +459,7 @@ body.has-sidebar{padding-left:264px;}
 
 <div class="callout note">
   <div class="ttl">Tuning beyond the threshold</div>
-  <p>Most traditional models inherently optimize for <strong>accuracy</strong>, yet you usually care about something else. Levers: tune the threshold, adjust parameters, redefine the target, sample/filter the data, apply <strong>misclassification costs</strong>, apply <strong>instance weighting</strong> (easiest: duplicate rows), or change the loss. <strong>Evaluate on what matters to you.</strong></p>
+  <p>Most traditional models optimize a <strong>default surrogate loss</strong> (log-loss, impurity, squared error) — rarely the metric you actually care about. Levers: tune the threshold, adjust parameters, redefine the target, sample/filter the data, apply <strong>misclassification costs</strong>, apply <strong>instance weighting</strong> (easiest: duplicate rows), or change the loss. <strong>Evaluate on what matters to you.</strong></p>
 </div>
 
 <h2>Class imbalance, costs &amp; sampling</h2>
@@ -604,7 +604,7 @@ body.has-sidebar{padding-left:264px;}
 <div class="formula">
   <span class="lbl">r² and adjusted r²</span>
   \[ r^2 = 1 - \frac{SSE}{S_{yy}},\quad SSE=\sum_i (y_i-\hat y_i)^2,\ \ S_{yy}=\sum_i (y_i-\bar y)^2 \]
-  \[ r^2_a = 1 - (1-r^2)\cdot\frac{n-1}{n-k} \quad (n=\#\text{obs},\ k=\#\text{predictors}) \]
+  \[ r^2_a = 1 - (1-r^2)\cdot\frac{n-1}{n-p-1} \quad (n=\#\text{obs},\ p=\#\text{predictors, excl. intercept}) \]
 </div>
 
 <div class="callout exam">
@@ -614,7 +614,7 @@ body.has-sidebar{padding-left:264px;}
 
 <dl class="defs">
   <dt>AIC / BIC</dt>
-  <dd>Trade off <strong>goodness of fit vs complexity</strong>. \(\text{AIC}=\frac{SSE}{n}\cdot\frac{n+k}{n-k}\). <strong>BIC = Schwarz criterion</strong>, closely related.</dd>
+  <dd>Trade off <strong>goodness of fit vs complexity</strong>. For Gaussian regression \(\text{AIC}=n\ln(\text{SSE}/n)+2k\) (\(k=\#\)parameters). <strong>BIC = Schwarz criterion</strong>, replaces \(2k\) with \(k\ln n\) (penalizes complexity more).</dd>
   <dt>Error measures</dt>
   <dd>\(\text{MSE}=\frac{1}{n}\sum(y_i-\hat y_i)^2\); \(\text{MAD}=\frac{1}{n}\sum\lvert y_i-\hat y_i\rvert\) (absolute); \(\text{RMSE}=\sqrt{\text{MSE}}\).</dd>
   <dt>REC curve</dt>
